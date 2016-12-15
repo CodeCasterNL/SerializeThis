@@ -4,6 +4,7 @@
 // </copyright>
 //------------------------------------------------------------------------------
 
+//using CodeCaster.SerializeThis.Serialization;
 using EnvDTE;
 using EnvDTE80;
 using Microsoft.CodeAnalysis;
@@ -152,66 +153,82 @@ namespace CodeCaster.SerializeThis
 
         private void GetMemberInfoRecursive(ITypeSymbol typeSymbol, SemanticModel semanticModel)
         {
-            string memberInfo = GetMemberInfoRecursive(typeSymbol);
-            ShowMessageBox(memberInfo);
+        //    Class memberInfo = GetMemberInfoRecursive(typeSymbol);
+
+        //    string result = "";
+
+        //    result += memberInfo.Name;
+
+        //    ShowMessageBox(result);
+        //}
+
+        //private Class GetMemberInfoRecursive(ITypeSymbol typeSymbol)
+        //{
+        //    var thisClass = new Class
+        //    {
+        //        Name = typeSymbol.Name
+        //    };
+
+        //    return thisClass;
         }
 
-        private string GetMemberInfoRecursive(ITypeSymbol typeSymbol)
-        {
-            string memberInfo = "";
+        //private string GetMemberInfoRecursive(ITypeSymbol typeSymbol)
+        //{
+        //    string memberInfo = "";
 
-            if (typeSymbol.BaseType != null)
-            {
-                memberInfo += GetMemberInfoRecursive(typeSymbol.BaseType);
-            }
+        //    if (typeSymbol.BaseType != null)
+        //    {
+        //        memberInfo += GetMemberInfoRecursive(typeSymbol.BaseType);
+        //    }
 
-            memberInfo += $"Public properties of {typeSymbol.Name}:{Environment.NewLine}";
+        //    memberInfo += $"Public properties of {typeSymbol.Name}:{Environment.NewLine}";
 
-            // TOOD: get members down the inheritance tree
-            foreach (var member in typeSymbol.GetMembers())
-            {
-                if (member.Kind == SymbolKind.Property && member.DeclaredAccessibility == Accessibility.Public)
-                {
-                    memberInfo += " - " + member.Name;
+        //    // TOOD: get members down the inheritance tree
+        //    foreach (var member in typeSymbol.GetMembers())
+        //    {
+        //        if (member.Kind == SymbolKind.Property && member.DeclaredAccessibility == Accessibility.Public)
+        //        {
+        //            memberInfo += " - " + member.Name;
 
-                    // TODO: add support for all known types, visitor pattern?
-                    var typedMember = member as IPropertySymbol;
-                    var memberType = typedMember.Type;
-                    switch (memberType.SpecialType)
-                    {
-                        case SpecialType.System_String:
-                            memberInfo += " (string)";
-                            break;
-                        case SpecialType.System_DateTime:
-                            memberInfo += " (DateTime)";
-                            break;
-                        case SpecialType.System_Int32:
-                            memberInfo += " (int)";
-                            break;
-                        case SpecialType.System_Int64:
-                            memberInfo += " (long)";
-                            break;
+        //            // TODO: add support for all known types, visitor pattern?
+        //            var typedMember = member as IPropertySymbol;
+        //            var memberType = typedMember.Type;
 
-                        // TODO: below doesn't seem to work, try if the type implements System.Collections.IEnumerable to emit a collection (after IDictionary<>)?
-                        case SpecialType.System_Collections_Generic_ICollection_T:
-                        case SpecialType.System_Collections_Generic_IEnumerable_T:
-                        case SpecialType.System_Collections_Generic_IEnumerator_T:
-                        case SpecialType.System_Collections_Generic_IList_T:
-                        case SpecialType.System_Collections_Generic_IReadOnlyCollection_T:
-                        case SpecialType.System_Collections_Generic_IReadOnlyList_T:
-                        case SpecialType.System_Collections_IEnumerable:
-                        case SpecialType.System_Collections_IEnumerator:
-                            memberInfo += " (collection<T>)";
-                            break;
-                    }
+        //            switch (memberType.SpecialType)
+        //            {
+        //                case SpecialType.System_String:
+        //                    memberInfo += " (string)";
+        //                    break;
+        //                case SpecialType.System_DateTime:
+        //                    memberInfo += " (DateTime)";
+        //                    break;
+        //                case SpecialType.System_Int32:
+        //                    memberInfo += " (int)";
+        //                    break;
+        //                case SpecialType.System_Int64:
+        //                    memberInfo += " (long)";
+        //                    break;
 
-                    memberInfo += Environment.NewLine;
+        //                // TODO: below doesn't seem to work, try if the type implements System.Collections.IEnumerable to emit a collection (after IDictionary<>)?
+        //                case SpecialType.System_Collections_Generic_ICollection_T:
+        //                case SpecialType.System_Collections_Generic_IEnumerable_T:
+        //                case SpecialType.System_Collections_Generic_IEnumerator_T:
+        //                case SpecialType.System_Collections_Generic_IList_T:
+        //                case SpecialType.System_Collections_Generic_IReadOnlyCollection_T:
+        //                case SpecialType.System_Collections_Generic_IReadOnlyList_T:
+        //                case SpecialType.System_Collections_IEnumerable:
+        //                case SpecialType.System_Collections_IEnumerator:
+        //                    memberInfo += " (collection<T>)";
+        //                    break;
+        //            }
 
-                }
-            }
+        //            memberInfo += Environment.NewLine;
 
-            return memberInfo;
-        }
+        //        }
+        //    }
+
+        //    return memberInfo;
+        //}
 
         private async Task<ISymbol> GetSymbolUnderCursorAsync(Microsoft.CodeAnalysis.Document document, SemanticModel semanticModel, int position)
         {

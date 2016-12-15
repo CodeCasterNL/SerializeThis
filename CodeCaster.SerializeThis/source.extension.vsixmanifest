@@ -1,7 +1,7 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <PackageManifest Version="2.0.0" xmlns="http://schemas.microsoft.com/developer/vsx-schema/2011" xmlns:d="http://schemas.microsoft.com/developer/vsx-schema-design/2011">
   <Metadata>
-    <Identity Id="SerializeThis.CodeCaster.ca0c8664-e98d-434b-b54e-cafb6f0b1279" Version="1.0" Language="en-US" Publisher="Raymon Turkenburg" />
+    <Identity Id="SerializeThis.CodeCaster.ca0c8664-e98d-434b-b54e-cafb6f0b1279" Version="1.0" Language="en-US" Publisher="CodeCaster" />
     <DisplayName>CodeCaster.SerializeThis</DisplayName>
     <Description xml:space="preserve">Serialize types directly from the IDE.</Description>
     <License>LICENSE</License>
