@@ -4,7 +4,6 @@
 // </copyright>
 //------------------------------------------------------------------------------
 
-//using CodeCaster.SerializeThis.Serialization;
 using EnvDTE;
 using EnvDTE80;
 using Microsoft.CodeAnalysis;
@@ -24,6 +23,9 @@ using System.ComponentModel.Design;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using CodeCaster.SerializeThis.Serialization;
+using System.Collections.Generic;
+using CodeCaster.SerializeThis.Serialization.Json;
 
 namespace CodeCaster.SerializeThis
 {
@@ -153,23 +155,86 @@ namespace CodeCaster.SerializeThis
 
         private void GetMemberInfoRecursive(ITypeSymbol typeSymbol, SemanticModel semanticModel)
         {
-        //    Class memberInfo = GetMemberInfoRecursive(typeSymbol);
+            Class memberInfo = GetMemberInfoRecursive(typeSymbol.Name, typeSymbol);
 
-        //    string result = "";
+            string memberInfoString = PrintMemberInfoRercursive(memberInfo, 0);
+            
+            string json = new JsonSerializer().Serialize(memberInfo);
+            ShowMessageBox(memberInfoString + Environment.NewLine + Environment.NewLine + json);
+        }
 
-        //    result += memberInfo.Name;
+        private string PrintMemberInfoRercursive(Class memberInfo, int depth)
+        {
+            string result = "";
 
-        //    ShowMessageBox(result);
-        //}
+            string spaces = new string(' ', depth);
 
-        //private Class GetMemberInfoRecursive(ITypeSymbol typeSymbol)
-        //{
-        //    var thisClass = new Class
-        //    {
-        //        Name = typeSymbol.Name
-        //    };
+            result += $"{spaces}{memberInfo.Type} {memberInfo.Name}{Environment.NewLine}";
 
-        //    return thisClass;
+            if (memberInfo.Children != null)
+            {
+                foreach (var child in memberInfo.Children)
+                {
+                    result += PrintMemberInfoRercursive(child, depth + 1);
+                }
+            }
+
+            return result;
+        }
+
+        private Class GetMemberInfoRecursive(string name, ITypeSymbol typeSymbol)
+        {
+            var thisClass = new Class
+            {
+                Name = name,
+                Type = GetSymbolType(typeSymbol),
+            };
+
+            if (thisClass.Type == TypeEnum.ComplexType)
+            {
+                thisClass.Children = GetChildren(typeSymbol);
+            }
+
+            return thisClass;
+        }
+
+        private IList<Class> GetChildren(ITypeSymbol typeSymbol)
+        {
+            var result = new List<Class>();
+
+            if (typeSymbol.BaseType != null)
+            {
+                result.AddRange(GetChildren(typeSymbol.BaseType));
+            }
+
+            foreach (var member in typeSymbol.GetMembers())
+            {
+                if (member.Kind == SymbolKind.Property && member.DeclaredAccessibility == Accessibility.Public)
+                {
+                    var memberTypeSymbol = member as IPropertySymbol;
+                    if (member != null)
+                    {
+                        result.Add(GetMemberInfoRecursive(memberTypeSymbol.Name, memberTypeSymbol.Type));
+                    }
+                }
+            }
+
+            return result;
+        }
+
+        private TypeEnum GetSymbolType(ITypeSymbol typeSymbol)
+        {
+            switch (typeSymbol.SpecialType)
+            {
+                case SpecialType.System_String:
+                    return TypeEnum.String;
+                case SpecialType.System_DateTime:
+                    return TypeEnum.DateTime;
+                case SpecialType.System_Int32:
+                    return TypeEnum.Int32;                    
+            }
+
+            return TypeEnum.ComplexType;
         }
 
         //private string GetMemberInfoRecursive(ITypeSymbol typeSymbol)
@@ -194,34 +259,7 @@ namespace CodeCaster.SerializeThis
         //            var typedMember = member as IPropertySymbol;
         //            var memberType = typedMember.Type;
 
-        //            switch (memberType.SpecialType)
-        //            {
-        //                case SpecialType.System_String:
-        //                    memberInfo += " (string)";
-        //                    break;
-        //                case SpecialType.System_DateTime:
-        //                    memberInfo += " (DateTime)";
-        //                    break;
-        //                case SpecialType.System_Int32:
-        //                    memberInfo += " (int)";
-        //                    break;
-        //                case SpecialType.System_Int64:
-        //                    memberInfo += " (long)";
-        //                    break;
-
-        //                // TODO: below doesn't seem to work, try if the type implements System.Collections.IEnumerable to emit a collection (after IDictionary<>)?
-        //                case SpecialType.System_Collections_Generic_ICollection_T:
-        //                case SpecialType.System_Collections_Generic_IEnumerable_T:
-        //                case SpecialType.System_Collections_Generic_IEnumerator_T:
-        //                case SpecialType.System_Collections_Generic_IList_T:
-        //                case SpecialType.System_Collections_Generic_IReadOnlyCollection_T:
-        //                case SpecialType.System_Collections_Generic_IReadOnlyList_T:
-        //                case SpecialType.System_Collections_IEnumerable:
-        //                case SpecialType.System_Collections_IEnumerator:
-        //                    memberInfo += " (collection<T>)";
-        //                    break;
-        //            }
-
+        //           
         //            memberInfo += Environment.NewLine;
 
         //        }
