@@ -1,55 +1,69 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
-namespace TestClasses
+namespace JsonTestClasses
 {
-    public class Foo
+    /// <summary>
+    /// Properties of built-in types.
+    /// </summary>
+    public class FooBase
     {
         public string Name { get; set; }
+        public bool BoolProperty { get; set; }
     }
 
-    public class Foo2 : Foo
+    /// <summary>
+    /// Inheritance.
+    /// </summary>
+    public class FooInherited : FooBase
     {
         public int Age { get; set; }
         public DateTime DateOfBirth { get; set; }
     }
 
     /// <summary>
-    /// Collections
+    /// Collections.
     /// </summary>
-    public class Foo3 : Foo
+    public class FooCollections : FooBase
     {
-        public Foo3 Parent { get; set; }
-        public List<Foo3> Children { get; set; }
-        public IList<Foo3> ChildrenI { get; set; }
+        public List<FooInherited> Children { get; set; }
+        public IList<FooInherited> ChildrenI { get; set; }
         public bool?[] NullableBoolArray { get; set; }
         public Dictionary<int, string> DictionaryProperty { get; set; }
     }
 
-    public class Foo4 : Foo
+    /// <summary>
+    /// Recursion.
+    /// </summary>
+    public class FooRecursion : FooBase
     {
-        private Foo4()
+        public FooRecursion Parent { get; set; }
+    }
+
+    /// <summary>
+    /// Reflection.
+    /// </summary>
+    public class FooPrivateConstructor : FooBase
+    {
+        private FooPrivateConstructor()
         {
-            // Cannot be constructed?
+            // Cannot be constructed? Should we care?
         }
     }
 
     /// <summary>
-    /// Nullables
+    /// Nullables.
     /// </summary>
-    public class Foo5 : Foo
+    public class FooNullable : FooBase
     {
         public int? NullableIntProperty { get; set; }
         public DateTime? NullableDateTimeProperty { get; set; }
     }
 
     /// <summary>
-    /// Numerics
+    /// Numerics.
     /// </summary>
-    public class Foo6 : Foo
+    public class FooNumerics : FooBase
     {
         public byte Byte { get; set; }
         public short Int16 { get; set; }
@@ -61,9 +75,9 @@ namespace TestClasses
     }
 
     /// <summary>
-    /// Generics
+    /// Generics.
     /// </summary>
-    public class Foo7 : Foo
+    public class FooGenerics : FooBase
     {
         public class Foo7Child<T>
         {
