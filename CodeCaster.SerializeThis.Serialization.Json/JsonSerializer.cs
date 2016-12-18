@@ -37,8 +37,12 @@ namespace CodeCaster.SerializeThis.Serialization.Json
         {
             switch (child.Type)
             {
+                case TypeEnum.Boolean:
+                    return true;
                 case TypeEnum.String:
                     return $"{child.Name}-FooString";
+                case TypeEnum.DateTime:
+                    return DateTime.Now.ToUniversalTime();
                 case TypeEnum.Int32:
                     return int.MaxValue;
                 default:

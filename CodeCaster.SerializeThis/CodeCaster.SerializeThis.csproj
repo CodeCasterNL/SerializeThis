@@ -342,6 +342,10 @@
       <Project>{94488295-EC5E-4AB9-80BC-9590B204936E}</Project>
       <Name>CodeCaster.SerializeThis.Serialization.Json</Name>
     </ProjectReference>
+    <ProjectReference Include="..\CodeCaster.SerializeThis.Serialization.Roslyn\CodeCaster.SerializeThis.Serialization.Roslyn.csproj">
+      <Project>{202C9FEF-1C93-4BCE-AC1B-0C1B7F85AE79}</Project>
+      <Name>CodeCaster.SerializeThis.Serialization.Roslyn</Name>
+    </ProjectReference>
     <ProjectReference Include="..\CodeCaster.SerializeThis.Serialization\CodeCaster.SerializeThis.Serialization.csproj">
       <Project>{d855ef9f-21ab-4be3-9771-a75d2e059271}</Project>
       <Name>CodeCaster.SerializeThis.Serialization</Name>

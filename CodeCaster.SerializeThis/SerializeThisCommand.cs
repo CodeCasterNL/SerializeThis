@@ -26,6 +26,7 @@ using System.Threading.Tasks;
 using CodeCaster.SerializeThis.Serialization;
 using System.Collections.Generic;
 using CodeCaster.SerializeThis.Serialization.Json;
+using CodeCaster.SerializeThis.Serialization.Roslyn;
 
 namespace CodeCaster.SerializeThis
 {
@@ -121,10 +122,20 @@ namespace CodeCaster.SerializeThis
         {
 
             var componentModel = ServiceProvider.GetService(typeof(SComponentModel)) as IComponentModel;
-            var visualStudioWorkspace = componentModel.GetService<VisualStudioWorkspace>();
-            IVsTextView activeView = null;
-            ErrorHandler.ThrowOnFailure((Package.GetGlobalService(typeof(SVsTextManager)) as IVsTextManager).GetActiveView(1, null, out activeView));
+            if (componentModel == null)
+            {
+                return;
+            }
 
+            var vsTextManager = Package.GetGlobalService(typeof(SVsTextManager)) as IVsTextManager;
+            if (vsTextManager == null)
+            {
+                return;
+            }
+
+            IVsTextView activeView;
+            ErrorHandler.ThrowOnFailure(vsTextManager.GetActiveView(1, null, out activeView));
+            
             var textView = componentModel.GetService<IVsEditorAdaptersFactoryService>().GetWpfTextView(activeView);
 
             CaretPosition caretPosition = textView.Caret.Position;
@@ -135,11 +146,8 @@ namespace CodeCaster.SerializeThis
                 return;
             }
 
-            caretPosition = textView.Caret.Position;
-            bufferPosition = caretPosition.BufferPosition;
             int position = bufferPosition.Position;
-            CancellationToken cancellationToken = new CancellationToken();
-            SemanticModel semanticModel = await document.GetSemanticModelAsync(cancellationToken);
+            SemanticModel semanticModel = await document.GetSemanticModelAsync();
 
             ISymbol selectedSymbol = await GetSymbolUnderCursorAsync(document, semanticModel, position);
 
@@ -150,19 +158,12 @@ namespace CodeCaster.SerializeThis
                 return;
             }
 
-            GetMemberInfoRecursive(typeSymbol, semanticModel);
-        }
-
-        private void GetMemberInfoRecursive(ITypeSymbol typeSymbol, SemanticModel semanticModel)
-        {
-            Class memberInfo = GetMemberInfoRecursive(typeSymbol.Name, typeSymbol);
-
-            string memberInfoString = PrintMemberInfoRercursive(memberInfo, 0);
-            
-            string json = new JsonSerializer().Serialize(memberInfo);
+            Class classInfo = new TypeSymbolParser().GetMemberInfoRecursive(typeSymbol, semanticModel);
+            string memberInfoString = PrintMemberInfoRercursive(classInfo, 0);
+            string json = new JsonSerializer().Serialize(classInfo);
             ShowMessageBox(memberInfoString + Environment.NewLine + Environment.NewLine + json);
         }
-
+        
         private string PrintMemberInfoRercursive(Class memberInfo, int depth)
         {
             string result = "";
@@ -181,92 +182,6 @@ namespace CodeCaster.SerializeThis
 
             return result;
         }
-
-        private Class GetMemberInfoRecursive(string name, ITypeSymbol typeSymbol)
-        {
-            var thisClass = new Class
-            {
-                Name = name,
-                Type = GetSymbolType(typeSymbol),
-            };
-
-            if (thisClass.Type == TypeEnum.ComplexType)
-            {
-                thisClass.Children = GetChildren(typeSymbol);
-            }
-
-            return thisClass;
-        }
-
-        private IList<Class> GetChildren(ITypeSymbol typeSymbol)
-        {
-            var result = new List<Class>();
-
-            if (typeSymbol.BaseType != null)
-            {
-                result.AddRange(GetChildren(typeSymbol.BaseType));
-            }
-
-            foreach (var member in typeSymbol.GetMembers())
-            {
-                if (member.Kind == SymbolKind.Property && member.DeclaredAccessibility == Accessibility.Public)
-                {
-                    var memberTypeSymbol = member as IPropertySymbol;
-                    if (member != null)
-                    {
-                        result.Add(GetMemberInfoRecursive(memberTypeSymbol.Name, memberTypeSymbol.Type));
-                    }
-                }
-            }
-
-            return result;
-        }
-
-        private TypeEnum GetSymbolType(ITypeSymbol typeSymbol)
-        {
-            switch (typeSymbol.SpecialType)
-            {
-                case SpecialType.System_String:
-                    return TypeEnum.String;
-                case SpecialType.System_DateTime:
-                    return TypeEnum.DateTime;
-                case SpecialType.System_Int32:
-                    return TypeEnum.Int32;                    
-            }
-
-            return TypeEnum.ComplexType;
-        }
-
-        //private string GetMemberInfoRecursive(ITypeSymbol typeSymbol)
-        //{
-        //    string memberInfo = "";
-
-        //    if (typeSymbol.BaseType != null)
-        //    {
-        //        memberInfo += GetMemberInfoRecursive(typeSymbol.BaseType);
-        //    }
-
-        //    memberInfo += $"Public properties of {typeSymbol.Name}:{Environment.NewLine}";
-
-        //    // TOOD: get members down the inheritance tree
-        //    foreach (var member in typeSymbol.GetMembers())
-        //    {
-        //        if (member.Kind == SymbolKind.Property && member.DeclaredAccessibility == Accessibility.Public)
-        //        {
-        //            memberInfo += " - " + member.Name;
-
-        //            // TODO: add support for all known types, visitor pattern?
-        //            var typedMember = member as IPropertySymbol;
-        //            var memberType = typedMember.Type;
-
-        //           
-        //            memberInfo += Environment.NewLine;
-
-        //        }
-        //    }
-
-        //    return memberInfo;
-        //}
 
         private async Task<ISymbol> GetSymbolUnderCursorAsync(Microsoft.CodeAnalysis.Document document, SemanticModel semanticModel, int position)
         {

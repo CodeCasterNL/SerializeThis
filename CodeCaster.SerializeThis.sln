@@ -9,6 +9,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CodeCaster.SerializeThis.Se
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CodeCaster.SerializeThis.Serialization.Json", "CodeCaster.SerializeThis.Serialization.Json\CodeCaster.SerializeThis.Serialization.Json.csproj", "{94488295-EC5E-4AB9-80BC-9590B204936E}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CodeCaster.SerializeThis.Serialization.Roslyn", "CodeCaster.SerializeThis.Serialization.Roslyn\CodeCaster.SerializeThis.Serialization.Roslyn.csproj", "{202C9FEF-1C93-4BCE-AC1B-0C1B7F85AE79}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -27,6 +29,10 @@ Global
 		{94488295-EC5E-4AB9-80BC-9590B204936E}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{94488295-EC5E-4AB9-80BC-9590B204936E}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{94488295-EC5E-4AB9-80BC-9590B204936E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{202C9FEF-1C93-4BCE-AC1B-0C1B7F85AE79}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{202C9FEF-1C93-4BCE-AC1B-0C1B7F85AE79}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{202C9FEF-1C93-4BCE-AC1B-0C1B7F85AE79}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{202C9FEF-1C93-4BCE-AC1B-0C1B7F85AE79}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
