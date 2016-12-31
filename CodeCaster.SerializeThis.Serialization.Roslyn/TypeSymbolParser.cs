@@ -30,7 +30,7 @@ namespace CodeCaster.SerializeThis.Serialization.Roslyn
                 IsNullable = isNullable,
             };
 
-            if (thisClass.IsCollection || thisClass.Type == TypeEnum.ComplexType)
+            if (thisClass.IsCollection || thisClass.Type == TypeEnum.ComplexType && !isNullable)
             {
                 // A collection's first child is its collection type.
                 thisClass.Children = GetChildProperties(typeSymbol);
@@ -68,6 +68,18 @@ namespace CodeCaster.SerializeThis.Serialization.Roslyn
             isNullable = IsNullableType(typeSymbol);
             isCollection = IsCollectionType(ref typeSymbol);
 
+            if (isNullable)
+            {
+                var named = typeSymbol as INamedTypeSymbol;
+                var nullableType = named?.TypeArguments.FirstOrDefault();
+                if (nullableType != null)
+                {
+                    bool ignored;
+                    var nullableTypeEnum = GetSymbolType(nullableType, out ignored, out ignored);
+                    return nullableTypeEnum;
+                }
+            }
+
             switch (typeSymbol.SpecialType)
             {
                 case SpecialType.System_Boolean:
@@ -85,9 +97,13 @@ namespace CodeCaster.SerializeThis.Serialization.Roslyn
 
         private bool IsNullableType(ITypeSymbol typeSymbol)
         {
-            string nullableTypeName = "System.Nullable<T>";
+            var named = typeSymbol as INamedTypeSymbol;
+            if (named == null)
+            {
+                return false;
+            }
 
-            return typeSymbol.TypeKind == TypeKind.Struct && typeSymbol.Name == nullableTypeName;
+            return typeSymbol.TypeKind == TypeKind.Struct && named.ConstructedFrom.SpecialType == SpecialType.System_Nullable_T;
         }
 
         private bool IsCollectionType(ref ITypeSymbol typeSymbol)

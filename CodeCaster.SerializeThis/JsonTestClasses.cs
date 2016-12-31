@@ -20,6 +20,29 @@ namespace JsonTestClasses
         public int Age { get; set; }
         public DateTime DateOfBirth { get; set; }
     }
+    
+    /// <summary>
+    /// Nullables.
+    /// </summary>
+    public class FooNullable : FooBase
+    {
+        public int? NullableIntProperty { get; set; }
+        public DateTime? NullableDateTimeProperty { get; set; }
+    }
+
+    /// <summary>
+    /// Numerics.
+    /// </summary>
+    public class FooNumerics : FooBase
+    {
+        public byte Byte { get; set; }
+        public short Int16 { get; set; }
+        public int Int32 { get; set; }
+        public long Int64 { get; set; }
+        public float Float { get; set; }
+        public double Double { get; set; }
+        public decimal Decimal { get; set; }
+    }
 
     /// <summary>
     /// Collections.
@@ -49,29 +72,6 @@ namespace JsonTestClasses
         {
             // Cannot be constructed? Should we care?
         }
-    }
-
-    /// <summary>
-    /// Nullables.
-    /// </summary>
-    public class FooNullable : FooBase
-    {
-        public int? NullableIntProperty { get; set; }
-        public DateTime? NullableDateTimeProperty { get; set; }
-    }
-
-    /// <summary>
-    /// Numerics.
-    /// </summary>
-    public class FooNumerics : FooBase
-    {
-        public byte Byte { get; set; }
-        public short Int16 { get; set; }
-        public int Int32 { get; set; }
-        public long Int64 { get; set; }
-        public float Float { get; set; }
-        public double Double { get; set; }
-        public decimal Decimal { get; set; }
     }
 
     /// <summary>
