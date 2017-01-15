@@ -8,7 +8,9 @@ This is not meant as a replacement for documentation and client generators such 
 
 It currently looks like this:
 
+![SerializeThis Screenshot](./static/images/typeserialization.png)
 
+The extension does not yet output anything. Perhaps it could copy the serialized object to the clipboard, or open a new tab in the text editor and write the serialized object into it. 
 
 ## Building and Running
 
