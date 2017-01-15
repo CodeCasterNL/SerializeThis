@@ -78,6 +78,7 @@ namespace JsonTestClasses
     /// </summary>
     public class FooCollections
     {
+        public string[] StringArray { get; set; }
         public List<FooBase> ChildrenList { get; set; }
         public IList<FooInherited> ChildrenIList { get; set; }
         public bool?[] NullableBoolArray { get; set; }

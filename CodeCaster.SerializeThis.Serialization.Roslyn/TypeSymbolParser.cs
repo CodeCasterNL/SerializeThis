@@ -127,14 +127,43 @@ namespace CodeCaster.SerializeThis.Serialization.Roslyn
         private bool IsCollectionType(ref ITypeSymbol typeSymbol)
         {
             // TODO: store known collection collection somewhere with their interface info, so we know which properties to ignore (Item[], Syncroot, Count, AllKeys, ...).
-            string[] knownCollectionInterfaces = { "System.IEnumerable", "System.Collections.Generic" };
+            string[] knownCollectionInterfaces =
+            {
+                "System.Collections.IList",
+                "System.Collections.ICollection",
+                "System.Collections.IEnumerable",
+                "System.Collections.Generic.IList<>",
+                "System.Collections.Generic.ICollection<>",
+                "System.Collections.Generic.IEnumerable<>",
+                "System.Collections.Generic.IReadOnlyList<>",
+                "System.Collections.Generic.IReadOnlyCollection<>",
+            };
 
-            return typeSymbol.Interfaces.Any(i => knownCollectionInterfaces.Any(c => c == GetClrName(i.Name)));
+            // TODO: do we also want to treat dictionaries differently? Or let the serializer deal with that?
+            string[] knownDictionaryMemberTypes =
+            {
+                "System.Tuple<,>",
+                "System.Collections.Generic.KeyValuePair<,>",
+            };
+
+            return typeSymbol.AllInterfaces.Any(i => knownCollectionInterfaces.Any(c => c == GetClrName(i)));
         }
 
-        private string GetClrName(string argName)
+        private string GetClrName(INamedTypeSymbol namedTypeSymbol)
         {
-            return argName;
+            string typeNamespace = GetNamespace(namedTypeSymbol.ContainingNamespace);
+            return typeNamespace + namedTypeSymbol.Name;
+        }
+
+        private string GetNamespace(INamespaceSymbol ns)
+        {
+            string result = "";
+            while (!string.IsNullOrWhiteSpace(ns.Name))
+            {
+                result = ns.Name + "." + result;
+                ns = ns.ContainingNamespace;
+            }
+            return result;
         }
     }
 }
