@@ -66,14 +66,22 @@ namespace JsonTestClasses
     }
 
     /// <summary>
+    /// ComplexType properties.
+    /// </summary>
+    public class FooComplexType : FooBase
+    {
+        public FooBase ChildProperty { get; set; }
+    }
+
+    /// <summary>
     /// Collections.
     /// </summary>
-    public class FooCollections : FooBase
+    public class FooCollections
     {
-        public List<FooInherited> Children { get; set; }
-        public IList<FooInherited> ChildrenI { get; set; }
+        public List<FooBase> ChildrenList { get; set; }
+        public IList<FooInherited> ChildrenIList { get; set; }
         public bool?[] NullableBoolArray { get; set; }
-        public Dictionary<int, string> DictionaryProperty { get; set; }
+        public Dictionary<int, string> DictionaryIntString { get; set; }
     }
 
     /// <summary>

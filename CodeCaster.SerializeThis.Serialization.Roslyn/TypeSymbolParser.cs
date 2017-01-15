@@ -16,20 +16,20 @@ namespace CodeCaster.SerializeThis.Serialization.Roslyn
         private Class GetMemberInfoRecursive(string name, ITypeSymbol typeSymbol)
         {
             bool isCollection;
-            bool isNullable;
+            bool isNullableValueType;
             bool isEnum;
-            var type = GetSymbolType(typeSymbol, out isCollection, out isNullable, out isEnum);
+            var type = GetSymbolType(typeSymbol, out isCollection, out isNullableValueType, out isEnum);
 
             var thisClass = new Class
             {
                 Name = name,
                 Type = type,
                 IsCollection = isCollection,
-                IsNullable = isNullable,
+                IsNullableValueType = isNullableValueType,
                 IsEnum = isEnum,
             };
 
-            if (thisClass.IsCollection || thisClass.Type == TypeEnum.ComplexType && !isNullable)
+            if (thisClass.IsCollection || thisClass.Type == TypeEnum.ComplexType && !isNullableValueType)
             {
                 // A collection's first child is its collection type.
                 thisClass.Children = GetChildProperties(typeSymbol);
@@ -62,15 +62,15 @@ namespace CodeCaster.SerializeThis.Serialization.Roslyn
             return result;
         }
 
-        private TypeEnum GetSymbolType(ITypeSymbol typeSymbol, out bool isCollection, out bool isNullable, out bool isEnum)
+        private TypeEnum GetSymbolType(ITypeSymbol typeSymbol, out bool isCollection, out bool isNullableValueType, out bool isEnum)
         {
             var namedTypeSymbol = typeSymbol as INamedTypeSymbol;
 
             isEnum = IsEnum(namedTypeSymbol);
-            isNullable = IsNullableType(typeSymbol);
+            isNullableValueType = IsNullableType(typeSymbol);
             isCollection = IsCollectionType(ref typeSymbol);
             
-            if (isNullable)
+            if (isNullableValueType)
             {
                 var nullableType = namedTypeSymbol?.TypeArguments.FirstOrDefault();
                 if (nullableType != null)

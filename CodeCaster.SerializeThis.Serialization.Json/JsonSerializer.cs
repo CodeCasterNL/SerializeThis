@@ -17,35 +17,48 @@ namespace CodeCaster.SerializeThis.Serialization.Json
                 throw new NotSupportedException("root type must be complex type");
             }
 
-            var rootObject = new JObject();
+            var rootObject = GetComplexType(type);
+            return rootObject.ToString();
+        }
+        
+        private JObject GetComplexType(Class toSerialize)
+        {
+            var result = new JObject();
 
-            foreach (var child in type.Children)
+            foreach (var child in toSerialize.Children)
             {
-                rootObject.Add(SerializeChild(child));
+                var childProperty = SerializeChild(child);
+                result.Add(child.Name, childProperty);
             }
 
-            return rootObject.ToString();
+            return result;
         }
 
         private JToken SerializeChild(Class child)
         {
-            var thisObject = new JProperty(child.Name, GetContents(child));
-            return thisObject;
-        }
-
-        private object GetContents(Class child)
-        {
-            if (child.IsEnum)
+            if (child.IsComplexType)
             {
-                return $"{child.Name}-FooEnum";
+                return GetComplexType(child);
             }
 
-            switch (child.Type)
+            // TODO: Collections.
+            
+            return new JValue(GetContents(child));
+        }
+
+        private object GetContents(Class toSerialize)
+        {
+            if (toSerialize.IsEnum)
+            {
+                return $"{toSerialize.Name}-FooEnum";
+            }
+
+            switch (toSerialize.Type)
             {
                 case TypeEnum.Boolean:
                     return true;
                 case TypeEnum.String:
-                    return $"{child.Name}-FooString";
+                    return $"{toSerialize.Name}-FooString";
                 case TypeEnum.DateTime:
                     return DateTime.Now.ToUniversalTime();
                 case TypeEnum.Int16:
