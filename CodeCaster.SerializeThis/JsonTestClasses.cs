@@ -36,12 +36,33 @@ namespace JsonTestClasses
     public class FooNumerics : FooBase
     {
         public byte Byte { get; set; }
+        public byte? NullableByte { get; set; }
         public short Int16 { get; set; }
+        public short? NullableInt16 { get; set; }
         public int Int32 { get; set; }
+        public int? NullableInt32 { get; set; }
         public long Int64 { get; set; }
+        public long? NullableInt64 { get; set; }
         public float Float { get; set; }
+        public float? NullableFloat { get; set; }
         public double Double { get; set; }
+        public double? NullableDouble { get; set; }
         public decimal Decimal { get; set; }
+        public decimal? NullableDecimal { get; set; }
+    }
+    
+    /// <summary>
+    /// Enums.
+    /// </summary>
+    public class FooWithEnum : FooBase
+    {
+        public enum FooEnum
+        {
+            Foo = 0,
+            Bar = 1,
+        }
+
+        public FooEnum Foo { get; set; }
     }
 
     /// <summary>

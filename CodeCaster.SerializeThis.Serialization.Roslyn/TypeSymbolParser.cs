@@ -82,14 +82,26 @@ namespace CodeCaster.SerializeThis.Serialization.Roslyn
 
             switch (typeSymbol.SpecialType)
             {
+                case SpecialType.System_Byte:
+                    return TypeEnum.Byte;
                 case SpecialType.System_Boolean:
                     return TypeEnum.Boolean;
                 case SpecialType.System_String:
                     return TypeEnum.String;
                 case SpecialType.System_DateTime:
                     return TypeEnum.DateTime;
+                case SpecialType.System_Int16:
+                    return TypeEnum.Int16;
                 case SpecialType.System_Int32:
                     return TypeEnum.Int32;
+                case SpecialType.System_Int64:
+                    return TypeEnum.Int64;
+                case SpecialType.System_Single:
+                    return TypeEnum.Float16;
+                case SpecialType.System_Double:
+                    return TypeEnum.Float32;
+                case SpecialType.System_Decimal:
+                    return TypeEnum.Decimal;
             }
 
             return TypeEnum.ComplexType;

@@ -43,8 +43,21 @@ namespace CodeCaster.SerializeThis.Serialization.Json
                     return $"{child.Name}-FooString";
                 case TypeEnum.DateTime:
                     return DateTime.Now.ToUniversalTime();
+                case TypeEnum.Int16:
+                    return Int16.MaxValue;
                 case TypeEnum.Int32:
-                    return int.MaxValue;
+                    return Int32.MaxValue;
+                case TypeEnum.Int64:
+                    return Int64.MaxValue;
+                case TypeEnum.Float16:
+                    return Single.MaxValue;
+                case TypeEnum.Float32:
+                    return Double.MaxValue;
+                case TypeEnum.Decimal:
+                    return Decimal.MaxValue;
+                case TypeEnum.Byte:
+                    return Byte.MaxValue;
+
                 default:
                     return null;
             }

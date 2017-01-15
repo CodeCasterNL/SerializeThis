@@ -29,5 +29,7 @@ namespace CodeCaster.SerializeThis.Serialization
         Decimal = 10,
 
         DateTime = 11,
+
+        Byte = 12,
     }
 }
