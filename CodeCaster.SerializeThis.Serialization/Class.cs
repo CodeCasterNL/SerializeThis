@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Collections.Generic;
 
 namespace CodeCaster.SerializeThis.Serialization
 {
@@ -18,6 +14,8 @@ namespace CodeCaster.SerializeThis.Serialization
         public bool IsNullable { get; set; }
 
         public bool IsCollection { get; set; }
+
+        public bool IsEnum { get; set; }
 
         public IList<Class> Children { get; set; }
     }

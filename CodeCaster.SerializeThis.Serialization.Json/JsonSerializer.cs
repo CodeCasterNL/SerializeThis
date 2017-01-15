@@ -35,6 +35,11 @@ namespace CodeCaster.SerializeThis.Serialization.Json
 
         private object GetContents(Class child)
         {
+            if (child.IsEnum)
+            {
+                return $"{child.Name}-FooEnum";
+            }
+
             switch (child.Type)
             {
                 case TypeEnum.Boolean:

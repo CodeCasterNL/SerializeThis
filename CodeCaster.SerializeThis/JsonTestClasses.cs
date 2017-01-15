@@ -62,7 +62,7 @@ namespace JsonTestClasses
             Bar = 1,
         }
 
-        public FooEnum Foo { get; set; }
+        public FooEnum EnumMember { get; set; }
     }
 
     /// <summary>

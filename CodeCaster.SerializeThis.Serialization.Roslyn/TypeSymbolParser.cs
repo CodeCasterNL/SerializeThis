@@ -1,8 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Microsoft.CodeAnalysis;
 
 namespace CodeCaster.SerializeThis.Serialization.Roslyn
@@ -20,7 +17,8 @@ namespace CodeCaster.SerializeThis.Serialization.Roslyn
         {
             bool isCollection;
             bool isNullable;
-            var type = GetSymbolType(typeSymbol, out isCollection, out isNullable);
+            bool isEnum;
+            var type = GetSymbolType(typeSymbol, out isCollection, out isNullable, out isEnum);
 
             var thisClass = new Class
             {
@@ -28,6 +26,7 @@ namespace CodeCaster.SerializeThis.Serialization.Roslyn
                 Type = type,
                 IsCollection = isCollection,
                 IsNullable = isNullable,
+                IsEnum = isEnum,
             };
 
             if (thisClass.IsCollection || thisClass.Type == TypeEnum.ComplexType && !isNullable)
@@ -63,19 +62,21 @@ namespace CodeCaster.SerializeThis.Serialization.Roslyn
             return result;
         }
 
-        private TypeEnum GetSymbolType(ITypeSymbol typeSymbol, out bool isCollection, out bool isNullable)
+        private TypeEnum GetSymbolType(ITypeSymbol typeSymbol, out bool isCollection, out bool isNullable, out bool isEnum)
         {
+            var namedTypeSymbol = typeSymbol as INamedTypeSymbol;
+
+            isEnum = IsEnum(namedTypeSymbol);
             isNullable = IsNullableType(typeSymbol);
             isCollection = IsCollectionType(ref typeSymbol);
-
+            
             if (isNullable)
             {
-                var named = typeSymbol as INamedTypeSymbol;
-                var nullableType = named?.TypeArguments.FirstOrDefault();
+                var nullableType = namedTypeSymbol?.TypeArguments.FirstOrDefault();
                 if (nullableType != null)
                 {
                     bool ignored;
-                    var nullableTypeEnum = GetSymbolType(nullableType, out ignored, out ignored);
+                    var nullableTypeEnum = GetSymbolType(nullableType, out ignored, out ignored, out ignored);
                     return nullableTypeEnum;
                 }
             }
@@ -105,6 +106,11 @@ namespace CodeCaster.SerializeThis.Serialization.Roslyn
             }
 
             return TypeEnum.ComplexType;
+        }
+
+        private bool IsEnum(INamedTypeSymbol namedTypeSymbol)
+        {
+            return namedTypeSymbol?.EnumUnderlyingType != null;
         }
 
         private bool IsNullableType(ITypeSymbol typeSymbol)
