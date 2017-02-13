@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace CodeCaster.SerializeThis.Serialization
+﻿namespace CodeCaster.SerializeThis.Serialization
 {
     /// <summary>
     /// Types that we support

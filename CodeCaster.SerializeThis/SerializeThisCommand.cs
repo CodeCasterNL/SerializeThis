@@ -4,6 +4,13 @@
 // </copyright>
 //------------------------------------------------------------------------------
 
+using System;
+using System.ComponentModel.Design;
+using System.Threading;
+using System.Threading.Tasks;
+using CodeCaster.SerializeThis.Serialization;
+using CodeCaster.SerializeThis.Serialization.Json;
+using CodeCaster.SerializeThis.Serialization.Roslyn;
 using EnvDTE;
 using EnvDTE80;
 using Microsoft.CodeAnalysis;
@@ -12,21 +19,11 @@ using Microsoft.CodeAnalysis.Text;
 using Microsoft.VisualStudio;
 using Microsoft.VisualStudio.ComponentModelHost;
 using Microsoft.VisualStudio.Editor;
-using Microsoft.VisualStudio.LanguageServices;
 using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.Shell.Interop;
 using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Editor;
 using Microsoft.VisualStudio.TextManager.Interop;
-using System;
-using System.ComponentModel.Design;
-using System.Linq;
-using System.Threading;
-using System.Threading.Tasks;
-using CodeCaster.SerializeThis.Serialization;
-using System.Collections.Generic;
-using CodeCaster.SerializeThis.Serialization.Json;
-using CodeCaster.SerializeThis.Serialization.Roslyn;
 
 namespace CodeCaster.SerializeThis
 {
