@@ -36,14 +36,35 @@ namespace CodeCaster.SerializeThis.Serialization.Json
 
         private JToken SerializeChild(Class child)
         {
+            if (child.IsCollection)
+            {
+                return GetCollection(child);
+            }
+
             if (child.IsComplexType)
             {
                 return GetComplexType(child);
             }
 
-            // TODO: Collections.
-            
             return new JValue(GetContents(child));
+        }
+
+        private JToken GetCollection(Class child)
+        {
+            // For now, we store the collection's type in its first child.
+            var collectionType = child.Children.FirstOrDefault();
+            if (collectionType == null)
+            {
+                return new JArray();
+            }
+
+            object[] arrayMembers = {
+                SerializeChild(collectionType),
+                SerializeChild(collectionType),
+                SerializeChild(collectionType),
+            };
+
+            return new JArray(arrayMembers);
         }
 
         private object GetContents(Class toSerialize)

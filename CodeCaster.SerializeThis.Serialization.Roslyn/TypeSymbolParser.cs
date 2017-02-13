@@ -29,19 +29,45 @@ namespace CodeCaster.SerializeThis.Serialization.Roslyn
                 IsEnum = isEnum,
             };
 
-            if (thisClass.IsCollection || thisClass.Type == TypeEnum.ComplexType && !isNullableValueType)
+            if (thisClass.IsCollection)
             {
                 // A collection's first child is its collection type.
+                var collectionType = GetCollectionType(thisClass, typeSymbol);
+                thisClass.Children = collectionType != null ? new List<Class> { collectionType } : new List<Class>();
+            }
+            else if (thisClass.Type == TypeEnum.ComplexType && !isNullableValueType)
+            {
                 thisClass.Children = GetChildProperties(typeSymbol);
             }
 
             return thisClass;
         }
 
+        private Class GetCollectionType(Class thisClass, ITypeSymbol typeSymbol)
+        {
+            INamedTypeSymbol iCollectionInterface = GetICollectionInterface(typeSymbol);
+
+            var collectionElementType = iCollectionInterface.TypeArguments.FirstOrDefault();
+
+            if (collectionElementType != null)
+            {
+                return GetMemberInfoRecursive("?", collectionElementType);
+            }
+
+            return null;
+        }
+
+        private INamedTypeSymbol GetICollectionInterface(ITypeSymbol typeSymbol)
+        {
+            var iCollectionInterface = typeSymbol.AllInterfaces.FirstOrDefault(i => GetClrName(i) == "System.Collections.Generic.ICollection`1");
+            return iCollectionInterface;
+        }
+
         private IList<Class> GetChildProperties(ITypeSymbol typeSymbol)
         {
             var result = new List<Class>();
 
+            // Walking up the inheritance tree. Root is System.Object without any more BaseTypes.
             if (typeSymbol.BaseType != null)
             {
                 result.AddRange(GetChildProperties(typeSymbol.BaseType));
@@ -68,8 +94,10 @@ namespace CodeCaster.SerializeThis.Serialization.Roslyn
 
             isEnum = IsEnum(namedTypeSymbol);
             isNullableValueType = IsNullableType(typeSymbol);
-            isCollection = IsCollectionType(ref typeSymbol);
-            
+
+            // Don't count strings as collections, even though they implement IEnumerable<string>.
+            isCollection = typeSymbol.SpecialType != SpecialType.System_String && IsCollectionType(ref typeSymbol);
+
             if (isNullableValueType)
             {
                 var nullableType = namedTypeSymbol?.TypeArguments.FirstOrDefault();
@@ -132,11 +160,11 @@ namespace CodeCaster.SerializeThis.Serialization.Roslyn
                 "System.Collections.IList",
                 "System.Collections.ICollection",
                 "System.Collections.IEnumerable",
-                "System.Collections.Generic.IList<>",
-                "System.Collections.Generic.ICollection<>",
-                "System.Collections.Generic.IEnumerable<>",
-                "System.Collections.Generic.IReadOnlyList<>",
-                "System.Collections.Generic.IReadOnlyCollection<>",
+                "System.Collections.Generic.IList`1",
+                "System.Collections.Generic.ICollection`1",
+                "System.Collections.Generic.IEnumerable`1",
+                "System.Collections.Generic.IReadOnlyList`1",
+                "System.Collections.Generic.IReadOnlyCollection`1",
             };
 
             // TODO: do we also want to treat dictionaries differently? Or let the serializer deal with that?
@@ -152,7 +180,7 @@ namespace CodeCaster.SerializeThis.Serialization.Roslyn
         private string GetClrName(INamedTypeSymbol namedTypeSymbol)
         {
             string typeNamespace = GetNamespace(namedTypeSymbol.ContainingNamespace);
-            return typeNamespace + namedTypeSymbol.Name;
+            return typeNamespace + namedTypeSymbol.MetadataName;
         }
 
         private string GetNamespace(INamespaceSymbol ns)
