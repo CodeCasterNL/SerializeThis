@@ -11,8 +11,6 @@ using System.Threading.Tasks;
 using CodeCaster.SerializeThis.Serialization;
 using CodeCaster.SerializeThis.Serialization.Json;
 using CodeCaster.SerializeThis.Serialization.Roslyn;
-using EnvDTE;
-using EnvDTE80;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.FindSymbols;
 using Microsoft.CodeAnalysis.Text;
@@ -42,12 +40,10 @@ namespace CodeCaster.SerializeThis
         /// </summary>
         public static readonly Guid CommandSet = new Guid("c2c4513d-ca4c-4b91-be0d-b797460e7572");
 
-        private readonly DTE2 DTE;
-
         /// <summary>
         /// VS Package that provides this command, not null.
         /// </summary>
-        private readonly Package package;
+        private readonly Package _package;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="SerializeThisCommand"/> class.
@@ -58,20 +54,18 @@ namespace CodeCaster.SerializeThis
         {
             if (package == null)
             {
-                throw new ArgumentNullException("package");
+                throw new ArgumentNullException(nameof(package));
             }
 
-            this.package = package;
+            _package = package;
 
-            OleMenuCommandService commandService = this.ServiceProvider.GetService(typeof(IMenuCommandService)) as OleMenuCommandService;
+            OleMenuCommandService commandService = ServiceProvider.GetService(typeof(IMenuCommandService)) as OleMenuCommandService;
             if (commandService != null)
             {
-                var menuCommandID = new CommandID(CommandSet, CommandId);
-                var menuItem = new MenuCommand(this.MenuItemCallback, menuCommandID);
+                var menuCommandId = new CommandID(CommandSet, CommandId);
+                var menuItem = new MenuCommand(MenuItemCallback, menuCommandId);
                 commandService.AddCommand(menuItem);
             }
-
-            DTE = (DTE2)ServiceProvider.GetService(typeof(DTE));
         }
 
         /// <summary>
@@ -86,13 +80,7 @@ namespace CodeCaster.SerializeThis
         /// <summary>
         /// Gets the service provider from the owner package.
         /// </summary>
-        private IServiceProvider ServiceProvider
-        {
-            get
-            {
-                return this.package;
-            }
-        }
+        private IServiceProvider ServiceProvider => _package;
 
         /// <summary>
         /// Initializes the singleton instance of the command.
@@ -132,7 +120,7 @@ namespace CodeCaster.SerializeThis
 
             IVsTextView activeView;
             ErrorHandler.ThrowOnFailure(vsTextManager.GetActiveView(1, null, out activeView));
-            
+
             var textView = componentModel.GetService<IVsEditorAdaptersFactoryService>().GetWpfTextView(activeView);
 
             CaretPosition caretPosition = textView.Caret.Position;
@@ -151,7 +139,7 @@ namespace CodeCaster.SerializeThis
             var typeSymbol = selectedSymbol as ITypeSymbol;
             if (typeSymbol == null)
             {
-                this.ShowMessageBox("Invoke this menu on a type name.");
+                ShowMessageBox("Invoke this menu on a type name.");
                 return;
             }
 
@@ -160,7 +148,7 @@ namespace CodeCaster.SerializeThis
             string json = new JsonSerializer().Serialize(classInfo);
             ShowMessageBox(memberInfoString + Environment.NewLine + Environment.NewLine + json);
         }
-        
+
         private string PrintMemberInfoRercursive(Class memberInfo, int depth)
         {
             string result = "";
@@ -180,7 +168,7 @@ namespace CodeCaster.SerializeThis
             return result;
         }
 
-        private async Task<ISymbol> GetSymbolUnderCursorAsync(Microsoft.CodeAnalysis.Document document, SemanticModel semanticModel, int position)
+        private async Task<ISymbol> GetSymbolUnderCursorAsync(TextDocument document, SemanticModel semanticModel, int position)
         {
             Workspace workspace = document.Project.Solution.Workspace;
             var cancellationToken = new CancellationToken();
@@ -193,7 +181,7 @@ namespace CodeCaster.SerializeThis
             string title = "Serialize This";
 
             VsShellUtilities.ShowMessageBox(
-                            this.ServiceProvider,
+                            ServiceProvider,
                             message,
                             title,
                             OLEMSGICON.OLEMSGICON_INFO,
