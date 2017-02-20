@@ -11,6 +11,8 @@ namespace CodeCaster.SerializeThis.Serialization
 
         public TypeEnum Type { get; set; }
 
+        public string TypeName { get; set; }
+
         public bool IsNullableValueType { get; set; }
 
         public bool IsCollection { get; set; }

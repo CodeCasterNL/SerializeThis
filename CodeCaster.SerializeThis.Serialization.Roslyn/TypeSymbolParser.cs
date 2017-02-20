@@ -6,6 +6,8 @@ namespace CodeCaster.SerializeThis.Serialization.Roslyn
 {
     public class TypeSymbolParser
     {
+        private readonly Dictionary<string, Class> _typesSeen = new Dictionary<string, Class>();
+
         public Class GetMemberInfoRecursive(ITypeSymbol typeSymbol, SemanticModel semanticModel)
         {
             Class memberInfo = GetMemberInfoRecursive(typeSymbol.Name, typeSymbol);
@@ -15,43 +17,57 @@ namespace CodeCaster.SerializeThis.Serialization.Roslyn
 
         private Class GetMemberInfoRecursive(string name, ITypeSymbol typeSymbol)
         {
+            // TODO: this will break. Include assembly name with type name?
+            // TODO: this is already broken. We need to save "membername-typeInfo" tuples. Members can occur multiple times within the same or multiple types with different or equal names.
+            string typeName = typeSymbol.GetTypeName();
+            Class existing;
+            if (_typesSeen.TryGetValue(typeName, out existing))
+            {
+                return existing;
+            }
+
             bool isCollection;
             bool isNullableValueType;
             bool isEnum;
             var type = GetSymbolType(typeSymbol, out isCollection, out isNullableValueType, out isEnum);
 
-            var thisClass = new Class
+            existing = new Class
             {
                 Name = name,
                 Type = type,
                 IsCollection = isCollection,
                 IsNullableValueType = isNullableValueType,
                 IsEnum = isEnum,
+                TypeName = typeName,
             };
 
-            if (thisClass.IsCollection)
+            // Save it _before_ diving into children. 
+            // TODO: will that work for a property of A.B.A.B?
+            _typesSeen[typeName] = existing;
+
+            if (existing.IsCollection)
             {
                 // A collection's first child is its collection type.
                 var collectionType = GetCollectionType(typeSymbol);
-                thisClass.Children = collectionType != null ? new List<Class> { collectionType } : new List<Class>();
+                existing.Children = collectionType != null ? new List<Class> { collectionType } : new List<Class>();
             }
-            else if (thisClass.Type == TypeEnum.ComplexType && !isNullableValueType)
+            else if (existing.Type == TypeEnum.ComplexType && !isNullableValueType)
             {
-                thisClass.Children = GetChildProperties(typeSymbol);
+                existing.Children = GetChildProperties(typeSymbol);
             }
 
-            return thisClass;
+            return existing;
         }
 
         private Class GetCollectionType(ITypeSymbol typeSymbol)
         {
-            INamedTypeSymbol iCollectionInterface = typeSymbol.GetICollectionInterface();
+            INamedTypeSymbol iCollectionInterface = typeSymbol.GetICollectionTInterface();
 
             var collectionElementType = iCollectionInterface.TypeArguments.FirstOrDefault();
 
             if (collectionElementType != null)
             {
-                return GetMemberInfoRecursive("?", collectionElementType);
+                return GetMemberInfoRecursive("CollectionElement", collectionElementType);
             }
 
             return null;

@@ -70,7 +70,8 @@ namespace JsonTestClasses
     /// </summary>
     public class FooComplexType : FooBase
     {
-        public FooBase ChildProperty { get; set; }
+        public FooBase ChildProperty1 { get; set; }
+        public FooBase ChildProperty2 { get; set; }
     }
 
     /// <summary>
@@ -81,6 +82,7 @@ namespace JsonTestClasses
         public string[] StringArray { get; set; }
         public List<FooBase> ChildrenList { get; set; }
         public IList<FooInherited> ChildrenIList { get; set; }
+        public ICollection<FooInherited> ChildrenICollection { get; set; }
         public bool?[] NullableBoolArray { get; set; }
         public Dictionary<int, string> DictionaryIntString { get; set; }
     }
@@ -91,6 +93,24 @@ namespace JsonTestClasses
     public class FooRecursion : FooBase
     {
         public FooRecursion Parent { get; set; }
+    }
+
+    /// <summary>
+    /// Recursion, but more distant.
+    /// </summary>
+    public class FooRecursionDeeper : FooBase
+    {
+        public class FooRecursionD1 : FooBase
+        {
+            public class FooRecursionD2 : FooBase
+            {
+                public FooRecursionDeeper RecursionDeeper { get; set; }
+            }
+
+            public FooRecursionD2 Recursion2 { get; set; }
+        }
+
+        public FooRecursionD1 Recursion1 { get; set; }
     }
 
     /// <summary>

@@ -5,6 +5,7 @@
 //------------------------------------------------------------------------------
 
 using System;
+using System.Collections.Generic;
 using System.ComponentModel.Design;
 using System.Threading;
 using System.Threading.Tasks;
@@ -149,21 +150,37 @@ namespace CodeCaster.SerializeThis
             ShowMessageBox(memberInfoString + Environment.NewLine + Environment.NewLine + json);
         }
 
-        private string PrintMemberInfoRercursive(Class memberInfo, int depth)
+        private string PrintMemberInfoRercursive(Class memberInfo, int depth, Dictionary<string, string> typesSeen = null)
         {
+            if (typesSeen == null)
+            {
+                typesSeen = new Dictionary<string, string>();
+            }
+
+            string representationForType;
+            if (typesSeen.TryGetValue(memberInfo.TypeName, out representationForType))
+            {
+                return representationForType;
+            }
+
             string result = "";
 
-            string spaces = new string(' ', depth);
+            // First add blank, so it'll be picked up in the case of recursion (A.A or A.B.A).
+            typesSeen[memberInfo.TypeName] = result;
 
-            result += $"{spaces}{memberInfo.Type} {memberInfo.Name}{Environment.NewLine}";
+            string spaces = new string(' ', depth * 2);
+
+            result += $"{spaces}{memberInfo.TypeName} ({memberInfo.Type}) {memberInfo.Name}{Environment.NewLine}";
 
             if (memberInfo.Children != null)
             {
                 foreach (var child in memberInfo.Children)
                 {
-                    result += PrintMemberInfoRercursive(child, depth + 1);
+                    result += PrintMemberInfoRercursive(child, depth + 1, typesSeen);
                 }
             }
+
+            typesSeen[memberInfo.TypeName] = result;
 
             return result;
         }

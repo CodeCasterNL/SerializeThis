@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using Newtonsoft.Json.Linq;
 
@@ -6,6 +7,8 @@ namespace CodeCaster.SerializeThis.Serialization.Json
 {
     public class JsonSerializer
     {
+        private readonly Dictionary<string, JObject> _typesSeen = new Dictionary<string, JObject>();
+
         public string Serialize(Class type)
         {
             if (type.Type != TypeEnum.ComplexType)
@@ -20,15 +23,22 @@ namespace CodeCaster.SerializeThis.Serialization.Json
         
         private JObject GetComplexType(Class toSerialize)
         {
-            var result = new JObject();
+            JObject existing;
+            if (_typesSeen.TryGetValue(toSerialize.TypeName, out existing))
+            {
+                return existing;
+            }
+
+            existing = new JObject();
+            _typesSeen[toSerialize.TypeName] = existing;
 
             foreach (var child in toSerialize.Children)
             {
                 var childProperty = SerializeChild(child);
-                result.Add(child.Name, childProperty);
+                existing.Add(child.Name, childProperty);
             }
 
-            return result;
+            return existing;
         }
 
         private JToken SerializeChild(Class child)
