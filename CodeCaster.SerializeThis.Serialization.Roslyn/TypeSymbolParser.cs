@@ -32,7 +32,7 @@ namespace CodeCaster.SerializeThis.Serialization.Roslyn
             if (thisClass.IsCollection)
             {
                 // A collection's first child is its collection type.
-                var collectionType = GetCollectionType(thisClass, typeSymbol);
+                var collectionType = GetCollectionType(typeSymbol);
                 thisClass.Children = collectionType != null ? new List<Class> { collectionType } : new List<Class>();
             }
             else if (thisClass.Type == TypeEnum.ComplexType && !isNullableValueType)
@@ -43,9 +43,9 @@ namespace CodeCaster.SerializeThis.Serialization.Roslyn
             return thisClass;
         }
 
-        private Class GetCollectionType(Class thisClass, ITypeSymbol typeSymbol)
+        private Class GetCollectionType(ITypeSymbol typeSymbol)
         {
-            INamedTypeSymbol iCollectionInterface = GetICollectionInterface(typeSymbol);
+            INamedTypeSymbol iCollectionInterface = typeSymbol.GetICollectionInterface();
 
             var collectionElementType = iCollectionInterface.TypeArguments.FirstOrDefault();
 
@@ -55,12 +55,6 @@ namespace CodeCaster.SerializeThis.Serialization.Roslyn
             }
 
             return null;
-        }
-
-        private INamedTypeSymbol GetICollectionInterface(ITypeSymbol typeSymbol)
-        {
-            var iCollectionInterface = typeSymbol.AllInterfaces.FirstOrDefault(i => GetClrName(i) == "System.Collections.Generic.ICollection`1");
-            return iCollectionInterface;
         }
 
         private IList<Class> GetChildProperties(ITypeSymbol typeSymbol)
@@ -92,11 +86,11 @@ namespace CodeCaster.SerializeThis.Serialization.Roslyn
         {
             var namedTypeSymbol = typeSymbol as INamedTypeSymbol;
 
-            isEnum = IsEnum(namedTypeSymbol);
-            isNullableValueType = IsNullableType(typeSymbol);
+            isEnum = namedTypeSymbol.IsEnum();
+            isNullableValueType = typeSymbol.IsNullableType();
 
             // Don't count strings as collections, even though they implement IEnumerable<string>.
-            isCollection = typeSymbol.SpecialType != SpecialType.System_String && IsCollectionType(ref typeSymbol);
+            isCollection = typeSymbol.SpecialType != SpecialType.System_String && typeSymbol.IsCollectionType();
 
             if (isNullableValueType)
             {
@@ -134,64 +128,6 @@ namespace CodeCaster.SerializeThis.Serialization.Roslyn
             }
 
             return TypeEnum.ComplexType;
-        }
-
-        private bool IsEnum(INamedTypeSymbol namedTypeSymbol)
-        {
-            return namedTypeSymbol?.EnumUnderlyingType != null;
-        }
-
-        private bool IsNullableType(ITypeSymbol typeSymbol)
-        {
-            var named = typeSymbol as INamedTypeSymbol;
-            if (named == null)
-            {
-                return false;
-            }
-
-            return typeSymbol.TypeKind == TypeKind.Struct && named.ConstructedFrom.SpecialType == SpecialType.System_Nullable_T;
-        }
-
-        private bool IsCollectionType(ref ITypeSymbol typeSymbol)
-        {
-            // TODO: store known collection collection somewhere with their interface info, so we know which properties to ignore (Item[], Syncroot, Count, AllKeys, ...).
-            string[] knownCollectionInterfaces =
-            {
-                "System.Collections.IList",
-                "System.Collections.ICollection",
-                "System.Collections.IEnumerable",
-                "System.Collections.Generic.IList`1",
-                "System.Collections.Generic.ICollection`1",
-                "System.Collections.Generic.IEnumerable`1",
-                "System.Collections.Generic.IReadOnlyList`1",
-                "System.Collections.Generic.IReadOnlyCollection`1",
-            };
-
-            // TODO: do we also want to treat dictionaries differently? Or let the serializer deal with that?
-            string[] knownDictionaryMemberTypes =
-            {
-                "System.Tuple<,>",
-                "System.Collections.Generic.KeyValuePair<,>",
-            };
-
-            return typeSymbol.AllInterfaces.Any(i => knownCollectionInterfaces.Any(c => c == GetClrName(i)));
-        }
-
-        private string GetClrName(INamedTypeSymbol namedTypeSymbol)
-        {
-            string typeNamespace = GetNamespace(namedTypeSymbol.ContainingNamespace);
-            return typeNamespace + namedTypeSymbol.MetadataName;
-        }
-
-        private string GetNamespace(INamespaceSymbol ns)
-        {
-            string result = "";
-            while (!string.IsNullOrWhiteSpace(ns.Name))
-            {
-                result = ns.Name + "." + result;
-                ns = ns.ContainingNamespace;
-            }
-            return result;
         }
     }
 }
