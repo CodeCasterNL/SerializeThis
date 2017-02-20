@@ -28,6 +28,17 @@ namespace CodeCaster.SerializeThis.Serialization.Roslyn
             return typeSymbol.TypeKind == TypeKind.Struct && named.ConstructedFrom.SpecialType == SpecialType.System_Nullable_T;
         }
 
+        public static string GetTypeName(this ITypeSymbol typeSymbol)
+        {
+            var symbolDisplayFormat = new SymbolDisplayFormat(
+                SymbolDisplayGlobalNamespaceStyle.Omitted,
+                SymbolDisplayTypeQualificationStyle.NameAndContainingTypesAndNamespaces,
+                SymbolDisplayGenericsOptions.IncludeVariance
+            );
+
+            return typeSymbol.ToDisplayString(symbolDisplayFormat);
+        }
+
         public static bool IsCollectionType(this ITypeSymbol typeSymbol)
         {
             // TODO: store known collection collection somewhere with their interface info, so we know which properties to ignore (Item[], Syncroot, Count, AllKeys, ...).
