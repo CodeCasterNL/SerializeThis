@@ -9,9 +9,9 @@ namespace CodeCaster.SerializeThis.Serialization.Json
     {
         private readonly Dictionary<string, JObject> _typesSeen = new Dictionary<string, JObject>();
 
-        public string Serialize(Class type)
+        public string Serialize(ClassInfo type)
         {
-            if (type.Type != TypeEnum.ComplexType)
+            if (type.Class.Type != TypeEnum.ComplexType)
             {
                 // Sure, maybe later we'll support collection or scalar types.
                 throw new NotSupportedException("root type must be complex type");
@@ -21,18 +21,18 @@ namespace CodeCaster.SerializeThis.Serialization.Json
             return rootObject.ToString();
         }
         
-        private JObject GetComplexType(Class toSerialize)
+        private JObject GetComplexType(ClassInfo toSerialize)
         {
             JObject existing;
-            if (_typesSeen.TryGetValue(toSerialize.TypeName, out existing))
+            if (_typesSeen.TryGetValue(toSerialize.Class.TypeName, out existing))
             {
                 return existing;
             }
 
             existing = new JObject();
-            _typesSeen[toSerialize.TypeName] = existing;
+            _typesSeen[toSerialize.Class.TypeName] = existing;
 
-            foreach (var child in toSerialize.Children)
+            foreach (var child in toSerialize.Class.Children)
             {
                 var childProperty = SerializeChild(child);
                 existing.Add(child.Name, childProperty);
@@ -41,14 +41,14 @@ namespace CodeCaster.SerializeThis.Serialization.Json
             return existing;
         }
 
-        private JToken SerializeChild(Class child)
+        private JToken SerializeChild(ClassInfo child)
         {
-            if (child.IsCollection)
+            if (child.Class.IsCollection)
             {
                 return GetCollection(child);
             }
 
-            if (child.IsComplexType)
+            if (child.Class.IsComplexType)
             {
                 return GetComplexType(child);
             }
@@ -56,10 +56,10 @@ namespace CodeCaster.SerializeThis.Serialization.Json
             return new JValue(GetContents(child));
         }
 
-        private JToken GetCollection(Class child)
+        private JToken GetCollection(ClassInfo child)
         {
             // For now, we store the collection's type in its first child.
-            var collectionType = child.Children.FirstOrDefault();
+            var collectionType = child.Class.Children.FirstOrDefault();
             if (collectionType == null)
             {
                 return new JArray();
@@ -74,14 +74,14 @@ namespace CodeCaster.SerializeThis.Serialization.Json
             return new JArray(arrayMembers);
         }
 
-        private object GetContents(Class toSerialize)
+        private object GetContents(ClassInfo toSerialize)
         {
-            if (toSerialize.IsEnum)
+            if (toSerialize.Class.IsEnum)
             {
                 return $"{toSerialize.Name}-FooEnum";
             }
 
-            switch (toSerialize.Type)
+            switch (toSerialize.Class.Type)
             {
                 case TypeEnum.Boolean:
                     return true;

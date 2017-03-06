@@ -48,7 +48,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Class.cs" />
-    <Compile Include="Node.cs" />
+    <Compile Include="ClassInfo.cs" />
     <Compile Include="TypeEnum.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>

@@ -144,13 +144,13 @@ namespace CodeCaster.SerializeThis
                 return;
             }
 
-            Class classInfo = new TypeSymbolParser().GetMemberInfoRecursive(typeSymbol, semanticModel);
+            var classInfo = new TypeSymbolParser().GetMemberInfoRecursive(typeSymbol, semanticModel);
             string memberInfoString = PrintMemberInfoRercursive(classInfo, 0);
             string json = new JsonSerializer().Serialize(classInfo);
             ShowMessageBox(memberInfoString + Environment.NewLine + Environment.NewLine + json);
         }
 
-        private string PrintMemberInfoRercursive(Class memberInfo, int depth, Dictionary<string, string> typesSeen = null)
+        private string PrintMemberInfoRercursive(ClassInfo memberInfo, int depth, Dictionary<string, string> typesSeen = null)
         {
             if (typesSeen == null)
             {
@@ -158,7 +158,7 @@ namespace CodeCaster.SerializeThis
             }
 
             string representationForType;
-            if (typesSeen.TryGetValue(memberInfo.TypeName, out representationForType))
+            if (typesSeen.TryGetValue(memberInfo.Class.TypeName, out representationForType))
             {
                 return representationForType;
             }
@@ -166,21 +166,21 @@ namespace CodeCaster.SerializeThis
             string result = "";
 
             // First add blank, so it'll be picked up in the case of recursion (A.A or A.B.A).
-            typesSeen[memberInfo.TypeName] = result;
+            typesSeen[memberInfo.Class.TypeName] = result;
 
             string spaces = new string(' ', depth * 2);
 
-            result += $"{spaces}{memberInfo.TypeName} ({memberInfo.Type}) {memberInfo.Name}{Environment.NewLine}";
+            result += $"{spaces}{memberInfo.Class.TypeName} ({memberInfo.Class.Type}) {memberInfo.Name}{Environment.NewLine}";
 
-            if (memberInfo.Children != null)
+            if (memberInfo.Class.Children != null)
             {
-                foreach (var child in memberInfo.Children)
+                foreach (var child in memberInfo.Class.Children)
                 {
                     result += PrintMemberInfoRercursive(child, depth + 1, typesSeen);
                 }
             }
 
-            typesSeen[memberInfo.TypeName] = result;
+            typesSeen[memberInfo.Class.TypeName] = result;
 
             return result;
         }

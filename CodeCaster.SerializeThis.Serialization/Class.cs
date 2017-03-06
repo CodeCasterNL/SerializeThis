@@ -7,8 +7,6 @@ namespace CodeCaster.SerializeThis.Serialization
     /// </summary>
     public class Class
     {
-        public string Name { get; set; }
-
         public TypeEnum Type { get; set; }
 
         public string TypeName { get; set; }
@@ -19,7 +17,7 @@ namespace CodeCaster.SerializeThis.Serialization
 
         public bool IsEnum { get; set; }
 
-        public IList<Class> Children { get; set; }
+        public IList<ClassInfo> Children { get; set; }
 
         public bool IsComplexType => Type == TypeEnum.ComplexType;
     }

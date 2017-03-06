@@ -8,14 +8,14 @@ namespace CodeCaster.SerializeThis.Serialization.Roslyn
     {
         private readonly Dictionary<string, Class> _typesSeen = new Dictionary<string, Class>();
 
-        public Class GetMemberInfoRecursive(ITypeSymbol typeSymbol, SemanticModel semanticModel)
+        public ClassInfo GetMemberInfoRecursive(ITypeSymbol typeSymbol, SemanticModel semanticModel)
         {
-            Class memberInfo = GetMemberInfoRecursive(typeSymbol.Name, typeSymbol);
+            var memberInfo = GetMemberInfoRecursive(typeSymbol.Name, typeSymbol);
 
             return memberInfo;
         }
 
-        private Class GetMemberInfoRecursive(string name, ITypeSymbol typeSymbol)
+        private ClassInfo GetMemberInfoRecursive(string name, ITypeSymbol typeSymbol)
         {
             // TODO: this will break. Include assembly name with type name?
             // TODO: this is already broken. We need to save "membername-typeInfo" tuples. Members can occur multiple times within the same or multiple types with different or equal names.
@@ -23,7 +23,11 @@ namespace CodeCaster.SerializeThis.Serialization.Roslyn
             Class existing;
             if (_typesSeen.TryGetValue(typeName, out existing))
             {
-                return existing;
+                return new ClassInfo
+                {
+                    Name = name,
+                    Class = existing
+                };
             }
 
             bool isCollection;
@@ -33,7 +37,6 @@ namespace CodeCaster.SerializeThis.Serialization.Roslyn
 
             existing = new Class
             {
-                Name = name,
                 Type = type,
                 IsCollection = isCollection,
                 IsNullableValueType = isNullableValueType,
@@ -49,17 +52,21 @@ namespace CodeCaster.SerializeThis.Serialization.Roslyn
             {
                 // A collection's first child is its collection type.
                 var collectionType = GetCollectionType(typeSymbol);
-                existing.Children = collectionType != null ? new List<Class> { collectionType } : new List<Class>();
+                existing.Children = collectionType != null ? new List<ClassInfo> { collectionType } : new List<ClassInfo>();
             }
             else if (existing.Type == TypeEnum.ComplexType && !isNullableValueType)
             {
                 existing.Children = GetChildProperties(typeSymbol);
             }
 
-            return existing;
+            return new ClassInfo
+            {
+                Name = name,
+                Class = existing
+            };
         }
 
-        private Class GetCollectionType(ITypeSymbol typeSymbol)
+        private ClassInfo GetCollectionType(ITypeSymbol typeSymbol)
         {
             INamedTypeSymbol iCollectionInterface = typeSymbol.GetICollectionTInterface();
 
@@ -73,9 +80,9 @@ namespace CodeCaster.SerializeThis.Serialization.Roslyn
             return null;
         }
 
-        private IList<Class> GetChildProperties(ITypeSymbol typeSymbol)
+        private IList<ClassInfo> GetChildProperties(ITypeSymbol typeSymbol)
         {
-            var result = new List<Class>();
+            var result = new List<ClassInfo>();
 
             // Walking up the inheritance tree. Root is System.Object without any more BaseTypes.
             if (typeSymbol.BaseType != null)
