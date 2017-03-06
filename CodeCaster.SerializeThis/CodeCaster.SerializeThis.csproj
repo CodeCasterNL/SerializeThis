@@ -60,9 +60,10 @@
     <Compile Include="SerializeThisCommandPackage.cs" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="[Content_Types].xml" />
     <None Include="app.config" />
     <None Include="Key.snk" />
-    <Content Include="LICENSE">
+    <Content Include="LICENSE.txt">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
       <IncludeInVSIX>true</IncludeInVSIX>
     </Content>
@@ -361,6 +362,27 @@
     <Error Condition="!Exists('..\packages\Microsoft.VSSDK.BuildTools.14.3.25420\build\Microsoft.VSSDK.BuildTools.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\Microsoft.VSSDK.BuildTools.14.3.25420\build\Microsoft.VSSDK.BuildTools.targets'))" />
   </Target>
   <Import Project="..\packages\Microsoft.VSSDK.BuildTools.14.3.25420\build\Microsoft.VSSDK.BuildTools.targets" Condition="Exists('..\packages\Microsoft.VSSDK.BuildTools.14.3.25420\build\Microsoft.VSSDK.BuildTools.targets')" />
+  <!-- From [Brent Arias](http://stackoverflow.com/users/284758/brent-arias) in http://stackoverflow.com/questions/2243593/determine-assembly-version-during-a-post-build-event -->
+  <Target Name="PostBuildMacros">
+    <GetAssemblyIdentity AssemblyFiles="$(TargetPath)">
+      <Output TaskParameter="Assemblies" ItemName="Targets" />
+    </GetAssemblyIdentity>
+    <ItemGroup>
+      <VersionNumber Include="@(Targets->'%(Version)')" />
+    </ItemGroup>
+  </Target>
+  <PropertyGroup>
+    <PostBuildEventDependsOn>
+      $(PostBuildEventDependsOn);
+      PostBuildMacros;
+    </PostBuildEventDependsOn>
+    <PostBuildEvent>set packageDir=$(TargetDir)CodeCaster.SerializeThis.@(VersionNumber)
+if not exist "$(TargetDir)%25packageDir%25" mkdir "%25packageDir%25"
+xcopy "$(ProjectDir)source.extension.vsixmanifest" "%25packageDir%25\extension.vsixmanifest" /YQ
+copy "$(ProjectDir)[Content_Types].xml" "%25packageDir%25\[Content_Types].xml" /Y
+copy "$(TargetDir)*.dll" "%25packageDir%25" /Y
+copy "$(TargetDir)LICENSE.txt" "%25packageDir%25" /Y</PostBuildEvent>
+  </PropertyGroup>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
   <Target Name="BeforeBuild">
