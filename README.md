@@ -14,7 +14,7 @@ The extension does not yet output anything. Perhaps it could copy the serialized
 
 ## Building and Running
 
-This project is a Visual Studio Extension, so you'll need to install the [Visual Studio SDK](https://msdn.microsoft.com/en-us/library/mt683786.aspx) in order to compile it. 
+This project is a Visual Studio Extension, so you'll need to install the [Visual Studio SDK](https://msdn.microsoft.com/en-us/library/mt683786.aspx) in order to compile it. The startup project requres Visual Studio 2017 to open and build, but the Extension will work in Visual Studio 2015 and 2017.  
 
 When running it, it starts an experimental instance of Visual Studio, where the extension will be loaded.
 
