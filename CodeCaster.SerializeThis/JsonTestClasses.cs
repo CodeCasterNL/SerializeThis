@@ -79,13 +79,24 @@ namespace JsonTestClasses
     /// </summary>
     public class FooCollections
     {
+        public ICollection<FooInherited> ChildrenICollection { get; set; }
+        public IMyCollection<FooInherited> InterfaceInheritance { get; set; }
+        public IMyCollection2<FooInherited> InterfaceDeeperInheritance { get; set; }
         public string[] StringArray { get; set; }
         public List<FooBase> ChildrenList { get; set; }
         public IList<FooInherited> ChildrenIList { get; set; }
-        public ICollection<FooInherited> ChildrenICollection { get; set; }
         public bool?[] NullableBoolArray { get; set; }
         public Dictionary<int, string> DictionaryIntString { get; set; }
     }
+
+    public interface IMyCollection2<T> : IMyCollection<T>
+    {
+    }
+
+    public interface IMyCollection<T> : ICollection<T>
+    {
+    }
+
 
     /// <summary>
     /// Recursion.

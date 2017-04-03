@@ -13,9 +13,20 @@ namespace CodeCaster.SerializeThis.Serialization.Roslyn
 
         public static INamedTypeSymbol GetICollectionTInterface(this ITypeSymbol typeSymbol)
         {
-            // TODO: meh.
-            var iCollectionInterface = typeSymbol.AllInterfaces.FirstOrDefault(i => i.GetTypeName().StartsWith("System.Collections.Generic.ICollection<"));
+            var namedTypeSymbol = typeSymbol as INamedTypeSymbol;
+            if (namedTypeSymbol != null && namedTypeSymbol.IsCollectionInterfaceType())
+            {
+                return namedTypeSymbol;
+            }
+
+            var iCollectionInterface = typeSymbol.AllInterfaces.FirstOrDefault(IsCollectionInterfaceType);
             return iCollectionInterface;
+        }
+
+        private static bool IsCollectionInterfaceType(this ITypeSymbol arg)
+        {
+            // TODO: meh.
+            return arg.GetTypeName().StartsWith("System.Collections.Generic.ICollection<");
         }
 
         public static bool IsNullableType(this ITypeSymbol typeSymbol)
