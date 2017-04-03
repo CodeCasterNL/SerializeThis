@@ -9,6 +9,7 @@ using System.Collections.Generic;
 using System.ComponentModel.Design;
 using System.Threading;
 using System.Threading.Tasks;
+using CodeCaster.SerializeThis.Forms;
 using CodeCaster.SerializeThis.Serialization;
 using CodeCaster.SerializeThis.Serialization.Json;
 using CodeCaster.SerializeThis.Serialization.Roslyn;
@@ -34,7 +35,8 @@ namespace CodeCaster.SerializeThis
         /// <summary>
         /// Command ID.
         /// </summary>
-        public const int CommandId = 0x0100;
+        public const int JsonCommandId = 0x0100;
+        public const int XmlCommandId = 0x0101;
 
         /// <summary>
         /// Command menu group (command set GUID).
@@ -45,6 +47,8 @@ namespace CodeCaster.SerializeThis
         /// VS Package that provides this command, not null.
         /// </summary>
         private readonly Package _package;
+
+        private SerializedModelForm _modelForm;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="SerializeThisCommand"/> class.
@@ -63,10 +67,21 @@ namespace CodeCaster.SerializeThis
             OleMenuCommandService commandService = ServiceProvider.GetService(typeof(IMenuCommandService)) as OleMenuCommandService;
             if (commandService != null)
             {
-                var menuCommandId = new CommandID(CommandSet, CommandId);
+                var menuCommandId = new CommandID(CommandSet, JsonCommandId);
                 var menuItem = new MenuCommand(MenuItemCallback, menuCommandId);
                 commandService.AddCommand(menuItem);
+
+                menuCommandId = new CommandID(CommandSet, XmlCommandId);
+                menuItem = new MenuCommand(MenuItemCallback, menuCommandId);
+                commandService.AddCommand(menuItem);
             }
+
+            InitializeForms();
+        }
+
+        private void InitializeForms()
+        {
+            _modelForm = _modelForm ?? new SerializedModelForm();
         }
 
         /// <summary>
@@ -101,12 +116,22 @@ namespace CodeCaster.SerializeThis
         /// <param name="e">Event args.</param>
         private async void MenuItemCallback(object sender, EventArgs e)
         {
-            await DoWorkAsync();
+            string commandName = GetCommandName(((MenuCommand) sender).CommandID.ID);
+            await DoWorkAsync(commandName);
         }
 
-        private async System.Threading.Tasks.Task DoWorkAsync()
+        private string GetCommandName(int menuCommandId)
         {
+            if (menuCommandId == XmlCommandId)
+            {
+                return "xml";
+            }
 
+            return "json";
+        }
+
+        private async System.Threading.Tasks.Task DoWorkAsync(string commandName)
+        {
             var componentModel = ServiceProvider.GetService(typeof(SComponentModel)) as IComponentModel;
             if (componentModel == null)
             {
@@ -145,9 +170,30 @@ namespace CodeCaster.SerializeThis
             }
 
             var classInfo = new TypeSymbolParser().GetMemberInfoRecursive(typeSymbol, semanticModel);
-            string memberInfoString = PrintMemberInfoRercursive(classInfo, 0);
-            string json = new JsonSerializer().Serialize(classInfo);
-            ShowMessageBox(memberInfoString + Environment.NewLine + Environment.NewLine + json);
+
+            OnTypeSerialized(classInfo, commandName);
+        }
+
+        private void OnTypeSerialized(ClassInfo classInfo, string menuItemName)
+        {
+            UpdateModelForm(classInfo, menuItemName);
+
+            //// Default to showing a MessageBox.
+            //string memberInfoString = PrintMemberInfoRercursive(classInfo, 0);
+            //string json = new JsonSerializer().Serialize(classInfo);
+            //ShowMessageBox(memberInfoString + Environment.NewLine + Environment.NewLine + json);
+        }
+
+        private void UpdateModelForm(ClassInfo classInfo, string menuItemName)
+        {
+            if (_modelForm == null)
+            {
+                InitializeForms();
+            }
+
+            _modelForm.UpdateModel(classInfo, menuItemName);
+            _modelForm.Show();
+            _modelForm.Focus();
         }
 
         private string PrintMemberInfoRercursive(ClassInfo memberInfo, int depth, Dictionary<string, string> typesSeen = null)
