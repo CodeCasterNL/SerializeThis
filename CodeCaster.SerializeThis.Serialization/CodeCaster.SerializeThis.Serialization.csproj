@@ -43,6 +43,7 @@
   <ItemGroup>
     <Compile Include="Class.cs" />
     <Compile Include="ClassInfo.cs" />
+    <Compile Include="IClassInfoSerializer.cs" />
     <Compile Include="TypeEnum.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>

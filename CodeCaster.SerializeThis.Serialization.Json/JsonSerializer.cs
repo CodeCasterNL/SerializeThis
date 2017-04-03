@@ -5,7 +5,7 @@ using Newtonsoft.Json.Linq;
 
 namespace CodeCaster.SerializeThis.Serialization.Json
 {
-    public class JsonSerializer
+    public class JsonSerializer : IClassInfoSerializer
     {
         private readonly Dictionary<string, JObject> _typesSeen = new Dictionary<string, JObject>();
 
