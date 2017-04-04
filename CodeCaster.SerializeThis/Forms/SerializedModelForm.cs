@@ -1,6 +1,5 @@
 ﻿using System.Windows.Forms;
 using CodeCaster.SerializeThis.Serialization;
-using CodeCaster.SerializeThis.Serialization.Json;
 
 namespace CodeCaster.SerializeThis.Forms
 {
@@ -11,17 +10,9 @@ namespace CodeCaster.SerializeThis.Forms
             InitializeComponent();
         }
 
-        public void UpdateModel(ClassInfo classInfo, string menuItemName)
+        public void UpdateModel(IClassInfoSerializer serializer, ClassInfo classInfo)
         {
-            var serializer = GetSerializer(menuItemName);
-            this.Text = $"Serialized Model: {menuItemName}";
             this.serializedModelTextBox.Text = serializer.Serialize(classInfo);
-        }
-
-        private IClassInfoSerializer GetSerializer(string menuItemName)
-        {
-            // TODO: IPluginFactory? Injection? Plugins?
-            return new JsonSerializer();
         }
     }
 }

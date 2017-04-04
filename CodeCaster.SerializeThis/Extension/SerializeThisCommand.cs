@@ -1,15 +1,10 @@
-﻿//------------------------------------------------------------------------------
-// <copyright file="SerializeThisCommand.cs" company="Company">
-//     Copyright (c) Company.  All rights reserved.
-// </copyright>
-//------------------------------------------------------------------------------
-
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel.Design;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using CodeCaster.SerializeThis.Forms;
+using CodeCaster.SerializeThis.OutputHandlers;
 using CodeCaster.SerializeThis.Serialization;
 using CodeCaster.SerializeThis.Serialization.Roslyn;
 using Microsoft.CodeAnalysis;
@@ -18,13 +13,11 @@ using Microsoft.CodeAnalysis.Text;
 using Microsoft.VisualStudio;
 using Microsoft.VisualStudio.ComponentModelHost;
 using Microsoft.VisualStudio.Editor;
-using Microsoft.VisualStudio.OLE.Interop;
 using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.Shell.Interop;
 using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Editor;
 using Microsoft.VisualStudio.TextManager.Interop;
-using Microsoft.VisualStudio.Utilities;
 using IServiceProvider = System.IServiceProvider;
 
 namespace CodeCaster.SerializeThis.Extension
@@ -34,8 +27,6 @@ namespace CodeCaster.SerializeThis.Extension
     /// </summary>
     internal sealed class SerializeThisCommand
     {
-        /// <summary>
-        /// Command ID.
         /// </summary>
         public const int JsonCommandId = 0x0100;
         public const int XmlCommandId = 0x0101;
@@ -45,28 +36,39 @@ namespace CodeCaster.SerializeThis.Extension
         /// </summary>
         public static readonly Guid CommandSet = new Guid("c2c4513d-ca4c-4b91-be0d-b797460e7572");
 
-        /// <summary>
-        /// VS Package that provides this command, not null.
-        /// </summary>
-        private readonly Package _package;
+        private readonly Microsoft.VisualStudio.Shell.Package _package;
+        private IServiceProvider ServiceProvider => _package;
 
-        private SerializedModelForm _modelForm;
+        private readonly ISerializerFactory _serializerFactory;
+        private readonly IOutputHandler[] _outputHandlers;
+
+        public static SerializeThisCommand Instance { get; private set; }
+
+        /// <summary>
+        /// Initializes the singleton instance of the command.
+        /// </summary>
+        /// <param name="package">Owner package, not null.</param>
+        /// <param name="serializerFactory"></param>
+        /// <param name="outputHandlers"></param>
+        public static void Initialize(Microsoft.VisualStudio.Shell.Package package, ISerializerFactory serializerFactory, IEnumerable<IOutputHandler> outputHandlers)
+        {
+            Instance = new SerializeThisCommand(package, serializerFactory, outputHandlers);
+        }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="SerializeThisCommand"/> class.
         /// Adds our command handlers for menu (commands must exist in the command table file)
         /// </summary>
         /// <param name="package">Owner package, not null.</param>
-        private SerializeThisCommand(Package package)
+        /// <param name="serializerFactory"></param>
+        /// <param name="outputHandlers"></param>
+        private SerializeThisCommand(Microsoft.VisualStudio.Shell.Package package, ISerializerFactory serializerFactory, IEnumerable<IOutputHandler> outputHandlers)
         {
-            if (package == null)
-            {
-                throw new ArgumentNullException(nameof(package));
-            }
+            _outputHandlers = outputHandlers.OrderByDescending(o => o.Priority).ToArray();
+            _serializerFactory = serializerFactory ?? throw new ArgumentNullException(nameof(serializerFactory));
+            _package = package ?? throw new ArgumentNullException(nameof(package));
 
-            _package = package;
-
-            OleMenuCommandService commandService = ServiceProvider.GetService(typeof(IMenuCommandService)) as OleMenuCommandService;
+            IMenuCommandService commandService = ServiceProvider.GetService(typeof(IMenuCommandService)) as IMenuCommandService;
             if (commandService != null)
             {
                 var menuCommandId = new CommandID(CommandSet, JsonCommandId);
@@ -76,53 +78,28 @@ namespace CodeCaster.SerializeThis.Extension
                 menuCommandId = new CommandID(CommandSet, XmlCommandId);
                 menuItem = new MenuCommand(MenuItemCallback, menuCommandId);
                 commandService.AddCommand(menuItem);
+
+                // TODO: let plugins add their own menu item.
             }
 
-            InitializeForms();
+            InitializeOutputHandlers();
         }
 
-        private void InitializeForms()
+        private void InitializeOutputHandlers()
         {
-            _modelForm = _modelForm ?? new SerializedModelForm();
+            foreach (var handler in _outputHandlers)
+            {
+                handler.Initialize(ServiceProvider);
+            }
         }
 
-        /// <summary>
-        /// Gets the instance of the command.
-        /// </summary>
-        public static SerializeThisCommand Instance
-        {
-            get;
-            private set;
-        }
-
-        /// <summary>
-        /// Gets the service provider from the owner package.
-        /// </summary>
-        private IServiceProvider ServiceProvider => _package;
-
-        /// <summary>
-        /// Initializes the singleton instance of the command.
-        /// </summary>
-        /// <param name="package">Owner package, not null.</param>
-        public static void Initialize(Package package)
-        {
-            Instance = new SerializeThisCommand(package);
-        }
-
-        /// <summary>
-        /// This function is the callback used to execute the command when the menu item is clicked.
-        /// See the constructor to see how the menu item is associated with this function using
-        /// OleMenuCommandService service and MenuCommand class.
-        /// </summary>
-        /// <param name="sender">Event sender.</param>
-        /// <param name="e">Event args.</param>
         private async void MenuItemCallback(object sender, EventArgs e)
         {
-            string commandName = GetCommandName(((MenuCommand)sender).CommandID.ID);
+            string commandName = GetContentType(((MenuCommand)sender).CommandID.ID);
             await DoWorkAsync(commandName);
         }
 
-        private string GetCommandName(int menuCommandId)
+        private string GetContentType(int menuCommandId)
         {
             if (menuCommandId == XmlCommandId)
             {
@@ -149,8 +126,6 @@ namespace CodeCaster.SerializeThis.Extension
             IVsTextView activeView;
             ErrorHandler.ThrowOnFailure(vsTextManager.GetActiveView(1, null, out activeView));
 
-
-
             var editorService = componentModel.GetService<IVsEditorAdaptersFactoryService>();
             var textView = editorService.GetWpfTextView(activeView);
 
@@ -170,70 +145,36 @@ namespace CodeCaster.SerializeThis.Extension
             var typeSymbol = selectedSymbol as ITypeSymbol;
             if (typeSymbol == null)
             {
-                ShowMessageBox("Invoke this menu on a type name.");
+                ShowMessageBox(ServiceProvider, "Invoke this menu on a type name.");
                 return;
             }
 
+            // This does the actual magic.
             var classInfo = new TypeSymbolParser().GetMemberInfoRecursive(typeSymbol, semanticModel);
-            
-            OnTypeSerialized(classInfo, commandName);
+
+            ShowOutput(classInfo, commandName);
         }
 
-        private void OnTypeSerialized(ClassInfo classInfo, string menuItemName)
+        private void ShowOutput(ClassInfo classInfo, string menuItemName)
         {
-            UpdateModelForm(classInfo, menuItemName);
-
-            //// Default to showing a MessageBox.
-            //string memberInfoString = PrintMemberInfoRercursive(classInfo, 0);
-            //string json = new JsonSerializer().Serialize(classInfo);
-            //ShowMessageBox(memberInfoString + Environment.NewLine + Environment.NewLine + json);
-        }
-
-        private void UpdateModelForm(ClassInfo classInfo, string menuItemName)
-        {
-            if (_modelForm == null ||_modelForm.IsDisposed)
+            IClassInfoSerializer serializer;
+            try
             {
-                InitializeForms();
+                serializer = _serializerFactory.GetSerializer(menuItemName);
+            }
+            catch (ArgumentException ex)
+            {
+                ShowMessageBox(ServiceProvider, $"Error retrieving '{menuItemName}' serializer:" + Environment.NewLine + Environment.NewLine + ex.Message);
+                return;
             }
 
-            _modelForm.UpdateModel(classInfo, menuItemName);
-            _modelForm.Show();
-            _modelForm.Focus();
-        }
-
-        private string PrintMemberInfoRercursive(ClassInfo memberInfo, int depth, Dictionary<string, string> typesSeen = null)
-        {
-            if (typesSeen == null)
+            foreach (var handler in _outputHandlers)
             {
-                typesSeen = new Dictionary<string, string>();
-            }
-
-            string representationForType;
-            if (typesSeen.TryGetValue(memberInfo.Class.TypeName, out representationForType))
-            {
-                return representationForType;
-            }
-
-            string result = "";
-
-            // First add blank, so it'll be picked up in the case of recursion (A.A or A.B.A).
-            typesSeen[memberInfo.Class.TypeName] = result;
-
-            string spaces = new string(' ', depth * 2);
-
-            result += $"{spaces}{memberInfo.Class.TypeName} ({memberInfo.Class.Type}) {memberInfo.Name}{Environment.NewLine}";
-
-            if (memberInfo.Class.Children != null)
-            {
-                foreach (var child in memberInfo.Class.Children)
+                if (handler.Handle(serializer, classInfo))
                 {
-                    result += PrintMemberInfoRercursive(child, depth + 1, typesSeen);
+                    break;
                 }
             }
-
-            typesSeen[memberInfo.Class.TypeName] = result;
-
-            return result;
         }
 
         private async Task<ISymbol> GetSymbolUnderCursorAsync(TextDocument document, SemanticModel semanticModel, int position)
@@ -244,17 +185,17 @@ namespace CodeCaster.SerializeThis.Extension
             return selectedSymbol;
         }
 
-        private void ShowMessageBox(string message)
+        public static bool ShowMessageBox(IServiceProvider serviceProvider, string message)
         {
             string title = "Serialize This";
 
-            VsShellUtilities.ShowMessageBox(
-                            ServiceProvider,
+            return VsShellUtilities.ShowMessageBox(
+                            serviceProvider,
                             message,
                             title,
                             OLEMSGICON.OLEMSGICON_INFO,
                             OLEMSGBUTTON.OLEMSGBUTTON_OK,
-                            OLEMSGDEFBUTTON.OLEMSGDEFBUTTON_FIRST);
+                            OLEMSGDEFBUTTON.OLEMSGDEFBUTTON_FIRST) == VSConstants.S_OK;
         }
     }
 }

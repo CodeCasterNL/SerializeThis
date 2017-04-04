@@ -1,13 +1,8 @@
-﻿//------------------------------------------------------------------------------
-// <copyright file="SerializeThisCommandPackage.cs" company="Company">
-//     Copyright (c) Company.  All rights reserved.
-// </copyright>
-//------------------------------------------------------------------------------
-
-using System;
+﻿using System;
 using System.Diagnostics.CodeAnalysis;
 using System.Runtime.InteropServices;
 using System.Threading;
+using CodeCaster.SerializeThis.OutputHandlers;
 using Microsoft.VisualStudio.Shell;
 
 namespace CodeCaster.SerializeThis.Extension
@@ -61,7 +56,16 @@ namespace CodeCaster.SerializeThis.Extension
         protected override async System.Threading.Tasks.Task InitializeAsync(CancellationToken cancellationToken, IProgress<ServiceProgressData> progress)
         {            
             base.Initialize();
-            SerializeThisCommand.Initialize(this);
+
+            // TODO: DI, plugins?
+            var outputHandlers = new IOutputHandler[]
+            {
+                new MessageBoxOutputHandler(),
+                new ModelFormOutputHandler(),
+                new TempFileInNewTabOutputHandler(),
+            };
+
+            SerializeThisCommand.Initialize(this, new DefaultSerializerFactory(), outputHandlers);
         }
 
         #endregion
