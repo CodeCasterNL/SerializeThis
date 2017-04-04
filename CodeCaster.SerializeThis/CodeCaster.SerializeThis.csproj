@@ -66,13 +66,12 @@
     </Compile>
     <Compile Include="JsonTestClasses.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="SerializeThisCommand.cs" />
-    <Compile Include="SerializeThisCommandPackage.cs" />
-    <Compile Include="TypeSerializedEventArgs.cs" />
+    <Compile Include="Extension\SerializeThisCommand.cs" />
+    <Compile Include="Extension\SerializeThisCommandPackage.cs" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="[Content_Types].xml" />
-    <None Include="app.config" />
+    <Content Include="Package\[Content_Types].xml" />
+    <None Include="Package\app.config" />
     <None Include="Key.snk" />
     <Content Include="LICENSE.txt">
       <IncludeInVSIX>true</IncludeInVSIX>
@@ -80,12 +79,12 @@
     <None Include="packages.config">
       <SubType>Designer</SubType>
     </None>
-    <None Include="source.extension.vsixmanifest">
+    <None Include="Package\source.extension.vsixmanifest">
       <SubType>Designer</SubType>
     </None>
   </ItemGroup>
   <ItemGroup>
-    <VSCTCompile Include="SerializeThisCommandPackage.vsct">
+    <VSCTCompile Include="Package\SerializeThisCommandPackage.vsct">
       <ResourceName>Menus.ctmenu</ResourceName>
       <SubType>Designer</SubType>
     </VSCTCompile>
@@ -344,9 +343,10 @@
     <EmbeddedResource Include="Forms\SerializedModelForm.resx">
       <DependentUpon>SerializedModelForm.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="VSPackage.resx">
+    <EmbeddedResource Include="Package\VSPackage.resx">
       <MergeWithCTO>true</MergeWithCTO>
       <ManifestResourceName>VSPackage</ManifestResourceName>
+      <SubType>Designer</SubType>
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>

@@ -11,7 +11,6 @@ using System.Threading;
 using System.Threading.Tasks;
 using CodeCaster.SerializeThis.Forms;
 using CodeCaster.SerializeThis.Serialization;
-using CodeCaster.SerializeThis.Serialization.Json;
 using CodeCaster.SerializeThis.Serialization.Roslyn;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.FindSymbols;
@@ -19,13 +18,16 @@ using Microsoft.CodeAnalysis.Text;
 using Microsoft.VisualStudio;
 using Microsoft.VisualStudio.ComponentModelHost;
 using Microsoft.VisualStudio.Editor;
+using Microsoft.VisualStudio.OLE.Interop;
 using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.Shell.Interop;
 using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Editor;
 using Microsoft.VisualStudio.TextManager.Interop;
+using Microsoft.VisualStudio.Utilities;
+using IServiceProvider = System.IServiceProvider;
 
-namespace CodeCaster.SerializeThis
+namespace CodeCaster.SerializeThis.Extension
 {
     /// <summary>
     /// Command handler
@@ -116,7 +118,7 @@ namespace CodeCaster.SerializeThis
         /// <param name="e">Event args.</param>
         private async void MenuItemCallback(object sender, EventArgs e)
         {
-            string commandName = GetCommandName(((MenuCommand) sender).CommandID.ID);
+            string commandName = GetCommandName(((MenuCommand)sender).CommandID.ID);
             await DoWorkAsync(commandName);
         }
 
@@ -138,7 +140,7 @@ namespace CodeCaster.SerializeThis
                 return;
             }
 
-            var vsTextManager = Package.GetGlobalService(typeof(SVsTextManager)) as IVsTextManager;
+            var vsTextManager = ServiceProvider.GetService(typeof(SVsTextManager)) as IVsTextManager;
             if (vsTextManager == null)
             {
                 return;
@@ -147,7 +149,10 @@ namespace CodeCaster.SerializeThis
             IVsTextView activeView;
             ErrorHandler.ThrowOnFailure(vsTextManager.GetActiveView(1, null, out activeView));
 
-            var textView = componentModel.GetService<IVsEditorAdaptersFactoryService>().GetWpfTextView(activeView);
+
+
+            var editorService = componentModel.GetService<IVsEditorAdaptersFactoryService>();
+            var textView = editorService.GetWpfTextView(activeView);
 
             CaretPosition caretPosition = textView.Caret.Position;
             SnapshotPoint bufferPosition = caretPosition.BufferPosition;
@@ -170,7 +175,7 @@ namespace CodeCaster.SerializeThis
             }
 
             var classInfo = new TypeSymbolParser().GetMemberInfoRecursive(typeSymbol, semanticModel);
-
+            
             OnTypeSerialized(classInfo, commandName);
         }
 
@@ -186,7 +191,7 @@ namespace CodeCaster.SerializeThis
 
         private void UpdateModelForm(ClassInfo classInfo, string menuItemName)
         {
-            if (_modelForm == null)
+            if (_modelForm == null ||_modelForm.IsDisposed)
             {
                 InitializeForms();
             }

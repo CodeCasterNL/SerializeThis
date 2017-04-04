@@ -10,7 +10,7 @@ using System.Runtime.InteropServices;
 using System.Threading;
 using Microsoft.VisualStudio.Shell;
 
-namespace CodeCaster.SerializeThis
+namespace CodeCaster.SerializeThis.Extension
 {
     /// <summary>
     /// This is the class that implements the package exposed by this assembly.
