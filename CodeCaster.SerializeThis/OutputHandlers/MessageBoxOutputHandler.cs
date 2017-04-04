@@ -7,8 +7,9 @@ namespace CodeCaster.SerializeThis.OutputHandlers
 {
     public class MessageBoxOutputHandler : IOutputHandler
     {
-        private IServiceProvider _serviceProvider;
         public int Priority => 10;
+
+        private IServiceProvider _serviceProvider;
 
         public void Initialize(IServiceProvider serviceProvider)
         {

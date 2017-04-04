@@ -9,6 +9,8 @@ namespace CodeCaster.SerializeThis.Serialization.Json
     {
         private readonly Dictionary<string, JObject> _typesSeen = new Dictionary<string, JObject>();
 
+        public string Extension => "json";
+
         public string Serialize(ClassInfo type)
         {
             if (type.Class.Type != TypeEnum.ComplexType)
@@ -35,7 +37,7 @@ namespace CodeCaster.SerializeThis.Serialization.Json
             foreach (var child in toSerialize.Class.Children)
             {
                 var childProperty = SerializeChild(child);
-                existing.Add(child.Name, childProperty);
+                existing[child.Name] = childProperty;
             }
 
             return existing;

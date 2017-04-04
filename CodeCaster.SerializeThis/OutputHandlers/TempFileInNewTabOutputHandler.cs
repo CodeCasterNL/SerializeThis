@@ -9,8 +9,9 @@ namespace CodeCaster.SerializeThis.OutputHandlers
 {
     public class TempFileInNewTabOutputHandler : IOutputHandler
     {
-        private bool _enabled;
         public int Priority => 30;
+
+        private bool _enabled;
         private IServiceProvider _serviceProvider;
 
         public void Initialize(IServiceProvider serviceProvider)
@@ -31,7 +32,11 @@ namespace CodeCaster.SerializeThis.OutputHandlers
                 string filename;
                 if (TryWriteTempFile(serializer, classInfo, out filename))
                 {
-                    return ShowTempFile(filename);
+                    bool result = ShowTempFile(filename);
+
+                    // Delete the file after opening.
+                    File.Delete(filename);
+                    return result;
                 }
             }
             catch (UnauthorizedAccessException)
@@ -48,13 +53,33 @@ namespace CodeCaster.SerializeThis.OutputHandlers
 
         private bool TryWriteTempFile(IClassInfoSerializer serializer, ClassInfo classInfo, out string filename)
         {
-            filename = Path.Combine(Path.GetTempPath(), Path.GetTempFileName());
+            filename = GenerateUniqueFileName(serializer, classInfo);
 
             string serialized = serializer.Serialize(classInfo);
 
             File.WriteAllText(filename, serialized);
 
             return true;
+        }
+
+        private string GenerateUniqueFileName(IClassInfoSerializer serializer, ClassInfo classInfo)
+        {
+            string filename;
+            int i = 0;
+            do
+            {
+                filename = Path.Combine(Path.GetTempPath(), classInfo.Name);
+                if (i > 0)
+                {
+                    filename += $"({i})";
+                }
+                i++;
+
+                filename += "." + serializer.Extension;
+            }
+            while (File.Exists(filename));
+
+            return filename;
         }
 
         private bool ShowTempFile(string filename)
@@ -69,7 +94,7 @@ namespace CodeCaster.SerializeThis.OutputHandlers
                 Guid logicalView = VSConstants.LOGVIEWID_Primary;
                 Microsoft.VisualStudio.OLE.Interop.IServiceProvider sppIgnored;
 
-                int result = openDoc.OpenDocumentViaProjectWithSpecific(filename, (uint) __VSSPECIFICEDITORFLAGS.VSSPECIFICEDITOR_DoOpen, DefGuidList.CLSID_TextEditorFactory, null, ref logicalView, out sppIgnored, out hier, out itemId, out frame);
+                int result = openDoc.OpenDocumentViaProjectWithSpecific(filename, (uint)__VSSPECIFICEDITORFLAGS.VSSPECIFICEDITOR_DoOpen, DefGuidList.CLSID_TextEditorFactory, null, ref logicalView, out sppIgnored, out hier, out itemId, out frame);
                 if (result == VSConstants.S_OK && frame != null)
                 {
                     return frame.Show() == VSConstants.S_OK;
