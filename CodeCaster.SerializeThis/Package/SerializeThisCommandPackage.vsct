@@ -1,0 +1,78 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<CommandTable xmlns="http://schemas.microsoft.com/VisualStudio/2005-10-18/CommandTable" xmlns:xs="http://www.w3.org/2001/XMLSchema">
+  <!--This is the file that defines the IDs for all the commands exposed by VisualStudio. -->
+  <Extern href="stdidcmd.h"/>
+
+  <!--This header contains the command ids for the menus provided by the shell. -->
+  <Extern href="vsshlids.h"/>
+
+  <Commands package="guidSerializeThisPackage">
+    <Groups>
+      <!-- Context menu in the text editor -->
+      <Group guid="guidSerializeThisPackageCmdSet" id="CodeWindowSubMenuGroup" priority="0x0600">
+        <Parent guid="guidSHLMainMenu" id="IDM_VS_CTXT_CODEWIN"/>
+      </Group>
+
+      <!-- The submenu -->
+      <Group guid="guidSerializeThisPackageCmdSet" id="SerializeAsSubMenuGroup" priority="0x0602">
+        <Parent guid="guidSerializeThisPackageCmdSet" id="SerializeAsSubMenu" />
+      </Group>
+    </Groups>
+
+    <!-- The menu itself -->
+    <Menus>
+      <Menu guid="guidSerializeThisPackageCmdSet" id="SerializeAsSubMenu" priority="0x0200" type="Menu">
+        <Parent guid="guidSerializeThisPackageCmdSet" id="CodeWindowSubMenuGroup" />
+        <Strings>
+          <ButtonText>Serialize As</ButtonText>
+        </Strings>
+      </Menu>
+    </Menus>
+
+    <!-- Menu items -->
+    <Buttons>
+      <Button guid="guidSerializeThisPackageCmdSet" id="jsonCommandId" priority="0x0100" type="Button">
+        <Parent guid="guidSerializeThisPackageCmdSet" id="SerializeAsSubMenuGroup" />
+        <Icon guid="guidImages" id="bmpPicJson" />
+        <Strings>
+          <ButtonText>JSON</ButtonText>
+        </Strings>
+      </Button>
+
+      <!-- XML support will come later. -->
+      <!--<Button guid="guidSerializeThisPackageCmdSet" id="xmlCommandId" priority="0x0200" type="Button">
+        <Parent guid="guidSerializeThisPackageCmdSet" id="SerializeAsSubMenuGroup" />
+        <Icon guid="guidImages" id="bmpPicXml" />
+        <Strings>
+          <ButtonText>XML</ButtonText>
+        </Strings>
+      </Button>-->
+    </Buttons>
+
+    <Bitmaps>
+      <Bitmap guid="guidImages" href="..\Resources\SerializeThisCommand.png" usedList="bmpPicJson, bmpPicXml"/>
+    </Bitmaps>
+  </Commands>
+
+  <Symbols>
+    <!-- This is the package guid. -->
+    <GuidSymbol name="guidSerializeThisPackage" value="{dc187add-f3fb-448a-8424-99255a901aa4}" />
+
+    <!-- This is the guid used to group the menu commands together -->
+    <GuidSymbol name="guidSerializeThisPackageCmdSet" value="{c2c4513d-ca4c-4b91-be0d-b797460e7572}">
+
+      <IDSymbol name="CodeWindowSubMenuGroup" value="0x1020" />
+      <IDSymbol name="SerializeAsSubMenuGroup" value="0x1021" />
+      <IDSymbol name="SerializeAsSubMenu" value="0x1022" />
+      <IDSymbol name="jsonCommandId" value="0x0100" />
+
+      <!-- XML support will come later. -->
+      <!--<IDSymbol name="xmlCommandId" value="0x0101" />-->
+    </GuidSymbol>
+
+    <GuidSymbol name="guidImages" value="{19077bda-00dc-4ea6-a4f6-23d24e992fac}" >
+      <IDSymbol name="bmpPicJson" value="1" />
+      <IDSymbol name="bmpPicXml" value="2" />
+    </GuidSymbol>
+  </Symbols>
+</CommandTable>

@@ -1,24 +1,11 @@
-﻿//------------------------------------------------------------------------------
-// <copyright file="SerializeThisCommandPackage.cs" company="Company">
-//     Copyright (c) Company.  All rights reserved.
-// </copyright>
-//------------------------------------------------------------------------------
-
-using System;
-using System.ComponentModel.Design;
-using System.Diagnostics;
+﻿using System;
 using System.Diagnostics.CodeAnalysis;
-using System.Globalization;
 using System.Runtime.InteropServices;
 using System.Threading;
-using System.Threading.Tasks;
-using Microsoft.VisualStudio;
-using Microsoft.VisualStudio.OLE.Interop;
+using CodeCaster.SerializeThis.OutputHandlers;
 using Microsoft.VisualStudio.Shell;
-using Microsoft.VisualStudio.Shell.Interop;
-using Microsoft.Win32;
 
-namespace CodeCaster.SerializeThis
+namespace CodeCaster.SerializeThis.Extension
 {
     /// <summary>
     /// This is the class that implements the package exposed by this assembly.
@@ -40,7 +27,7 @@ namespace CodeCaster.SerializeThis
     [PackageRegistration(UseManagedResourcesOnly = true)]
     [InstalledProductRegistration("#110", "#112", "1.0", IconResourceID = 400)] // Info on this package for Help/About
     [ProvideMenuResource("Menus.ctmenu", 1)]
-    [Guid(SerializeThisCommandPackage.PackageGuidString)]
+    [Guid(PackageGuidString)]
     [SuppressMessage("StyleCop.CSharp.DocumentationRules", "SA1650:ElementDocumentationMustBeSpelledCorrectly", Justification = "pkgdef, VS and vsixmanifest are valid VS terms")]
     public sealed class SerializeThisCommandPackage : AsyncPackage
     {
@@ -69,7 +56,16 @@ namespace CodeCaster.SerializeThis
         protected override async System.Threading.Tasks.Task InitializeAsync(CancellationToken cancellationToken, IProgress<ServiceProgressData> progress)
         {            
             base.Initialize();
-            SerializeThisCommand.Initialize(this);
+
+            // TODO: DI, plugins?
+            var outputHandlers = new IOutputHandler[]
+            {
+                new MessageBoxOutputHandler(),
+                new ModelFormOutputHandler(),
+                new TempFileInNewTabOutputHandler(),
+            };
+
+            SerializeThisCommand.Initialize(this, new DefaultSerializerFactory(), outputHandlers);
         }
 
         #endregion
