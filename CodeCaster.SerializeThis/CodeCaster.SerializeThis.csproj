@@ -81,6 +81,10 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="Package\[Content_Types].xml" />
+    <Content Include="Resources\Serialize_This-Menu.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      <IncludeInVSIX>true</IncludeInVSIX>
+    </Content>
     <None Include="Package\app.config" />
     <None Include="Key.snk" />
     <Content Include="LICENSE.txt">
@@ -99,7 +103,10 @@
       <SubType>Designer</SubType>
     </VSCTCompile>
     <Content Include="Resources\SerializeThisCommand.png" />
-    <Content Include="Resources\SerializeThisCommandPackage.ico" />
+    <Content Include="Resources\SerializeThisCommandPackage.ico">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      <IncludeInVSIX>true</IncludeInVSIX>
+    </Content>
   </ItemGroup>
   <ItemGroup>
     <Reference Include="EnvDTE, Version=8.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
