@@ -29,8 +29,7 @@ namespace CodeCaster.SerializeThis.OutputHandlers
 
             try
             {
-                string filename;
-                if (TryWriteTempFile(serializer, classInfo, out filename))
+                if (TryWriteTempFile(serializer, classInfo, out string filename))
                 {
                     bool result = ShowTempFile(filename);
 
@@ -84,17 +83,13 @@ namespace CodeCaster.SerializeThis.OutputHandlers
 
         private bool ShowTempFile(string filename)
         {
-            IVsUIShellOpenDocument openDoc = _serviceProvider.GetService(typeof(IVsUIShellOpenDocument)) as IVsUIShellOpenDocument;
+            var openDoc = _serviceProvider.GetService(typeof(IVsUIShellOpenDocument)) as IVsUIShellOpenDocument;
 
             if (openDoc != null)
             {
-                IVsWindowFrame frame;
-                uint itemId;
-                IVsUIHierarchy hier;
                 Guid logicalView = VSConstants.LOGVIEWID_Primary;
-                Microsoft.VisualStudio.OLE.Interop.IServiceProvider sppIgnored;
 
-                int result = openDoc.OpenDocumentViaProjectWithSpecific(filename, (uint)__VSSPECIFICEDITORFLAGS.VSSPECIFICEDITOR_DoOpen, DefGuidList.CLSID_TextEditorFactory, null, ref logicalView, out sppIgnored, out hier, out itemId, out frame);
+                int result = openDoc.OpenDocumentViaProjectWithSpecific(filename, (uint)__VSSPECIFICEDITORFLAGS.VSSPECIFICEDITOR_DoOpen, DefGuidList.CLSID_TextEditorFactory, null, ref logicalView, out Microsoft.VisualStudio.OLE.Interop.IServiceProvider sppIgnored, out IVsUIHierarchy hier, out uint itemId, out IVsWindowFrame frame);
                 if (result == VSConstants.S_OK && frame != null)
                 {
                     return frame.Show() == VSConstants.S_OK;
