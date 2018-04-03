@@ -88,9 +88,10 @@
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
       <IncludeInVSIX>true</IncludeInVSIX>
     </Content>
-    <None Include="..\LICENSE">
+    <Content Include="..\LICENSE">
       <Link>LICENSE</Link>
-    </None>
+      <IncludeInVSIX>true</IncludeInVSIX>
+    </Content>
     <None Include="Package\app.config" />
     <None Include="Key.snk" />
     <None Include="packages.config">
