@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
-VisualStudioVersion = 15.0.26228.9
+VisualStudioVersion = 15.0.27130.2027
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CodeCaster.SerializeThis", "CodeCaster.SerializeThis\CodeCaster.SerializeThis.csproj", "{47AB8FC5-CE41-40AD-AC3A-F5ADD685B19B}"
 EndProject
@@ -10,6 +10,12 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CodeCaster.SerializeThis.Serialization.Json", "CodeCaster.SerializeThis.Serialization.Json\CodeCaster.SerializeThis.Serialization.Json.csproj", "{94488295-EC5E-4AB9-80BC-9590B204936E}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CodeCaster.SerializeThis.Serialization.Roslyn", "CodeCaster.SerializeThis.Serialization.Roslyn\CodeCaster.SerializeThis.Serialization.Roslyn.csproj", "{202C9FEF-1C93-4BCE-AC1B-0C1B7F85AE79}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{BECEAAB9-CC33-43B4-A702-299AE93E3CA8}"
+	ProjectSection(SolutionItems) = preProject
+		LICENSE = LICENSE
+		SolutionInfo.cs = SolutionInfo.cs
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -36,5 +42,8 @@ Global
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {18D09F9F-363A-4817-A52C-C5AA696B920B}
 	EndGlobalSection
 EndGlobal

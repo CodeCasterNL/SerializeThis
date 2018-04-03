@@ -15,6 +15,8 @@ namespace CodeCaster.SerializeThis.Serialization
 
         public bool IsCollection { get; set; }
 
+        public bool IsDictionary { get; set; }
+
         public bool IsEnum { get; set; }
 
         public IList<ClassInfo> Children { get; set; }

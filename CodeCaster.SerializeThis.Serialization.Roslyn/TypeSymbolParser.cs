@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using Microsoft.CodeAnalysis;
 
@@ -20,8 +21,7 @@ namespace CodeCaster.SerializeThis.Serialization.Roslyn
             // TODO: this will break. Include assembly name with type name?
             // TODO: this is already broken. We need to save "membername-typeInfo" tuples. Members can occur multiple times within the same or multiple types with different or equal names.
             string typeName = typeSymbol.GetTypeName();
-            Class existing;
-            if (_typesSeen.TryGetValue(typeName, out existing))
+            if (_typesSeen.TryGetValue(typeName, out var existing))
             {
                 return new ClassInfo
                 {
@@ -30,15 +30,13 @@ namespace CodeCaster.SerializeThis.Serialization.Roslyn
                 };
             }
 
-            bool isCollection;
-            bool isNullableValueType;
-            bool isEnum;
-            var type = GetSymbolType(typeSymbol, out isCollection, out isNullableValueType, out isEnum);
+            var type = GetSymbolType(typeSymbol, out var isCollection, out var isDictionary, out var isNullableValueType, out var isEnum);
 
             existing = new Class
             {
                 Type = type,
                 IsCollection = isCollection,
+                IsDictionary = isDictionary,
                 IsNullableValueType = isNullableValueType,
                 IsEnum = isEnum,
                 TypeName = typeName,
@@ -48,7 +46,13 @@ namespace CodeCaster.SerializeThis.Serialization.Roslyn
             // TODO: will that work for a property of A.B.A.B?
             _typesSeen[typeName] = existing;
 
-            if (existing.IsCollection)
+            if (existing.IsDictionary)
+            {
+                // A dictionary's key type is represented by its first child, the value type by the second.
+                var keyValueType = GetDictionaryKeyType(typeSymbol);
+                existing.Children = keyValueType?.Item1 != null && keyValueType.Item2 != null ? new List<ClassInfo> { keyValueType.Item1, keyValueType.Item2 } : new List<ClassInfo>();
+            }
+            else if (existing.IsCollection)
             {
                 // A collection's first child is its collection type.
                 var collectionType = GetCollectionType(typeSymbol);
@@ -74,7 +78,25 @@ namespace CodeCaster.SerializeThis.Serialization.Roslyn
 
             if (collectionElementType != null)
             {
-                return GetMemberInfoRecursive("CollectionElement", collectionElementType);
+                return GetMemberInfoRecursive("CollectionElementType", collectionElementType);
+            }
+
+            return null;
+        }
+
+        private Tuple<ClassInfo, ClassInfo> GetDictionaryKeyType(ITypeSymbol typeSymbol)
+        {
+            INamedTypeSymbol iCollectionInterface = typeSymbol.GetIDictionaryTKeyTValueInterface();
+
+            var keyType = iCollectionInterface.TypeArguments.FirstOrDefault();
+            var valueType = iCollectionInterface.TypeArguments.Skip(1).FirstOrDefault();
+
+            if (keyType != null && valueType != null)
+            {
+                var keyInfo = GetMemberInfoRecursive("KeyType", keyType);
+                var valueInfo = GetMemberInfoRecursive("ValueType", valueType);
+
+                return Tuple.Create(keyInfo, valueInfo);
             }
 
             return null;
@@ -94,8 +116,7 @@ namespace CodeCaster.SerializeThis.Serialization.Roslyn
             {
                 if (member.Kind == SymbolKind.Property && member.DeclaredAccessibility == Accessibility.Public)
                 {
-                    var memberTypeSymbol = member as IPropertySymbol;
-                    if (memberTypeSymbol != null)
+                    if (member is IPropertySymbol memberTypeSymbol)
                     {
                         result.Add(GetMemberInfoRecursive(memberTypeSymbol.Name, memberTypeSymbol.Type));
                     }
@@ -105,7 +126,7 @@ namespace CodeCaster.SerializeThis.Serialization.Roslyn
             return result;
         }
 
-        private TypeEnum GetSymbolType(ITypeSymbol typeSymbol, out bool isCollection, out bool isNullableValueType, out bool isEnum)
+        private TypeEnum GetSymbolType(ITypeSymbol typeSymbol, out bool isCollection, out bool isDictionary, out bool isNullableValueType, out bool isEnum)
         {
             var namedTypeSymbol = typeSymbol as INamedTypeSymbol;
 
@@ -115,13 +136,14 @@ namespace CodeCaster.SerializeThis.Serialization.Roslyn
             // Don't count strings as collections, even though they implement IEnumerable<string>.
             isCollection = typeSymbol.SpecialType != SpecialType.System_String && typeSymbol.IsCollectionType();
 
+            isDictionary = isCollection && typeSymbol.IsDictionaryType();
+
             if (isNullableValueType)
             {
                 var nullableType = namedTypeSymbol?.TypeArguments.FirstOrDefault();
                 if (nullableType != null)
                 {
-                    bool ignored;
-                    var nullableTypeEnum = GetSymbolType(nullableType, out ignored, out ignored, out ignored);
+                    var nullableTypeEnum = GetSymbolType(nullableType, out _, out _, out _, out _);
                     return nullableTypeEnum;
                 }
             }
