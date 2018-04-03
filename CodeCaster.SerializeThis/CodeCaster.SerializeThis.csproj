@@ -58,6 +58,9 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="..\SolutionInfo.cs">
+      <Link>Properties\SolutionInfo.cs</Link>
+    </Compile>
     <Compile Include="DefaultSerializerFactory.cs" />
     <Compile Include="Forms\SerializedModelForm.cs">
       <SubType>Form</SubType>
@@ -85,11 +88,11 @@
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
       <IncludeInVSIX>true</IncludeInVSIX>
     </Content>
+    <None Include="..\LICENSE">
+      <Link>LICENSE</Link>
+    </None>
     <None Include="Package\app.config" />
     <None Include="Key.snk" />
-    <Content Include="LICENSE.txt">
-      <IncludeInVSIX>true</IncludeInVSIX>
-    </Content>
     <None Include="packages.config">
       <SubType>Designer</SubType>
     </None>
