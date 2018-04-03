@@ -1,11 +1,11 @@
-﻿using System.Linq;
+﻿using System;
+using System.Linq;
 using Microsoft.CodeAnalysis;
 
 namespace CodeCaster.SerializeThis.Serialization.Roslyn
 {
     public static class TypeSymbolExtensions
     {
-
         public static bool IsEnum(this INamedTypeSymbol namedTypeSymbol)
         {
             return namedTypeSymbol?.EnumUnderlyingType != null;
@@ -13,26 +13,17 @@ namespace CodeCaster.SerializeThis.Serialization.Roslyn
 
         public static INamedTypeSymbol GetICollectionTInterface(this ITypeSymbol typeSymbol)
         {
-            var namedTypeSymbol = typeSymbol as INamedTypeSymbol;
-            if (namedTypeSymbol != null && namedTypeSymbol.IsCollectionInterfaceType())
-            {
-                return namedTypeSymbol;
-            }
-
-            var iCollectionInterface = typeSymbol.AllInterfaces.FirstOrDefault(IsCollectionInterfaceType);
-            return iCollectionInterface;
+            return GetInterface(typeSymbol, x => x.IsCollectionInterfaceType());
         }
 
-        private static bool IsCollectionInterfaceType(this ITypeSymbol arg)
+        public static INamedTypeSymbol GetIDictionaryTKeyTValueInterface(this ITypeSymbol typeSymbol)
         {
-            // TODO: meh.
-            return arg.GetTypeName().StartsWith("System.Collections.Generic.ICollection<");
+            return GetInterface(typeSymbol, x => x.IsDictionaryInterfaceType());
         }
 
         public static bool IsNullableType(this ITypeSymbol typeSymbol)
         {
-            var named = typeSymbol as INamedTypeSymbol;
-            if (named == null)
+            if (!(typeSymbol is INamedTypeSymbol named))
             {
                 return false;
             }
@@ -51,32 +42,37 @@ namespace CodeCaster.SerializeThis.Serialization.Roslyn
             return typeSymbol.ToDisplayString(symbolDisplayFormat);
         }
 
+        public static bool IsDictionaryType(this ITypeSymbol typeSymbol)
+        {
+            return typeSymbol.GetIDictionaryTKeyTValueInterface() != null;
+        }
+
         public static bool IsCollectionType(this ITypeSymbol typeSymbol)
         {
             return typeSymbol.GetICollectionTInterface() != null;
+        }
 
-            // TODO: store known collection collection somewhere with their interface info, so we know which properties to ignore (Item[], Syncroot, Count, AllKeys, ...).
-            //string[] knownCollectionInterfaces =
-            //{
-            //    "System.Collections.IList",
-            //    "System.Collections.ICollection",
-            //    "System.Collections.IEnumerable",
-            //    "System.Collections.Generic.IList`1",
-            //    "System.Collections.Generic.ICollection`1",
-            //    "System.Collections.Generic.IEnumerable`1",
-            //    "System.Collections.Generic.IReadOnlyList`1",
-            //    "System.Collections.Generic.IReadOnlyCollection`1",
-            //};
+        private static INamedTypeSymbol GetInterface(ITypeSymbol typeSymbol, Func<ITypeSymbol, bool> testFunction)
+        {
+            if (typeSymbol is INamedTypeSymbol namedTypeSymbol && testFunction(namedTypeSymbol))
+            {
+                return namedTypeSymbol;
+            }
 
-            // TODO: do we also want to treat dictionaries differently? Or let the serializer deal with that?
-            //string[] knownDictionaryMemberTypes =
-            //{
-            //    "System.Tuple<,>",
-            //    "System.Collections.Generic.KeyValuePair<,>",
-            //};
+            var iCollectionInterface = typeSymbol.AllInterfaces.FirstOrDefault(i => testFunction(i));
+            return iCollectionInterface;
+        }
 
-            // TODO: refactor somehow.
-            //return typeSymbol.AllInterfaces.Any(i => knownCollectionInterfaces.Any(c => c == i.GetTypeName()));
+        private static bool IsCollectionInterfaceType(this ITypeSymbol arg)
+        {
+            // TODO: meh.
+            return arg.GetTypeName().StartsWith("System.Collections.Generic.ICollection<");
+        }
+
+        private static bool IsDictionaryInterfaceType(this ITypeSymbol arg)
+        {
+            // TODO: meh.
+            return arg.GetTypeName().StartsWith("System.Collections.Generic.IDictionary<");
         }
     }
 }

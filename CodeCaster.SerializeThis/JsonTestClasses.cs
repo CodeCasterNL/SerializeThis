@@ -89,6 +89,15 @@ namespace JsonTestClasses
         public Dictionary<int, string> DictionaryIntString { get; set; }
     }
 
+    /// <summary>
+    /// Dictionaries.
+    /// </summary>
+    public class FooDictionaries
+    {
+        public Dictionary<int, string> IntStringDict { get; set; }
+        public Dictionary<string, FooBase> StringFooBase { get; set; }
+    }
+
     public interface IMyCollection2<T> : IMyCollection<T>
     {
     }

@@ -25,8 +25,7 @@ namespace CodeCaster.SerializeThis.Serialization.Json
         
         private JObject GetComplexType(ClassInfo toSerialize)
         {
-            JObject existing;
-            if (_typesSeen.TryGetValue(toSerialize.Class.TypeName, out existing))
+            if (_typesSeen.TryGetValue(toSerialize.Class.TypeName, out var existing))
             {
                 return existing;
             }

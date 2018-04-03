@@ -30,15 +30,13 @@ namespace CodeCaster.SerializeThis.Serialization.Roslyn
                 };
             }
 
-            bool isCollection;
-            bool isNullableValueType;
-            bool isEnum;
-            var type = GetSymbolType(typeSymbol, out isCollection, out isNullableValueType, out isEnum);
+            var type = GetSymbolType(typeSymbol, out var isCollection, out var isDictionary, out var isNullableValueType, out var isEnum);
 
             existing = new Class
             {
                 Type = type,
                 IsCollection = isCollection,
+                IsDictionary = isDictionary,
                 IsNullableValueType = isNullableValueType,
                 IsEnum = isEnum,
                 TypeName = typeName,
@@ -94,8 +92,7 @@ namespace CodeCaster.SerializeThis.Serialization.Roslyn
             {
                 if (member.Kind == SymbolKind.Property && member.DeclaredAccessibility == Accessibility.Public)
                 {
-                    var memberTypeSymbol = member as IPropertySymbol;
-                    if (memberTypeSymbol != null)
+                    if (member is IPropertySymbol memberTypeSymbol)
                     {
                         result.Add(GetMemberInfoRecursive(memberTypeSymbol.Name, memberTypeSymbol.Type));
                     }
@@ -105,7 +102,7 @@ namespace CodeCaster.SerializeThis.Serialization.Roslyn
             return result;
         }
 
-        private TypeEnum GetSymbolType(ITypeSymbol typeSymbol, out bool isCollection, out bool isNullableValueType, out bool isEnum)
+        private TypeEnum GetSymbolType(ITypeSymbol typeSymbol, out bool isCollection, out bool isDictionary, out bool isNullableValueType, out bool isEnum)
         {
             var namedTypeSymbol = typeSymbol as INamedTypeSymbol;
 
@@ -115,13 +112,14 @@ namespace CodeCaster.SerializeThis.Serialization.Roslyn
             // Don't count strings as collections, even though they implement IEnumerable<string>.
             isCollection = typeSymbol.SpecialType != SpecialType.System_String && typeSymbol.IsCollectionType();
 
+            isDictionary = isCollection && typeSymbol.IsDictionaryType();
+
             if (isNullableValueType)
             {
                 var nullableType = namedTypeSymbol?.TypeArguments.FirstOrDefault();
                 if (nullableType != null)
                 {
-                    bool ignored;
-                    var nullableTypeEnum = GetSymbolType(nullableType, out ignored, out ignored, out ignored);
+                    var nullableTypeEnum = GetSymbolType(nullableType, out _, out _, out _, out _);
                     return nullableTypeEnum;
                 }
             }
