@@ -53,7 +53,7 @@ namespace CodeCaster.SerializeThis.Extension
         /// Initialization of the package; this method is called right after the package is sited, so this is the place
         /// where you can put all the initialization code that rely on services provided by VisualStudio.
         /// </summary>
-        protected override async System.Threading.Tasks.Task InitializeAsync(CancellationToken cancellationToken, IProgress<ServiceProgressData> progress)
+        protected override System.Threading.Tasks.Task InitializeAsync(CancellationToken cancellationToken, IProgress<ServiceProgressData> progress)
         {            
             base.Initialize();
 
@@ -66,6 +66,8 @@ namespace CodeCaster.SerializeThis.Extension
             };
 
             SerializeThisCommand.Initialize(this, new DefaultSerializerFactory(), outputHandlers);
+
+            return System.Threading.Tasks.Task.CompletedTask;
         }
 
         #endregion

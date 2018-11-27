@@ -15,8 +15,6 @@ using Microsoft.VisualStudio.ComponentModelHost;
 using Microsoft.VisualStudio.Editor;
 using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.Shell.Interop;
-using Microsoft.VisualStudio.Text;
-using Microsoft.VisualStudio.Text.Editor;
 using Microsoft.VisualStudio.TextManager.Interop;
 using IServiceProvider = System.IServiceProvider;
 
@@ -27,7 +25,6 @@ namespace CodeCaster.SerializeThis.Extension
     /// </summary>
     internal sealed class SerializeThisCommand
     {
-        /// </summary>
         public const int JsonCommandId = 0x0100;
         public const int XmlCommandId = 0x0101;
 
@@ -68,8 +65,7 @@ namespace CodeCaster.SerializeThis.Extension
             _serializerFactory = serializerFactory ?? throw new ArgumentNullException(nameof(serializerFactory));
             _package = package ?? throw new ArgumentNullException(nameof(package));
 
-            IMenuCommandService commandService = ServiceProvider.GetService(typeof(IMenuCommandService)) as IMenuCommandService;
-            if (commandService != null)
+            if (ServiceProvider.GetService(typeof(IMenuCommandService)) is IMenuCommandService commandService)
             {
                 var menuCommandId = new CommandID(CommandSet, JsonCommandId);
                 var menuItem = new MenuCommand(MenuItemCallback, menuCommandId);
@@ -79,7 +75,7 @@ namespace CodeCaster.SerializeThis.Extension
                 menuItem = new MenuCommand(MenuItemCallback, menuCommandId);
                 commandService.AddCommand(menuItem);
 
-                // TODO: let plugins add their own menu item.
+                // TODO: let other plugins add their own menu item to this plugin's context menu.
             }
 
             InitializeOutputHandlers();
@@ -95,11 +91,11 @@ namespace CodeCaster.SerializeThis.Extension
 
         private async void MenuItemCallback(object sender, EventArgs e)
         {
-            string commandName = GetContentType(((MenuCommand)sender).CommandID.ID);
+            var commandName = GetContentType(((MenuCommand)sender).CommandID.ID);
             await DoWorkAsync(commandName);
         }
 
-        private string GetContentType(int menuCommandId)
+        private static string GetContentType(int menuCommandId)
         {
             if (menuCommandId == XmlCommandId)
             {
@@ -123,27 +119,25 @@ namespace CodeCaster.SerializeThis.Extension
                 return;
             }
 
-            IVsTextView activeView;
-            ErrorHandler.ThrowOnFailure(vsTextManager.GetActiveView(1, null, out activeView));
+            ErrorHandler.ThrowOnFailure(vsTextManager.GetActiveView(1, null, out var activeView));
 
             var editorService = componentModel.GetService<IVsEditorAdaptersFactoryService>();
             var textView = editorService.GetWpfTextView(activeView);
 
-            CaretPosition caretPosition = textView.Caret.Position;
-            SnapshotPoint bufferPosition = caretPosition.BufferPosition;
+            var caretPosition = textView.Caret.Position;
+            var bufferPosition = caretPosition.BufferPosition;
             var document = bufferPosition.Snapshot.GetOpenDocumentInCurrentContextWithChanges();
             if (document == null)
             {
                 return;
             }
 
-            int position = bufferPosition.Position;
-            SemanticModel semanticModel = await document.GetSemanticModelAsync();
+            var position = bufferPosition.Position;
+            var semanticModel = await document.GetSemanticModelAsync();
 
-            ISymbol selectedSymbol = await GetSymbolUnderCursorAsync(document, semanticModel, position);
+            var selectedSymbol = await GetSymbolUnderCursorAsync(document, semanticModel, position);
 
-            var typeSymbol = selectedSymbol as ITypeSymbol;
-            if (typeSymbol == null)
+            if (!(selectedSymbol is ITypeSymbol typeSymbol))
             {
                 ShowMessageBox(ServiceProvider, "Invoke this menu on a type name.");
                 return;
