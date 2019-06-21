@@ -1,7 +1,7 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <PackageManifest Version="2.0.0" xmlns="http://schemas.microsoft.com/developer/vsx-schema/2011" xmlns:d="http://schemas.microsoft.com/developer/vsx-schema-design/2011">
     <Metadata>
-        <Identity Id="SerializeThis.CodeCaster.ca0c8664-e98d-434b-b54e-cafb6f0b1279" Version="1.2.0" Language="en-US" Publisher="CodeCaster" />
+        <Identity Id="SerializeThis.CodeCaster.ca0c8664-e98d-434b-b54e-cafb6f0b1279" Version="1.2.1" Language="en-US" Publisher="CodeCaster" />
         <DisplayName>CodeCaster.SerializeThis</DisplayName>
         <Description xml:space="preserve">Serialize types directly from the IDE.</Description>
         <MoreInfo>https://github.com/CodeCasterNL/CodeCaster.SerializeThis/blob/master/README.md</MoreInfo>
@@ -17,12 +17,11 @@
     </Installation>
     <Dependencies>
         <Dependency Id="Microsoft.Framework.NDP" DisplayName="Microsoft .NET Framework" d:Source="Manual" Version="[4.6,)" />
-        <Dependency Id="Microsoft.VisualStudio.MPF.14.0" DisplayName="Visual Studio MPF 14.0" d:Source="Installed" Version="[14.0,15.0)" />
     </Dependencies>
     <Assets>
         <Asset Type="Microsoft.VisualStudio.Assembly" d:Source="Project" d:ProjectName="%CurrentProject%" Path="|%CurrentProject%|" AssemblyName="|%CurrentProject%;AssemblyName|" />
     </Assets>
     <Prerequisites>
-        <Prerequisite Id="Microsoft.VisualStudio.Component.CoreEditor" Version="[15.0.25904.2,16.0)" DisplayName="Visual Studio core editor" />
+        <Prerequisite Id="Microsoft.VisualStudio.Component.CoreEditor" Version="[15.0,)" DisplayName="Visual Studio core editor" />
     </Prerequisites>
 </PackageManifest>
