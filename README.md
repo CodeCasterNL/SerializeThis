@@ -26,3 +26,4 @@ This project is a Visual Studio Extension, so you'll need to install the [Visual
 
 Start debugging by running the CodeCaster.SerializeThis project, which starts an experimental instance of Visual Studio, where the extension will be loaded. You can then open any C# file, right-click a type name and see the "Serialize As" submenu.
 
+The experimental instance has its own file history, so click "Continue without code" on the startup screen, click `File -> Open -> File...` and select the file you wish to test, for example the file `CodeCaster.SerializeThis\JsonTestClasses.cs` in this repository. On later runs of the experimental instance, you can then click `File -> Recent Files -> ...JsonTestClasses.cs` so you won't have to browse to it again.

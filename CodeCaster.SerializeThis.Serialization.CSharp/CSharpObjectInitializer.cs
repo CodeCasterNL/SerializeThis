@@ -1,8 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace CodeCaster.SerializeThis.Serialization.CSharp
 {
@@ -12,7 +8,7 @@ namespace CodeCaster.SerializeThis.Serialization.CSharp
 
         public string Serialize(ClassInfo type)
         {
-            throw new NotImplementedException();
+            return "var foo = new " + type.Name + Environment.NewLine + "{" + Environment.NewLine + "};";
         }
     }
 }

@@ -50,7 +50,7 @@
 
       <Button guid="guidSerializeThisPackageCmdSet" id="cSharpCommandId" priority="0x0102" type="Button">
         <Parent guid="guidSerializeThisPackageCmdSet" id="SerializeAsSubMenuGroup" />
-        <Icon guid="guidImages" id="bmpPicJson" />
+        <Icon guid="guidImages" id="bmpPicCSharp" />
         <Strings>
           <ButtonText>C# object initializer</ButtonText>
         </Strings>
@@ -58,7 +58,7 @@
     </Buttons>
 
     <Bitmaps>
-      <Bitmap guid="guidImages" href="..\Resources\SerializeThisCommand.png" usedList="bmpPicJson, bmpPicXml"/>
+      <Bitmap guid="guidImages" href="..\Resources\SerializeThisCommand.png" usedList="bmpPicJson, bmpPicXml, bmpPicCSharp"/>
     </Bitmaps>
   </Commands>
 
@@ -81,6 +81,7 @@
     <GuidSymbol name="guidImages" value="{19077bda-00dc-4ea6-a4f6-23d24e992fac}" >
       <IDSymbol name="bmpPicJson" value="1" />
       <IDSymbol name="bmpPicXml" value="2" />
+      <IDSymbol name="bmpPicCSharp" value="3" />
     </GuidSymbol>
   </Symbols>
 </CommandTable>
