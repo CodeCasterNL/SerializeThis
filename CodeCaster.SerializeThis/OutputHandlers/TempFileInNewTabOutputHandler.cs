@@ -74,7 +74,7 @@ namespace CodeCaster.SerializeThis.OutputHandlers
                 }
                 i++;
 
-                filename += "." + serializer.Extension;
+                filename += "." + serializer.FileExtension;
             }
             while (File.Exists(filename));
 

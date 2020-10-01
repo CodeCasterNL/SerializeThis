@@ -7,10 +7,10 @@ namespace CodeCaster.SerializeThis.Serialization.Json
 {
     public class JsonSerializer : IClassInfoSerializer
     {
-        private int counter;
+        private int _counter;
         private readonly Dictionary<string, JObject> _typesSeen = new Dictionary<string, JObject>();
 
-        public string Extension => "json";
+        public string FileExtension => "json";
 
         public string Serialize(ClassInfo type)
         {
@@ -103,41 +103,43 @@ namespace CodeCaster.SerializeThis.Serialization.Json
             return new JArray(arrayMembers);
         }
 
+        // ReSharper disable BuiltInTypeReferenceStyle - for consistent naming
         private object GetContents(ClassInfo toSerialize)
         {
-            counter++;
+            _counter++;
 
             if (toSerialize.Class.IsEnum)
             {
-                return $"{toSerialize.Name}-FooEnum{counter}";
+                return $"{toSerialize.Name}-FooEnum{_counter}";
             }
 
             switch (toSerialize.Class.Type)
             {
                 case TypeEnum.Boolean:
-                    return counter % 2 == 0;
+                    return _counter % 2 == 0;
                 case TypeEnum.String:
-                    return $"{toSerialize.Name}-FooString{counter}";
+                    return $"{toSerialize.Name}-FooString{_counter}";
                 case TypeEnum.DateTime:
-                    return DateTime.Now.ToUniversalTime().AddSeconds(counter);
+                    return DateTime.Now.ToUniversalTime().AddSeconds(_counter);
                 case TypeEnum.Int16:
-                    return (Int16)counter;
+                    return (Int16)_counter;
                 case TypeEnum.Int32:
-                    return (Int32)counter;
+                    return (Int32)_counter;
                 case TypeEnum.Int64:
-                    return (Int64)counter;
+                    return (Int64)_counter;
                 case TypeEnum.Float16:
-                    return ((Single)counter) + .42;
+                    return ((Single)_counter) + .42;
                 case TypeEnum.Float32:
-                    return ((Double)counter) +.42;
+                    return ((Double)_counter) +.42;
                 case TypeEnum.Decimal:
-                    return ((Decimal)counter) + .42m;
+                    return ((Decimal)_counter) + .42m;
                 case TypeEnum.Byte:
-                    return (Byte)counter;
+                    return (Byte)_counter;
 
                 default:
                     return null;
             }
         }
+        // ReSharper enable BuiltInTypeReferenceStyle - for consistent naming
     }
 }
