@@ -40,13 +40,21 @@
       </Button>
 
       <!-- XML support will come later. -->
-      <!--<Button guid="guidSerializeThisPackageCmdSet" id="xmlCommandId" priority="0x0200" type="Button">
+      <!--<Button guid="guidSerializeThisPackageCmdSet" id="xmlCommandId" priority="0x0101" type="Button">
         <Parent guid="guidSerializeThisPackageCmdSet" id="SerializeAsSubMenuGroup" />
         <Icon guid="guidImages" id="bmpPicXml" />
         <Strings>
           <ButtonText>XML</ButtonText>
         </Strings>
       </Button>-->
+
+      <Button guid="guidSerializeThisPackageCmdSet" id="cSharpCommandId" priority="0x0102" type="Button">
+        <Parent guid="guidSerializeThisPackageCmdSet" id="SerializeAsSubMenuGroup" />
+        <Icon guid="guidImages" id="bmpPicJson" />
+        <Strings>
+          <ButtonText>C# object initializer</ButtonText>
+        </Strings>
+      </Button>
     </Buttons>
 
     <Bitmaps>
@@ -65,9 +73,9 @@
       <IDSymbol name="SerializeAsSubMenuGroup" value="0x1021" />
       <IDSymbol name="SerializeAsSubMenu" value="0x1022" />
       <IDSymbol name="jsonCommandId" value="0x0100" />
-
       <!-- XML support will come later. -->
       <!--<IDSymbol name="xmlCommandId" value="0x0101" />-->
+      <IDSymbol name="cSharpCommandId" value="0x0102" />
     </GuidSymbol>
 
     <GuidSymbol name="guidImages" value="{19077bda-00dc-4ea6-a4f6-23d24e992fac}" >

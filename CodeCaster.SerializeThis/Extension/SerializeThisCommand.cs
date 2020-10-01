@@ -27,6 +27,7 @@ namespace CodeCaster.SerializeThis.Extension
     {
         public const int JsonCommandId = 0x0100;
         public const int XmlCommandId = 0x0101;
+        public const int CSharpCommandId = 0x0102;
 
         /// <summary>
         /// Command menu group (command set GUID).
@@ -74,6 +75,10 @@ namespace CodeCaster.SerializeThis.Extension
                 menuCommandId = new CommandID(CommandSet, XmlCommandId);
                 menuItem = new MenuCommand(MenuItemCallback, menuCommandId);
                 commandService.AddCommand(menuItem);
+                
+                menuCommandId = new CommandID(CommandSet, CSharpCommandId);
+                menuItem = new MenuCommand(MenuItemCallback, menuCommandId);
+                commandService.AddCommand(menuItem);
 
                 // TODO: let other plugins add their own menu item to this plugin's context menu.
             }
@@ -97,12 +102,13 @@ namespace CodeCaster.SerializeThis.Extension
 
         private static string GetContentType(int menuCommandId)
         {
-            if (menuCommandId == XmlCommandId)
+            switch (menuCommandId)
             {
-                return "xml";
+                case XmlCommandId: return "xml";
+                case JsonCommandId: return "json";
+                case CSharpCommandId: return "c#";
+                default: throw new ArgumentException(nameof(menuCommandId));
             }
-
-            return "json";
         }
 
         private async System.Threading.Tasks.Task DoWorkAsync(string commandName)

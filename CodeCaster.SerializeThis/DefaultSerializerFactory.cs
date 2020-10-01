@@ -13,6 +13,8 @@ namespace CodeCaster.SerializeThis
             {
                 case "json":
                     return new JsonSerializer();
+                case "c#":
+                    return new CSharpObjectInitializer();
 
                 default:
                     // TODO: DI.

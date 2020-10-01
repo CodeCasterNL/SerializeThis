@@ -22,7 +22,7 @@ Its basic functionality has been tested in various scenarios, but if you have a 
 
 ## Building and Running
 
-This project is a Visual Studio Extension, so you'll need to install the [Visual Studio SDK](https://msdn.microsoft.com/en-us/library/mt683786.aspx) in order to compile it. The startup project requres Visual Studio 2017 to open and build, but the extension will work in Visual Studio 2015 and 2017.  
+This project is a Visual Studio Extension, so you'll need to install the [Visual Studio 2019 SDK](https://docs.microsoft.com/en-us/visualstudio/extensibility/installing-the-visual-studio-sdk?view=vs-201) in order to compile it. The startup project requres Visual Studio 2019 to open and build, but the extension will work in Visual Studio 2015, 2017 and 2019.
 
-When running it, it starts an experimental instance of Visual Studio, where the extension will be loaded.
+Start debugging by running the CodeCaster.SerializeThis project, which starts an experimental instance of Visual Studio, where the extension will be loaded. You can then open any C# file, right-click a type name and see the "Serialize As" submenu.
 
