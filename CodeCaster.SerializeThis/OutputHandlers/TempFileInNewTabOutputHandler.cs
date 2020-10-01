@@ -3,6 +3,7 @@ using System.IO;
 using CodeCaster.SerializeThis.Serialization;
 using Microsoft.VisualStudio;
 using Microsoft.VisualStudio.Editor;
+using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.Shell.Interop;
 
 namespace CodeCaster.SerializeThis.OutputHandlers
@@ -26,6 +27,8 @@ namespace CodeCaster.SerializeThis.OutputHandlers
             {
                 return false;
             }
+            
+            ThreadHelper.ThrowIfNotOnUIThread();
 
             try
             {
@@ -83,6 +86,7 @@ namespace CodeCaster.SerializeThis.OutputHandlers
 
         private bool ShowTempFile(string filename)
         {
+            ThreadHelper.ThrowIfNotOnUIThread();
             var openDoc = _serviceProvider.GetService(typeof(IVsUIShellOpenDocument)) as IVsUIShellOpenDocument;
 
             if (openDoc != null)
