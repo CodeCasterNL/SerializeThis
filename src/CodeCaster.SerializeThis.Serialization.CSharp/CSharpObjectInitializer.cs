@@ -28,15 +28,6 @@ namespace CodeCaster.SerializeThis.Serialization.CSharp
             return builder.ToString();
         }
 
-        private void AppendChild(StringBuilder builder, ClassInfo type, ClassInfo child, int indent)
-        {
-            var spaces = new string(' ', indent * 4);
-
-            builder.Append(spaces).Append(child.Name).Append(" = ");
-
-            EmitInitializer(builder, child, indent);
-        }
-
         private void EmitInitializer(StringBuilder builder, ClassInfo child, int indent)
         {
             if (child.Class.IsDictionary)
@@ -82,12 +73,25 @@ namespace CodeCaster.SerializeThis.Serialization.CSharp
 
         private void EmitCollection(StringBuilder builder, ClassInfo child, int indent)
         {
-            throw new NotImplementedException();
+            builder.AppendFormat("new {0}[0],", child.Class.TypeName);
+            builder.AppendLine(",");
         }
 
         private void EmitDictionary(StringBuilder builder, ClassInfo child, int indent)
         {
-            throw new NotImplementedException();
+            var keyType = child.Class.Children[0].Class.TypeName;
+            var valueType = child.Class.Children[1].Class.TypeName;
+            builder.AppendFormat("new {0}<{1}, {2}>(),", child.Class.TypeName, keyType, valueType);
+            builder.AppendLine(",");
+        }
+
+        private void AppendChild(StringBuilder builder, ClassInfo type, ClassInfo child, int indent)
+        {
+            var spaces = new string(' ', indent * 4);
+
+            builder.Append(spaces).Append(child.Name).Append(" = ");
+
+            EmitInitializer(builder, child, indent);
         }
 
         private void EmitValueTypeConstant(StringBuilder builder, ClassInfo child)
@@ -138,7 +142,7 @@ namespace CodeCaster.SerializeThis.Serialization.CSharp
                 case TypeEnum.Float16:
                     return (_counter + .42f).ToString(CultureInfo.InvariantCulture) + "f";
                 case TypeEnum.Float32:
-                    return (_counter + .42f).ToString(CultureInfo.InvariantCulture) + "d";
+                    return (_counter + .42d).ToString(CultureInfo.InvariantCulture) + "d";
                 case TypeEnum.Decimal:
                     return (_counter + .42m).ToString(CultureInfo.InvariantCulture) + "m";
                 case TypeEnum.Byte:
