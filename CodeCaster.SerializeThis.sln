@@ -3,13 +3,15 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 16
 VisualStudioVersion = 16.0.30517.126
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CodeCaster.SerializeThis", "CodeCaster.SerializeThis\CodeCaster.SerializeThis.csproj", "{47AB8FC5-CE41-40AD-AC3A-F5ADD685B19B}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CodeCaster.SerializeThis", "src\CodeCaster.SerializeThis\CodeCaster.SerializeThis.csproj", "{47AB8FC5-CE41-40AD-AC3A-F5ADD685B19B}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CodeCaster.SerializeThis.Serialization", "CodeCaster.SerializeThis.Serialization\CodeCaster.SerializeThis.Serialization.csproj", "{D855EF9F-21AB-4BE3-9771-A75D2E059271}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CodeCaster.SerializeThis.Serialization", "src\CodeCaster.SerializeThis.Serialization\CodeCaster.SerializeThis.Serialization.csproj", "{D855EF9F-21AB-4BE3-9771-A75D2E059271}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CodeCaster.SerializeThis.Serialization.Json", "CodeCaster.SerializeThis.Serialization.Json\CodeCaster.SerializeThis.Serialization.Json.csproj", "{94488295-EC5E-4AB9-80BC-9590B204936E}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CodeCaster.SerializeThis.Serialization.Json", "src\CodeCaster.SerializeThis.Serialization.Json\CodeCaster.SerializeThis.Serialization.Json.csproj", "{94488295-EC5E-4AB9-80BC-9590B204936E}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CodeCaster.SerializeThis.Serialization.Roslyn", "CodeCaster.SerializeThis.Serialization.Roslyn\CodeCaster.SerializeThis.Serialization.Roslyn.csproj", "{202C9FEF-1C93-4BCE-AC1B-0C1B7F85AE79}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CodeCaster.SerializeThis.Serialization.Roslyn", "src\CodeCaster.SerializeThis.Serialization.Roslyn\CodeCaster.SerializeThis.Serialization.Roslyn.csproj", "{202C9FEF-1C93-4BCE-AC1B-0C1B7F85AE79}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CodeCaster.SerializeThis.Serialization.CSharp", "src\CodeCaster.SerializeThis.Serialization.CSharp\CodeCaster.SerializeThis.Serialization.CSharp.csproj", "{2AA3E609-B787-4FB2-A271-3CF3C7ECDF4D}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{BECEAAB9-CC33-43B4-A702-299AE93E3CA8}"
 	ProjectSection(SolutionItems) = preProject
@@ -21,8 +23,6 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "GitHub Items", "GitHub Item
 		LICENSE = LICENSE
 		README.md = README.md
 	EndProjectSection
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CodeCaster.SerializeThis.Serialization.CSharp", "CodeCaster.SerializeThis.Serialization.CSharp\CodeCaster.SerializeThis.Serialization.CSharp.csproj", "{2AA3E609-B787-4FB2-A271-3CF3C7ECDF4D}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
