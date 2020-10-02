@@ -13,16 +13,18 @@ namespace CodeCaster.SerializeThis.Serialization.CSharp
         public string Serialize(ClassInfo type)
         {
             _counter = 0;
-
-            var builder = new StringBuilder();
-            builder.AppendLine("var foo = new " + type.Class.TypeName + Environment.NewLine + "{");
-
-            foreach (var children in type.Class.Children)
+            
+            if (type.Class.Type != TypeEnum.ComplexType)
             {
-                AppendChild(builder, type, children, indent: 1);
+                // Sure, maybe later we'll support collection or scalar types.
+                throw new NotSupportedException("root type must be complex type");
             }
 
-            builder.AppendLine("};");
+            var builder = new StringBuilder();
+            builder.Append("var foo = ");
+
+            EmitComplexType(builder, type, 0);
+            
             return builder.ToString();
         }
 
@@ -58,9 +60,24 @@ namespace CodeCaster.SerializeThis.Serialization.CSharp
             EmitValueTypeConstant(builder, child);
         }
 
-        private void EmitComplexType(StringBuilder builder, ClassInfo child, int indent)
+        private void EmitComplexType(StringBuilder builder, ClassInfo type, int indent)
         {
-            throw new NotImplementedException();
+            var spaces = new string(' ', indent * 4);
+            builder.AppendFormat("new {0}{1}{2}{{{1}", type.Class.TypeName, Environment.NewLine, spaces);
+
+            foreach (var children in type.Class.Children)
+            {
+                AppendChild(builder, type, children, indent + 1);
+            }
+
+            if (indent == 0)
+            {
+                builder.AppendLine("};");
+            }
+            else
+            {
+                builder.Append(spaces).AppendLine("},");
+            }
         }
 
         private void EmitCollection(StringBuilder builder, ClassInfo child, int indent)
