@@ -113,14 +113,12 @@ namespace CodeCaster.SerializeThis.Extension
 
         private async System.Threading.Tasks.Task DoWorkAsync(string commandName)
         {
-            var componentModel = ServiceProvider.GetService(typeof(SComponentModel)) as IComponentModel;
-            if (componentModel == null)
+            if (!(ServiceProvider.GetService(typeof(SComponentModel)) is IComponentModel componentModel))
             {
                 return;
             }
 
-            var vsTextManager = ServiceProvider.GetService(typeof(SVsTextManager)) as IVsTextManager;
-            if (vsTextManager == null)
+            if (!(ServiceProvider.GetService(typeof(SVsTextManager)) is IVsTextManager vsTextManager))
             {
                 return;
             }
