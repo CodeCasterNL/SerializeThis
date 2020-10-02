@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Globalization;
+using System.Linq;
 using System.Text;
 
 namespace CodeCaster.SerializeThis.Serialization.CSharp
@@ -82,8 +84,6 @@ namespace CodeCaster.SerializeThis.Serialization.CSharp
                 case bool b:
                     builder.Append(b ? "true" : "false");
                     break;
-                case string s:
-                    builder.AppendFormat("\"{0}\"", s);
                     break;
                 case DateTime dt:
                     builder.AppendFormat("new DateTime({0}, {1}, {2}, {3}, {4}, {5})", dt.Year, dt.Month, dt.Day, dt.Hour, dt.Minute, dt.Second);
@@ -100,7 +100,9 @@ namespace CodeCaster.SerializeThis.Serialization.CSharp
         {
             if (child.Class.IsEnum)
             {
-                return $"{child.Name}-FooEnum{_counter}";
+                // TODO: get enum example member (or 0)?
+                var enumMember = child.Class.Children.FirstOrDefault()?.Name ?? "0";
+                return $"{child.Class.TypeName}.{enumMember}";
             }
 
             switch (child.Class.Type)
@@ -108,7 +110,7 @@ namespace CodeCaster.SerializeThis.Serialization.CSharp
                 case TypeEnum.Boolean:
                     return _counter % 2 == 0;
                 case TypeEnum.String:
-                    return $"{child.Name}-FooString{_counter}";
+                    return $"\"{child.Name}-FooString{_counter}\"";
                 case TypeEnum.DateTime:
                     return DateTime.Now.ToUniversalTime().AddSeconds(_counter);
                 case TypeEnum.Int16:
@@ -118,11 +120,11 @@ namespace CodeCaster.SerializeThis.Serialization.CSharp
                 case TypeEnum.Int64:
                     return (Int64)_counter;
                 case TypeEnum.Float16:
-                    return (_counter + .42f) + "f";
+                    return (_counter + .42f).ToString(CultureInfo.InvariantCulture) + "f";
                 case TypeEnum.Float32:
-                    return (_counter + .42f) + "d";
+                    return (_counter + .42f).ToString(CultureInfo.InvariantCulture) + "d";
                 case TypeEnum.Decimal:
-                    return (_counter + .42m) + "m";
+                    return (_counter + .42m).ToString(CultureInfo.InvariantCulture) + "m";
                 case TypeEnum.Byte:
                     return (Byte)_counter;
 
