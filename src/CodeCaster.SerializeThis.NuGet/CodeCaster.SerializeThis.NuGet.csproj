@@ -9,6 +9,7 @@
     <ProjectReference Include="..\CodeCaster.SerializeThis.Serialization.CSharp\CodeCaster.SerializeThis.Serialization.CSharp.csproj" />
     <ProjectReference Include="..\CodeCaster.SerializeThis.Serialization.Json\CodeCaster.SerializeThis.Serialization.Json.csproj" />
     <ProjectReference Include="..\CodeCaster.SerializeThis.Serialization.Roslyn\CodeCaster.SerializeThis.Serialization.Roslyn.csproj" />
+    <ProjectReference Include="..\CodeCaster.SerializeThis.Serialization\CodeCaster.SerializeThis.Serialization.csproj" />
     <ProjectReference Include="..\CodeCaster.SerializeThis\CodeCaster.SerializeThis.csproj" />
   </ItemGroup>
 
