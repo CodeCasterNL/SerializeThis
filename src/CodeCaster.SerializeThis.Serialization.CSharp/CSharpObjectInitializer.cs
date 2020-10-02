@@ -77,17 +77,20 @@ namespace CodeCaster.SerializeThis.Serialization.CSharp
 
             var value = GetValue(child);
 
-            if (value is string)
+            switch (value)
             {
-                builder.AppendFormat("\"{0}\"", value);
-            }
-            else if (value is DateTime dt)
-            {
-                builder.AppendFormat("new DateTime({0}, {1}, {2}, {3}, {4}, {5})", dt.Year, dt.Month, dt.Day, dt.Hour, dt.Minute, dt.Second);
-            }
-            else
-            {
-                builder.Append(value ?? "null");
+                case bool b:
+                    builder.Append(b ? "true" : "false");
+                    break;
+                case string s:
+                    builder.AppendFormat("\"{0}\"", s);
+                    break;
+                case DateTime dt:
+                    builder.AppendFormat("new DateTime({0}, {1}, {2}, {3}, {4}, {5})", dt.Year, dt.Month, dt.Day, dt.Hour, dt.Minute, dt.Second);
+                    break;
+                default:
+                    builder.Append(value ?? "null");
+                    break;
             }
 
             builder.AppendLine(",");
