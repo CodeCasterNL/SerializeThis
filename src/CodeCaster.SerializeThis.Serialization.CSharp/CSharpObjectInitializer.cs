@@ -74,15 +74,15 @@ namespace CodeCaster.SerializeThis.Serialization.CSharp
         private void EmitCollection(StringBuilder builder, ClassInfo child, int indent)
         {
             builder.AppendFormat("new {0}[0],", child.Class.TypeName);
-            builder.AppendLine(",");
+            builder.AppendLine();
         }
 
         private void EmitDictionary(StringBuilder builder, ClassInfo child, int indent)
         {
             var keyType = child.Class.Children[0].Class.TypeName;
             var valueType = child.Class.Children[1].Class.TypeName;
-            builder.AppendFormat("new {0}<{1}, {2}>(),", child.Class.TypeName, keyType, valueType);
-            builder.AppendLine(",");
+            builder.AppendFormat("new {0}(),", child.Class.TypeName);
+            builder.AppendLine();
         }
 
         private void AppendChild(StringBuilder builder, ClassInfo type, ClassInfo child, int indent)
