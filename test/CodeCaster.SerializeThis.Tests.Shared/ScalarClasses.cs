@@ -45,7 +45,7 @@ namespace CodeCaster.SerializeThis.Tests.Shared
                             Name = "Bar",
                             Class = new Class
                             {
-                                TypeName = "System.String",
+                                TypeName = "System.String[]",
                                 Type = TypeEnum.ComplexType
                             }
                         }

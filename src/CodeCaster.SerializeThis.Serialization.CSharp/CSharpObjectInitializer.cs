@@ -79,8 +79,8 @@ namespace CodeCaster.SerializeThis.Serialization.CSharp
 
         private void EmitDictionary(StringBuilder builder, ClassInfo child, int indent)
         {
-            var keyType = child.Class.Children[0].Class.TypeName;
-            var valueType = child.Class.Children[1].Class.TypeName;
+            var keyType = child.Class.GenericParameters[0].Class.TypeName;
+            var valueType = child.Class.GenericParameters[1].Class.TypeName;
             builder.AppendFormat("new {0}(),", child.Class.TypeName);
             builder.AppendLine();
         }

@@ -34,9 +34,10 @@ namespace CodeCaster.SerializeThis.Serialization.Roslyn
         public static string GetTypeName(this ITypeSymbol typeSymbol)
         {
             var symbolDisplayFormat = new SymbolDisplayFormat(
-                SymbolDisplayGlobalNamespaceStyle.Omitted,
-                SymbolDisplayTypeQualificationStyle.NameAndContainingTypesAndNamespaces,
-                SymbolDisplayGenericsOptions.IncludeTypeParameters
+                    globalNamespaceStyle: SymbolDisplayGlobalNamespaceStyle.Omitted,
+                    typeQualificationStyle: SymbolDisplayTypeQualificationStyle.NameAndContainingTypesAndNamespaces,
+                    genericsOptions: SymbolDisplayGenericsOptions.None, //SymbolDisplayGenericsOptions.IncludeTypeParameters
+                    miscellaneousOptions: SymbolDisplayMiscellaneousOptions.EscapeKeywordIdentifiers
             );
 
             return typeSymbol.ToDisplayString(symbolDisplayFormat);
@@ -66,13 +67,15 @@ namespace CodeCaster.SerializeThis.Serialization.Roslyn
         private static bool IsCollectionInterfaceType(this ITypeSymbol arg)
         {
             // TODO: meh.
-            return arg.GetTypeName().StartsWith("System.Collections.Generic.ICollection<");
+            return arg.GetTypeName().StartsWith("System.Collections.Generic.ICollection")
+                   && arg is INamedTypeSymbol n && n.TypeArguments.Length == 1;
         }
 
         private static bool IsDictionaryInterfaceType(this ITypeSymbol arg)
         {
             // TODO: meh.
-            return arg.GetTypeName().StartsWith("System.Collections.Generic.IDictionary<");
+            return arg.GetTypeName().StartsWith("System.Collections.Generic.IDictionary")
+                   && arg is INamedTypeSymbol n && n.TypeArguments.Length == 2;
         }
     }
 }

@@ -68,8 +68,8 @@ namespace CodeCaster.SerializeThis.Serialization.Json
         private JToken GetDictionary(ClassInfo child)
         {
             // A dictionary's key type is the first child, the value type the second.
-            var keyType = child.Class.Children.FirstOrDefault();
-            var valueType = child.Class.Children.Skip(1).FirstOrDefault();
+            var keyType = child.Class.GenericParameters.FirstOrDefault();
+            var valueType = child.Class.GenericParameters.Skip(1).FirstOrDefault();
 
             var jObject = new JObject();
 
@@ -89,7 +89,7 @@ namespace CodeCaster.SerializeThis.Serialization.Json
         private JToken GetCollection(ClassInfo child)
         {
             // We store the collection's type in its first child.
-            var collectionType = child.Class.Children.FirstOrDefault();
+            var collectionType = child.Class.GenericParameters.FirstOrDefault();
             if (collectionType == null)
             {
                 return new JArray();

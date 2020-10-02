@@ -7,32 +7,32 @@ namespace CodeCaster.SerializeThis.Serialization.Roslyn
 {
     public class TypeSymbolParser
     {
-        private readonly Dictionary<string, Class> _typesSeen = new Dictionary<string, Class>();
-
         public ClassInfo GetMemberInfoRecursive(ITypeSymbol typeSymbol, SemanticModel semanticModel)
         {
-            var memberInfo = GetMemberInfoRecursive(typeSymbol.Name, typeSymbol);
+            var memberInfo = GetMemberInfoRecursive(typeSymbol.GetTypeName(), typeSymbol);
 
             return memberInfo;
         }
 
         private ClassInfo GetMemberInfoRecursive(string name, ITypeSymbol typeSymbol)
         {
+            var typesSeen = new Dictionary<string, Class>();
+
             // TODO: this will break. Include assembly name with type name?
             // TODO: this is already broken. We need to save "membername-typeInfo" tuples. Members can occur multiple times within the same or multiple types with different or equal names.
             string typeName = typeSymbol.GetTypeName();
-            if (_typesSeen.TryGetValue(typeName, out var existing))
+            if (typesSeen.TryGetValue(typeName, out var c))
             {
                 return new ClassInfo
                 {
                     Name = name,
-                    Class = existing
+                    Class = c
                 };
             }
 
             var type = GetSymbolType(typeSymbol, out var isCollection, out var isDictionary, out var isNullableValueType, out var isEnum);
 
-            existing = new Class
+            c = new Class
             {
                 Type = type,
                 IsCollection = isCollection,
@@ -44,29 +44,39 @@ namespace CodeCaster.SerializeThis.Serialization.Roslyn
 
             // Save it _before_ diving into children. 
             // TODO: will that work for a property of A.B.A.B?
-            _typesSeen[typeName] = existing;
+            typesSeen[typeName] = c;
 
-            if (existing.IsDictionary)
+            // TODO: handle _all_ generics. There can be a Foo<T1, T2> that (indirectly) inherits List<T2> and adds additional properties...
+            // TODO: though for example JSON can't handle that, and does the C# object and collection initializer?
+            if (c.IsDictionary)
             {
-                // A dictionary's key type is represented by its first child, the value type by the second.
                 var keyValueType = GetDictionaryKeyType(typeSymbol);
-                existing.Children = keyValueType?.Item1 != null && keyValueType.Item2 != null ? new List<ClassInfo> { keyValueType.Item1, keyValueType.Item2 } : new List<ClassInfo>();
+                if (keyValueType?.Item1 != null && keyValueType.Item2 != null)
+                {
+                    c.GenericParameters.Add(keyValueType.Item1);
+                    c.GenericParameters.Add(keyValueType.Item2);
+                }
             }
-            else if (existing.IsCollection)
+            else if (c.IsCollection)
             {
-                // A collection's first child is its collection type.
                 var collectionType = GetCollectionType(typeSymbol);
-                existing.Children = collectionType != null ? new List<ClassInfo> { collectionType } : new List<ClassInfo>();
+                if (collectionType != null)
+                {
+                    c.GenericParameters.Add(collectionType);
+                }
             }
-            else if (existing.Type == TypeEnum.ComplexType && !isNullableValueType)
+            else if (c.Type == TypeEnum.ComplexType && !isNullableValueType)
             {
-                existing.Children = GetChildProperties(typeSymbol);
+                foreach (var child in GetChildProperties(typeSymbol))
+                {
+                    c.Children.Add(child);
+                }
             }
 
             return new ClassInfo
             {
                 Name = name,
-                Class = existing
+                Class = c
             };
         }
 

@@ -75,6 +75,16 @@ namespace JsonTestClasses
     }
 
     /// <summary>
+    /// Some simple collections.
+    /// </summary>
+    public class FooSimpleCollections
+    {
+        public string[] StringArray { get; set; }
+        public List<FooBase> FooBaseList { get; set; }
+        public Dictionary<int, string> IntStringDict { get; set; }
+    }
+
+    /// <summary>
     /// Collections.
     /// </summary>
     public class FooCollections

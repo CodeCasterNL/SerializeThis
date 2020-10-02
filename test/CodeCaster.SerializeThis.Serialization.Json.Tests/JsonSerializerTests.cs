@@ -17,13 +17,33 @@ namespace CodeCaster.SerializeThis.Serialization.Json.Tests
         {
             // Arrange
             var type = ScalarClasses.ClassWithBarStringProperty();
-            
+
             // Act
             var result = _classUnderTest.Serialize(type);
 
             // Assert
             var expectedJson = @"{
   ""Bar"": ""Bar-FooString1""
+}";
+            Assert.AreEqual(expectedJson, result);
+        }
+
+        [Test]
+        public void Serialize_Handles_StringArrays()
+        {
+            // Arrange
+            var type = ScalarClasses.ClassWithBarStringArrayProperty();
+
+            // Act
+            var result = _classUnderTest.Serialize(type);
+
+            // Assert
+            var expectedJson = @"{
+  ""Bar"": [
+    ""Bar-FooString1"",
+    ""Bar-FooString2"",
+    ""Bar-FooString3""
+  ]
 }";
             Assert.AreEqual(expectedJson, result);
         }

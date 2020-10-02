@@ -25,5 +25,19 @@ namespace CodeCaster.SerializeThis.Serialization.CSharp.Tests
             // Assert
             Assert.IsTrue(result.Contains("Bar = \"Bar-FooString1\""));
         }
+
+
+        [Test]
+        public void Serialize_Handles_Arrays()
+        {
+            // Arrange
+            var type = ScalarClasses.ClassWithBarStringArrayProperty();
+
+            // Act
+            var result = _classUnderTest.Serialize(type);
+
+            // Assert
+            Assert.IsTrue(result.Contains("Bar = new System.String[]"));
+        }
     }
 }
