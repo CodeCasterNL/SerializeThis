@@ -89,7 +89,7 @@
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
       <IncludeInVSIX>true</IncludeInVSIX>
     </Content>
-    <Content Include="..\LICENSE">
+    <Content Include="..\..\LICENSE">
       <Link>LICENSE</Link>
       <IncludeInVSIX>true</IncludeInVSIX>
     </Content>
