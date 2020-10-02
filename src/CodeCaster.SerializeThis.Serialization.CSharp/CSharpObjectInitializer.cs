@@ -49,7 +49,7 @@ namespace CodeCaster.SerializeThis.Serialization.CSharp
                 return;
             }
 
-            if (child.Class.IsComplexType)
+            if (!child.Class.IsEnum && child.Class.IsComplexType)
             {
                 EmitComplexType(builder, child, indent);
                 return;
@@ -83,7 +83,6 @@ namespace CodeCaster.SerializeThis.Serialization.CSharp
             {
                 case bool b:
                     builder.Append(b ? "true" : "false");
-                    break;
                     break;
                 case DateTime dt:
                     builder.AppendFormat("new DateTime({0}, {1}, {2}, {3}, {4}, {5})", dt.Year, dt.Month, dt.Day, dt.Hour, dt.Minute, dt.Second);
