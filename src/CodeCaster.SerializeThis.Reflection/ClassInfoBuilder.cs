@@ -11,6 +11,8 @@ namespace CodeCaster.SerializeThis.Reflection
 
             var type = value.GetType();
 
+            // TODO: implement the whole thing
+
             return new ClassInfo
             {
                 Name = "value",

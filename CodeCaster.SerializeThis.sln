@@ -52,6 +52,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CodeCaster.SerializeThis.Re
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CodeCaster.SerializeThis.Nuget.Tests", "test\CodeCaster.SerializeThis.Nuget.Tests\CodeCaster.SerializeThis.Nuget.Tests.csproj", "{05A2C78C-AAF8-49CB-9E83-DA908C65835F}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CodeCaster.SerializeThis.Relection.Tests", "test\CodeCaster.SerializeThis.Relection.Tests\CodeCaster.SerializeThis.Relection.Tests.csproj", "{0747C62F-6907-4028-BEA7-0C62D9995923}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -102,6 +104,10 @@ Global
 		{05A2C78C-AAF8-49CB-9E83-DA908C65835F}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{05A2C78C-AAF8-49CB-9E83-DA908C65835F}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{05A2C78C-AAF8-49CB-9E83-DA908C65835F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{0747C62F-6907-4028-BEA7-0C62D9995923}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0747C62F-6907-4028-BEA7-0C62D9995923}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{0747C62F-6907-4028-BEA7-0C62D9995923}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{0747C62F-6907-4028-BEA7-0C62D9995923}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -120,6 +126,7 @@ Global
 		{5DBDC7D3-1E6E-42EB-A85D-0E48F1A92D11} = {D5001EFA-9A47-4F6A-8ACA-76B6B84D2F83}
 		{878BCBF8-E17E-4E35-B285-18D73AE4FD58} = {165685AC-A522-483E-ABAB-7B43A7CCC632}
 		{05A2C78C-AAF8-49CB-9E83-DA908C65835F} = {D5001EFA-9A47-4F6A-8ACA-76B6B84D2F83}
+		{0747C62F-6907-4028-BEA7-0C62D9995923} = {D5001EFA-9A47-4F6A-8ACA-76B6B84D2F83}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {18D09F9F-363A-4817-A52C-C5AA696B920B}
