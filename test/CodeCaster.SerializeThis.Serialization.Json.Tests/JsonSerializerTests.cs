@@ -1,12 +1,11 @@
-using System.Collections.Generic;
 using CodeCaster.SerializeThis.Tests.Shared;
 using NUnit.Framework;
 
-namespace CodeCaster.SerializeThis.Serialization.CSharp.Tests
+namespace CodeCaster.SerializeThis.Serialization.Json.Tests
 {
-    public class ObjectInitializerTests
+    public class JsonSerializerTests
     {
-        private readonly CSharpObjectInitializer _classUnderTest = new CSharpObjectInitializer();
+        private readonly IClassInfoSerializer _classUnderTest = new JsonSerializer();
 
         [SetUp]
         public void Setup()
@@ -14,16 +13,19 @@ namespace CodeCaster.SerializeThis.Serialization.CSharp.Tests
         }
 
         [Test]
-        public void Serialize_Handles_ValueTypes()
+        public void Serialize_Handles_Strings()
         {
             // Arrange
             var type = ScalarClasses.ClassWithBarStringProperty();
-
+            
             // Act
             var result = _classUnderTest.Serialize(type);
 
             // Assert
-            Assert.IsTrue(result.Contains("Bar = \"Bar-FooString1\""));
+            var expectedJson = @"{
+  ""Bar"": ""Bar-FooString1""
+}";
+            Assert.AreEqual(expectedJson, result);
         }
     }
 }
