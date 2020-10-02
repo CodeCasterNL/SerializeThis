@@ -14,6 +14,8 @@ namespace CodeCaster.SerializeThis.Serialization.Json
 
         public string Serialize(ClassInfo type)
         {
+            _counter = 0;
+
             if (type.Class.Type != TypeEnum.ComplexType)
             {
                 // Sure, maybe later we'll support collection or scalar types.

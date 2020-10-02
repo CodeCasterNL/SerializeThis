@@ -13,7 +13,7 @@ namespace CodeCaster.SerializeThis.Serialization.CSharp.Tests
         }
 
         [Test]
-        public void Test1()
+        public void Serialize_Handles_ValueTypes()
         {
             // Arrange
             var type = new ClassInfo
@@ -42,7 +42,7 @@ namespace CodeCaster.SerializeThis.Serialization.CSharp.Tests
             var result = _classUnderTest.Serialize(type);
 
             // Assert
-            Assert.IsTrue(result.Contains("Bar = new System.String()"));
+            Assert.IsTrue(result.Contains("Bar = \"Bar-FooString1\""));
         }
     }
 }
