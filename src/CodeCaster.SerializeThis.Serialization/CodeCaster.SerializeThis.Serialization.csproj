@@ -46,15 +46,13 @@
     </Compile>
     <Compile Include="Class.cs" />
     <Compile Include="ClassInfo.cs" />
+    <Compile Include="IClassInfoBuilder.cs" />
     <Compile Include="IClassInfoSerializer.cs" />
     <Compile Include="ISerializerFactory.cs" />
     <Compile Include="TypeEnum.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="..\LICENSE">
-      <Link>LICENSE</Link>
-    </None>
     <None Include="Key.snk" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

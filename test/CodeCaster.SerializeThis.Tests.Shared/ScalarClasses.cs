@@ -9,7 +9,7 @@ namespace CodeCaster.SerializeThis.Tests.Shared
         {
             return new ClassInfo
             {
-                Name = "Foo",
+                Name = "FooWithBarString",
                 Class = new Class
                 {
                     Type = TypeEnum.ComplexType,
@@ -29,6 +29,29 @@ namespace CodeCaster.SerializeThis.Tests.Shared
                 }
             };
         }
-
+        public static ClassInfo ClassWithBarStringArrayProperty()
+        {
+            return new ClassInfo
+            {
+                Name = "FooWithBarStringArray",
+                Class = new Class
+                {
+                    Type = TypeEnum.ComplexType,
+                    TypeName = "Foo",
+                    Children = new List<ClassInfo>
+                    {
+                        new ClassInfo
+                        {
+                            Name = "Bar",
+                            Class = new Class
+                            {
+                                TypeName = "System.String",
+                                Type = TypeEnum.ComplexType
+                            }
+                        }
+                    }
+                }
+            };
+        }
     }
 }

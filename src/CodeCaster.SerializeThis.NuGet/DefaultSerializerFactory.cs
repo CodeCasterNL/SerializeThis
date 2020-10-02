@@ -1,27 +1,26 @@
 using System;
-using CodeCaster.SerializeThis.Package;
 using CodeCaster.SerializeThis.Serialization;
 using CodeCaster.SerializeThis.Serialization.CSharp;
 using CodeCaster.SerializeThis.Serialization.Json;
 
-namespace CodeCaster.SerializeThis
+namespace CodeCaster.SerializeThis.NuGet
 {
     public class DefaultSerializerFactory : ISerializerFactory
     {
         public IClassInfoSerializer GetSerializer(object serializer)
         {
-            var serializerString = serializer as string;
+            var serializerEnum = serializer as SerializerEnum?;
 
-            switch (serializerString?.ToLowerInvariant())
+            switch (serializerEnum)
             {
-                case "json":
+                case SerializerEnum.Json:
                     return new JsonSerializer();
-                case "c#":
+                case SerializerEnum.Xml:
                     return new CSharpObjectInitializer();
 
                 default:
                     // TODO: DI.
-                    throw new ArgumentException(string.Format(VSPackage.SerializerNotSupported, serializer), nameof(serializer));
+                    throw new ArgumentException(string.Format(Resources.Serializer_not_supported, serializer), nameof(serializer));
             }
         }
     }

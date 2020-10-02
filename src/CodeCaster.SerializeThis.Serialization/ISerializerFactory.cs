@@ -2,6 +2,6 @@
 {
     public interface ISerializerFactory
     {
-        IClassInfoSerializer GetSerializer(string contentType);
+        IClassInfoSerializer GetSerializer(object serializer);
     }
 }

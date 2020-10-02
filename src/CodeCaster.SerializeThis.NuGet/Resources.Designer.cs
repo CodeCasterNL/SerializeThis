@@ -8,7 +8,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace CodeCaster.SerializeThis.Package {
+namespace CodeCaster.SerializeThis.NuGet {
     using System;
     
     
@@ -22,14 +22,14 @@ namespace CodeCaster.SerializeThis.Package {
     [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Resources.Tools.StronglyTypedResourceBuilder", "16.0.0.0")]
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
     [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
-    internal class VSPackage {
+    internal class Resources {
         
         private static global::System.Resources.ResourceManager resourceMan;
         
         private static global::System.Globalization.CultureInfo resourceCulture;
         
         [global::System.Diagnostics.CodeAnalysis.SuppressMessageAttribute("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
-        internal VSPackage() {
+        internal Resources() {
         }
         
         /// <summary>
@@ -39,7 +39,7 @@ namespace CodeCaster.SerializeThis.Package {
         internal static global::System.Resources.ResourceManager ResourceManager {
             get {
                 if (object.ReferenceEquals(resourceMan, null)) {
-                    global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("CodeCaster.SerializeThis.Package.VSPackage", typeof(VSPackage).Assembly);
+                    global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("CodeCaster.SerializeThis.NuGet.Resources", typeof(Resources).Assembly);
                     resourceMan = temp;
                 }
                 return resourceMan;
@@ -61,39 +61,11 @@ namespace CodeCaster.SerializeThis.Package {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to SerializeThisCommand Extension.
-        /// </summary>
-        internal static string _110 {
-            get {
-                return ResourceManager.GetString("110", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to SerializeThisCommand Visual Studio Extension Detailed Info.
-        /// </summary>
-        internal static string _112 {
-            get {
-                return ResourceManager.GetString("112", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized resource of type System.Drawing.Icon similar to (Icon).
-        /// </summary>
-        internal static System.Drawing.Icon _400 {
-            get {
-                object obj = ResourceManager.GetObject("400", resourceCulture);
-                return ((System.Drawing.Icon)(obj));
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to Serializer &apos;{0}&apos; is not supported..
         /// </summary>
-        internal static string SerializerNotSupported {
+        internal static string Serializer_not_supported {
             get {
-                return ResourceManager.GetString("SerializerNotSupported", resourceCulture);
+                return ResourceManager.GetString("Serializer_not_supported", resourceCulture);
             }
         }
     }
