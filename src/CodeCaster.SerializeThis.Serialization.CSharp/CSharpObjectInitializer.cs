@@ -23,82 +23,142 @@ namespace CodeCaster.SerializeThis.Serialization.CSharp
             var builder = new StringBuilder();
             builder.Append("var foo = ");
 
-            EmitComplexType(builder, type, 0);
+            EmitComplexType(builder, type, 0, StatementEndOptions.Semicolon | StatementEndOptions.Newline);
             
             return builder.ToString();
         }
 
-        private void EmitInitializer(StringBuilder builder, ClassInfo child, int indent)
+        private void EmitInitializer(StringBuilder builder, ClassInfo type, int indent, StatementEndOptions statementEnd = StatementEndOptions.Comma | StatementEndOptions.Newline)
         {
-            if (child.Class.IsDictionary)
+            switch (type.Class.CollectionType)
             {
-                EmitDictionary(builder, child, indent);
+                case CollectionType.Array:
+                    EmitArray(builder, type, indent, statementEnd);
+                    return;
+                case CollectionType.Collection:
+                    EmitCollection(builder, type, indent, statementEnd);
+                    return;
+                case CollectionType.Dictionary:
+                    EmitDictionary(builder, type, indent, statementEnd);
+                    return;
+            }
+
+            if (!type.Class.IsEnum && type.Class.IsComplexType)
+            {
+                EmitComplexType(builder, type, indent, statementEnd);
                 return;
             }
 
-            if (child.Class.IsCollection)
-            {
-                EmitCollection(builder, child, indent);
-                return;
-            }
-
-            if (!child.Class.IsEnum && child.Class.IsComplexType)
-            {
-                EmitComplexType(builder, child, indent);
-                return;
-            }
-
-            EmitValueTypeConstant(builder, child);
+            EmitValueTypeConstant(builder, type, statementEnd);
         }
 
-        private void EmitComplexType(StringBuilder builder, ClassInfo type, int indent)
+        private static string GetSpaces(int indent) => new string(' ', indent * 4);
+
+        private void EmitComplexType(StringBuilder builder, ClassInfo type, int indent, StatementEndOptions statementEnd)
         {
-            var spaces = new string(' ', indent * 4);
+            var spaces = GetSpaces(indent);
             builder.AppendFormat("new {0}{1}{2}{{{1}", type.Class.TypeName, Environment.NewLine, spaces);
 
-            foreach (var children in type.Class.Children)
+            for (var index = 0; index < type.Class.Children.Count; index++)
             {
-                AppendChild(builder, type, children, indent + 1);
+                var child = type.Class.Children[index];
+                var childEnd = index == type.Class.Children.Count - 1
+                    ? StatementEndOptions.Newline
+                    : StatementEndOptions.Comma | StatementEndOptions.Newline;
+
+                AppendChild(builder, type, child, indent + 1, childEnd);
             }
 
-            if (indent == 0)
-            {
-                builder.AppendLine("};");
-            }
-            else
-            {
-                builder.Append(spaces).AppendLine("},");
-            }
-        }
+            builder.Append(spaces).Append("}");
 
-        private void EmitCollection(StringBuilder builder, ClassInfo child, int indent)
-        {
-            builder.AppendFormat("new {0}[0],", child.Class.TypeName);
-            builder.AppendLine();
+            EndStatement(builder, statementEnd);
         }
-
-        private void EmitDictionary(StringBuilder builder, ClassInfo child, int indent)
+        
+        private void AppendChild(StringBuilder builder, ClassInfo type, ClassInfo child, int indent, StatementEndOptions statementEnd)
         {
-            var keyType = child.Class.GenericParameters[0].Class.TypeName;
-            var valueType = child.Class.GenericParameters[1].Class.TypeName;
-            builder.AppendFormat("new {0}(),", child.Class.TypeName);
-            builder.AppendLine();
-        }
-
-        private void AppendChild(StringBuilder builder, ClassInfo type, ClassInfo child, int indent)
-        {
-            var spaces = new string(' ', indent * 4);
+            var spaces = GetSpaces(indent);
 
             builder.Append(spaces).Append(child.Name).Append(" = ");
 
-            EmitInitializer(builder, child, indent);
+            EmitInitializer(builder, child, indent, statementEnd);
+        }
+        
+        private void EmitArray(StringBuilder builder, ClassInfo type, int indent, StatementEndOptions statementEnd)
+        {
+            var spaces = GetSpaces(indent);
+            var elementType = type.Class.GenericParameters[0];
+
+            // TypeName includes square brackets for arrays (System.String[])
+            builder.AppendFormat("new {0}{1}", type.Class.TypeName, Environment.NewLine);
+            EmitCollectionInitializer(builder, elementType, indent, spaces, statementEnd);
         }
 
-        private void EmitValueTypeConstant(StringBuilder builder, ClassInfo child)
+        private void EmitCollection(StringBuilder builder, ClassInfo type, int indent, StatementEndOptions statementEnd)
+        {
+            var spaces = GetSpaces(indent);
+            var elementType = type.Class.GenericParameters[0];
+
+            var typeName = $"{type.Class.TypeName}<{elementType.Class.TypeName}>";
+
+            builder.AppendFormat("new {0}{1}", typeName, Environment.NewLine);
+            EmitCollectionInitializer(builder, elementType, indent, spaces, statementEnd);
+        }
+
+        private void EmitCollectionInitializer(StringBuilder builder, ClassInfo elementType, int indent, string spaces, StatementEndOptions statementEnd)
+        {
+            void EmitCollectionEntry(int elementIndent, StatementEndOptions elementStatementEnd = StatementEndOptions.Comma | StatementEndOptions.Newline)
+            {
+                builder.Append(GetSpaces(elementIndent));
+                EmitInitializer(builder, elementType, elementIndent, elementStatementEnd);
+            }
+
+            builder.Append(spaces).AppendLine("{");
+
+            // TODO: 3 is hardcoded here
+            EmitCollectionEntry(indent + 1);
+            EmitCollectionEntry(indent + 1);
+            EmitCollectionEntry(indent + 1, StatementEndOptions.Newline);
+
+            builder.Append(spaces).Append("}");
+            EndStatement(builder, statementEnd);
+        }
+
+        private void EmitDictionary(StringBuilder builder, ClassInfo type, int indent, StatementEndOptions statementEnd)
+        {
+            var keyType = type.Class.GenericParameters[0];
+            var valueType = type.Class.GenericParameters[1];
+
+            void EmitDictionaryEntry(int elementIndent, StatementEndOptions elementStatementEnd = StatementEndOptions.Comma | StatementEndOptions.Newline)
+            {
+                builder.Append(GetSpaces(elementIndent)).Append("{ ");
+                EmitInitializer(builder, keyType, 0, StatementEndOptions.None);
+                builder.Append(", ");
+                EmitInitializer(builder, valueType, 0, StatementEndOptions.None);
+                builder.Append(" }");
+                EndStatement(builder, elementStatementEnd);
+            }
+
+            var spaces = GetSpaces(indent);
+
+            var typeName = $"{type.Class.TypeName}<{keyType.Class.TypeName}, {valueType.Class.TypeName}>";
+
+            builder.AppendFormat("new {0}{1}", typeName, Environment.NewLine);
+            builder.Append(spaces).AppendLine("{");
+            
+            // TODO: 3 is hardcoded here
+            EmitDictionaryEntry(indent + 1);
+            EmitDictionaryEntry(indent + 1);
+            EmitDictionaryEntry(indent + 1, StatementEndOptions.Newline);
+            
+            builder.Append(spaces).Append("}");
+            EndStatement(builder, statementEnd);
+        }
+
+        private void EmitValueTypeConstant(StringBuilder builder, ClassInfo type, StatementEndOptions statementEnd = StatementEndOptions.Comma | StatementEndOptions.Newline)
         {
             _counter++;
 
-            var value = GetValue(child);
+            var value = GetValue(type);
 
             switch (value)
             {
@@ -113,24 +173,24 @@ namespace CodeCaster.SerializeThis.Serialization.CSharp
                     break;
             }
 
-            builder.AppendLine(",");
+            EndStatement(builder, statementEnd);
         }
 
-        private object GetValue(ClassInfo child)
+        private object GetValue(ClassInfo type)
         {
-            if (child.Class.IsEnum)
+            if (type.Class.IsEnum)
             {
                 // TODO: get enum example member (or 0)?
-                var enumMember = child.Class.Children.FirstOrDefault()?.Name ?? "0";
-                return $"{child.Class.TypeName}.{enumMember}";
+                var enumMember = type.Class.Children.FirstOrDefault()?.Name ?? "0";
+                return $"{type.Class.TypeName}.{enumMember}";
             }
 
-            switch (child.Class.Type)
+            switch (type.Class.Type)
             {
                 case TypeEnum.Boolean:
                     return _counter % 2 == 0;
                 case TypeEnum.String:
-                    return $"\"{child.Name}-FooString{_counter}\"";
+                    return $"\"{type.Name}-FooString{_counter}\"";
                 case TypeEnum.DateTime:
                     return DateTime.Now.ToUniversalTime().AddSeconds(_counter);
                 case TypeEnum.Int16:
@@ -151,6 +211,16 @@ namespace CodeCaster.SerializeThis.Serialization.CSharp
                 default:
                     return null;
             }
+        }
+        
+        private void EndStatement(StringBuilder builder, StatementEndOptions statementEnd)
+        {
+            if (statementEnd.HasFlag(StatementEndOptions.Semicolon))
+                builder.Append(";");
+            if (statementEnd.HasFlag(StatementEndOptions.Comma))
+                builder.Append(",");
+            if (statementEnd.HasFlag(StatementEndOptions.Newline))
+                builder.AppendLine();
         }
     }
 }

@@ -10,7 +10,6 @@ namespace CodeCaster.SerializeThis.Serialization.Roslyn
         public ClassInfo GetMemberInfoRecursive(ITypeSymbol typeSymbol, SemanticModel semanticModel)
         {
             var memberInfo = GetMemberInfoRecursive(typeSymbol.GetTypeName(), typeSymbol);
-
             return memberInfo;
         }
 
@@ -30,25 +29,24 @@ namespace CodeCaster.SerializeThis.Serialization.Roslyn
                 };
             }
 
-            var type = GetSymbolType(typeSymbol, out var isCollection, out var isDictionary, out var isNullableValueType, out var isEnum);
+            var type = GetSymbolType(typeSymbol, out var collectionType, out var isNullableValueType, out var isEnum);
 
             c = new Class
             {
                 Type = type,
-                IsCollection = isCollection,
-                IsDictionary = isDictionary,
+                CollectionType= collectionType,
                 IsNullableValueType = isNullableValueType,
                 IsEnum = isEnum,
                 TypeName = typeName,
             };
 
             // Save it _before_ diving into children. 
-            // TODO: will that work for a property of A.B.A.B?
+            // TODO: will that work for a property of A.B.A.B? We need to pass typesSeen around recursively.
             typesSeen[typeName] = c;
 
             // TODO: handle _all_ generics. There can be a Foo<T1, T2> that (indirectly) inherits List<T2> and adds additional properties...
-            // TODO: though for example JSON can't handle that, and does the C# object and collection initializer?
-            if (c.IsDictionary)
+            // TODO: though for example JSON can't handle that, and do the C# object and collection initializer combine?
+            if (c.CollectionType == CollectionType.Dictionary)
             {
                 var keyValueType = GetDictionaryKeyType(typeSymbol);
                 if (keyValueType?.Item1 != null && keyValueType.Item2 != null)
@@ -57,12 +55,20 @@ namespace CodeCaster.SerializeThis.Serialization.Roslyn
                     c.GenericParameters.Add(keyValueType.Item2);
                 }
             }
-            else if (c.IsCollection)
+            else if (c.CollectionType == CollectionType.Collection)
             {
-                var collectionType = GetCollectionType(typeSymbol);
-                if (collectionType != null)
+                var collectionTypeParameter = GetCollectionTypeParameter(typeSymbol);
+                if (collectionTypeParameter != null)
                 {
-                    c.GenericParameters.Add(collectionType);
+                    c.GenericParameters.Add(collectionTypeParameter);
+                }
+            }
+            else if (c.CollectionType == CollectionType.Array)
+            {
+                var arrayTypeParameter = GetArrayTypeParameter(typeSymbol);
+                if (arrayTypeParameter != null)
+                {
+                    c.GenericParameters.Add(arrayTypeParameter);
                 }
             }
             else if (c.Type == TypeEnum.ComplexType && !isNullableValueType)
@@ -80,7 +86,25 @@ namespace CodeCaster.SerializeThis.Serialization.Roslyn
             };
         }
 
-        private ClassInfo GetCollectionType(ITypeSymbol typeSymbol)
+        /// <summary>
+        /// For a T[] array, return the <see cref="ClassInfo"/> of T.
+        /// </summary>
+        private ClassInfo GetArrayTypeParameter(ITypeSymbol typeSymbol)
+        {
+            if (!(typeSymbol is IArrayTypeSymbol arrayType))
+            {
+                return null;
+            }
+
+            //arrayType.Sizes
+
+            return GetMemberInfoRecursive("ArrayElementType", arrayType.ElementType);
+        }
+
+        /// <summary>
+        /// For an ICollection{T}-implementing type, return the <see cref="ClassInfo"/> of T.
+        /// </summary>
+        private ClassInfo GetCollectionTypeParameter(ITypeSymbol typeSymbol)
         {
             INamedTypeSymbol iCollectionInterface = typeSymbol.GetICollectionTInterface();
 
@@ -94,6 +118,9 @@ namespace CodeCaster.SerializeThis.Serialization.Roslyn
             return null;
         }
 
+        /// <summary>
+        /// For an IDictionary{TKey, TValue}, return the <see cref="ClassInfo"/> of TKey and TValue.
+        /// </summary>
         private Tuple<ClassInfo, ClassInfo> GetDictionaryKeyType(ITypeSymbol typeSymbol)
         {
             INamedTypeSymbol iCollectionInterface = typeSymbol.GetIDictionaryTKeyTValueInterface();
@@ -136,7 +163,7 @@ namespace CodeCaster.SerializeThis.Serialization.Roslyn
             return result;
         }
 
-        private TypeEnum GetSymbolType(ITypeSymbol typeSymbol, out bool isCollection, out bool isDictionary, out bool isNullableValueType, out bool isEnum)
+        private TypeEnum GetSymbolType(ITypeSymbol typeSymbol, out CollectionType? collectionType, out bool isNullableValueType, out bool isEnum)
         {
             var namedTypeSymbol = typeSymbol as INamedTypeSymbol;
 
@@ -144,16 +171,33 @@ namespace CodeCaster.SerializeThis.Serialization.Roslyn
             isNullableValueType = typeSymbol.IsNullableType();
 
             // Don't count strings as collections, even though they implement IEnumerable<string>.
-            isCollection = typeSymbol.SpecialType != SpecialType.System_String && typeSymbol.IsCollectionType();
+            var isArray = typeSymbol.BaseType?.GetTypeName()== "System.Array";
+            var isCollection = typeSymbol.SpecialType != SpecialType.System_String && typeSymbol.IsCollectionType();
+            var isDictionary = isCollection && typeSymbol.IsDictionaryType();
 
-            isDictionary = isCollection && typeSymbol.IsDictionaryType();
+            // TODO: we want to support most collection types, as quick starting point ICollection<T> was chosen to detect them.
+            // TODO: the proper way would be to look for an Add() method or indexer property, but what would be the appropriate type in the first case?.
+            // TODO: also, arrays can be jagged or multidimensional... what code to generate?
+            collectionType = null;
+            if (isDictionary)
+            {
+                collectionType = CollectionType.Dictionary;
+            }
+            else if (isArray)
+            {
+                collectionType = CollectionType.Array;
+            }
+            else if (isCollection)
+            {
+                collectionType = CollectionType.Collection;
+            }
 
             if (isNullableValueType)
             {
                 var nullableType = namedTypeSymbol?.TypeArguments.FirstOrDefault();
                 if (nullableType != null)
                 {
-                    var nullableTypeEnum = GetSymbolType(nullableType, out _, out _, out _, out _);
+                    var nullableTypeEnum = GetSymbolType(nullableType, out _, out _, out _);
                     return nullableTypeEnum;
                 }
             }

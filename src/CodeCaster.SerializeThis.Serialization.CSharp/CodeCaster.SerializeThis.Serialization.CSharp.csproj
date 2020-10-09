@@ -53,6 +53,7 @@
     </Compile>
     <Compile Include="CSharpObjectInitializer.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="StatementEndOptions.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\CodeCaster.SerializeThis.Serialization\CodeCaster.SerializeThis.Serialization.csproj">

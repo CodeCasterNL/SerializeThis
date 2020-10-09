@@ -47,12 +47,12 @@ namespace CodeCaster.SerializeThis.Serialization.Json
 
         private JToken SerializeChild(ClassInfo child)
         {
-            if (child.Class.IsDictionary)
+            if (child.Class.CollectionType == CollectionType.Dictionary)
             {
                 return GetDictionary(child);
             }
 
-            if (child.Class.IsCollection)
+            if (child.Class.CollectionType == CollectionType.Collection || child.Class.CollectionType == CollectionType.Array)
             {
                 return GetCollection(child);
             }

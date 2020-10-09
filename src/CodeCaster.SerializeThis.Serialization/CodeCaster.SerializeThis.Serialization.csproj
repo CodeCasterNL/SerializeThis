@@ -46,6 +46,7 @@
     </Compile>
     <Compile Include="Class.cs" />
     <Compile Include="ClassInfo.cs" />
+    <Compile Include="CollectionType.cs" />
     <Compile Include="IClassInfoBuilder.cs" />
     <Compile Include="IClassInfoSerializer.cs" />
     <Compile Include="ISerializerFactory.cs" />

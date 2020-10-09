@@ -10,10 +10,8 @@ namespace CodeCaster.SerializeThis.Serialization
 
         public bool IsNullableValueType { get; set; }
 
-        public bool IsCollection { get; set; }
-
-        public bool IsDictionary { get; set; }
-
+        public CollectionType? CollectionType { get; set; }
+        
         public bool IsEnum { get; set; }
 
         public IList<ClassInfo> Children { get; set; } = new List<ClassInfo>();

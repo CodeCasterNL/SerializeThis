@@ -84,6 +84,46 @@ namespace JsonTestClasses
         public Dictionary<int, string> IntStringDict { get; set; }
     }
 
+    internal class Test
+    {
+        private void Foo()
+        {
+            var foo = new JsonTestClasses.FooSimpleCollections
+            {
+                StringArray = new System.String[]
+                {
+                    "ArrayElementType-FooString1",
+                    "ArrayElementType-FooString2",
+                    "ArrayElementType-FooString3"
+                },
+                FooBaseList = new System.Collections.Generic.List<JsonTestClasses.FooBase>
+                {
+                    new JsonTestClasses.FooBase
+                    {
+                        Name = "Name-FooString4",
+                        BoolProperty = false
+                    },
+                    new JsonTestClasses.FooBase
+                    {
+                        Name = "Name-FooString6",
+                        BoolProperty = false
+                    },
+                    new JsonTestClasses.FooBase
+                    {
+                        Name = "Name-FooString8",
+                        BoolProperty = false
+                    }
+                },
+                IntStringDict = new System.Collections.Generic.Dictionary<System.Int32, System.String>
+                {
+                    { 10, "ValueType-FooString11" },
+                    { 12, "ValueType-FooString13" },
+                    { 14, "ValueType-FooString15" }
+                }
+            };
+        }
+    }
+
     /// <summary>
     /// Collections.
     /// </summary>
