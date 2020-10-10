@@ -29,7 +29,7 @@ namespace CodeCaster.SerializeThis.Serialization.Roslyn
                 };
             }
 
-            var type = GetSymbolType(typeSymbol, out var collectionType, out var isNullableValueType, out var isEnum);
+            var type = GetSymbolType(typeSymbol, out var collectionType, out var isNullableValueType, out var isEnum, out var genericParameters);
 
             c = new Class
             {
@@ -73,6 +73,11 @@ namespace CodeCaster.SerializeThis.Serialization.Roslyn
             }
             else if (c.Type == TypeEnum.ComplexType && !isNullableValueType)
             {
+                foreach (var gp in genericParameters)
+                {
+                    c.GenericParameters.Add(gp);
+                }
+                
                 foreach (var child in GetChildProperties(typeSymbol))
                 {
                     c.Children.Add(child);
@@ -123,10 +128,10 @@ namespace CodeCaster.SerializeThis.Serialization.Roslyn
         /// </summary>
         private Tuple<ClassInfo, ClassInfo> GetDictionaryKeyType(ITypeSymbol typeSymbol)
         {
-            INamedTypeSymbol iCollectionInterface = typeSymbol.GetIDictionaryTKeyTValueInterface();
+            INamedTypeSymbol iDictionarynInterface = typeSymbol.GetIDictionaryTKeyTValueInterface();
 
-            var keyType = iCollectionInterface.TypeArguments.FirstOrDefault();
-            var valueType = iCollectionInterface.TypeArguments.Skip(1).FirstOrDefault();
+            var keyType = iDictionarynInterface.TypeArguments.FirstOrDefault();
+            var valueType = iDictionarynInterface.TypeArguments.Skip(1).FirstOrDefault();
 
             if (keyType != null && valueType != null)
             {
@@ -163,10 +168,10 @@ namespace CodeCaster.SerializeThis.Serialization.Roslyn
             return result;
         }
 
-        private TypeEnum GetSymbolType(ITypeSymbol typeSymbol, out CollectionType? collectionType, out bool isNullableValueType, out bool isEnum)
+        private TypeEnum GetSymbolType(ITypeSymbol typeSymbol, out CollectionType? collectionType, out bool isNullableValueType, out bool isEnum, out List<ClassInfo> typeParameters)
         {
             var namedTypeSymbol = typeSymbol as INamedTypeSymbol;
-
+            
             isEnum = namedTypeSymbol.IsEnum();
             isNullableValueType = typeSymbol.IsNullableType();
 
@@ -174,7 +179,7 @@ namespace CodeCaster.SerializeThis.Serialization.Roslyn
             var isArray = typeSymbol.BaseType?.GetTypeName()== "System.Array";
             var isCollection = typeSymbol.SpecialType != SpecialType.System_String && typeSymbol.IsCollectionType();
             var isDictionary = isCollection && typeSymbol.IsDictionaryType();
-
+            
             // TODO: we want to support most collection types, as quick starting point ICollection<T> was chosen to detect them.
             // TODO: the proper way would be to look for an Add() method or indexer property, but what would be the appropriate type in the first case?.
             // TODO: also, arrays can be jagged or multidimensional... what code to generate?
@@ -192,12 +197,21 @@ namespace CodeCaster.SerializeThis.Serialization.Roslyn
                 collectionType = CollectionType.Collection;
             }
 
+            typeParameters = new List<ClassInfo>();
+            if (namedTypeSymbol?.TypeArguments.Any() == true)
+            {
+                foreach (var typeArg in namedTypeSymbol.TypeArguments)
+                {
+                    typeParameters.Add(GetMemberInfoRecursive(typeArg.Name, typeArg));
+                }
+            }
+
             if (isNullableValueType)
             {
                 var nullableType = namedTypeSymbol?.TypeArguments.FirstOrDefault();
                 if (nullableType != null)
                 {
-                    var nullableTypeEnum = GetSymbolType(nullableType, out _, out _, out _);
+                    var nullableTypeEnum = GetSymbolType(nullableType, out _, out _, out _, out _);
                     return nullableTypeEnum;
                 }
             }

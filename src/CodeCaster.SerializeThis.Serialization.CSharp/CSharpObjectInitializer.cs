@@ -14,16 +14,10 @@ namespace CodeCaster.SerializeThis.Serialization.CSharp
         {
             _counter = 0;
             
-            if (type.Class.Type != TypeEnum.ComplexType)
-            {
-                // Sure, maybe later we'll support collection or scalar types.
-                throw new NotSupportedException("root type must be complex type");
-            }
-
             var builder = new StringBuilder();
             builder.Append("var foo = ");
 
-            EmitComplexType(builder, type, 0, StatementEndOptions.Semicolon | StatementEndOptions.Newline);
+            EmitInitializer(builder, type, 0, StatementEndOptions.Semicolon | StatementEndOptions.Newline);
             
             return builder.ToString();
         }
@@ -57,7 +51,9 @@ namespace CodeCaster.SerializeThis.Serialization.CSharp
         private void EmitComplexType(StringBuilder builder, ClassInfo type, int indent, StatementEndOptions statementEnd)
         {
             var spaces = GetSpaces(indent);
-            builder.AppendFormat("new {0}{1}{2}{{{1}", type.Class.TypeName, Environment.NewLine, spaces);
+            var typeName = GetGenericTypeName(type.Class);
+            
+            builder.AppendFormat("new {0}{1}{2}{{{1}", typeName, Environment.NewLine, spaces);
 
             for (var index = 0; index < type.Class.Children.Count; index++)
             {
@@ -73,7 +69,18 @@ namespace CodeCaster.SerializeThis.Serialization.CSharp
 
             EndStatement(builder, statementEnd);
         }
-        
+
+        private string GetGenericTypeName(Class type)
+        {
+            if (!type.GenericParameters.Any())
+            {
+                return type.TypeName;
+            }
+            
+            // TODO: cache?
+            return type.TypeName + "<" + string.Join(", ", type.GenericParameters.Select(p => GetGenericTypeName(p.Class))) + ">";
+        }
+
         private void AppendChild(StringBuilder builder, ClassInfo type, ClassInfo child, int indent, StatementEndOptions statementEnd)
         {
             var spaces = GetSpaces(indent);
@@ -131,9 +138,9 @@ namespace CodeCaster.SerializeThis.Serialization.CSharp
             void EmitDictionaryEntry(int elementIndent, StatementEndOptions elementStatementEnd = StatementEndOptions.Comma | StatementEndOptions.Newline)
             {
                 builder.Append(GetSpaces(elementIndent)).Append("{ ");
-                EmitInitializer(builder, keyType, 0, StatementEndOptions.None);
+                EmitInitializer(builder, keyType, indent + 1, StatementEndOptions.None);
                 builder.Append(", ");
-                EmitInitializer(builder, valueType, 0, StatementEndOptions.None);
+                EmitInitializer(builder, valueType, indent + 1, StatementEndOptions.None);
                 builder.Append(" }");
                 EndStatement(builder, elementStatementEnd);
             }
