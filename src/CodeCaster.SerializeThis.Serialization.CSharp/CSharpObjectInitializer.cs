@@ -39,6 +39,13 @@ namespace CodeCaster.SerializeThis.Serialization.CSharp
 
             if (!type.Class.IsEnum && type.Class.IsComplexType)
             {
+                // TODO: prevent infinite recursion here. We need to save "membername-typeInfo" tuples, maybe?
+                // TODO: members can occur multiple times within the same or multiple types with different or equal names.
+                // TODO: in other words, The property Foo.Bar.Foo doesn't have to point back to the first Foo. 
+                // TODO: or Foo.Bar isn't the same as Foo.Baz.Bar. Define a max recursion depth, and also distance, i.e.
+                // TODO: how often to repeat the pattern A.B.C.D[.A.B.C.D[...]] if D has a property of type A?)
+                // TODO: maybe print `// A.B.C.D.A = max recursion depth reached` or something like that.
+
                 EmitComplexType(builder, type, indent, statementEnd);
                 return;
             }

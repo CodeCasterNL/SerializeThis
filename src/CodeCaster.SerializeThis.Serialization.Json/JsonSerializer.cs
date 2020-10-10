@@ -30,6 +30,7 @@ namespace CodeCaster.SerializeThis.Serialization.Json
         {
             if (_typesSeen.TryGetValue(toSerialize.Class.TypeName, out var existing))
             {
+                // TODO: this is broken if we have a property of our own type. This just happens to prevent infinite recursion, but also doesn't properly show what the object can contain.
                 return existing;
             }
 

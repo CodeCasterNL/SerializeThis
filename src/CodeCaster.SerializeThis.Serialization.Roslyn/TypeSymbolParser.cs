@@ -7,20 +7,21 @@ namespace CodeCaster.SerializeThis.Serialization.Roslyn
 {
     public class TypeSymbolParser
     {
+        // TODO: this makes it pretty much not thread safe, might we ever need that, store the class/info stuff in a more stateful object?
+        private readonly Dictionary<string, Class> _typesSeen = new Dictionary<string, Class>();
+
         public ClassInfo GetMemberInfoRecursive(ITypeSymbol typeSymbol, SemanticModel semanticModel)
         {
+            _typesSeen.Clear();
             var memberInfo = GetMemberInfoRecursive(typeSymbol.GetTypeName(), typeSymbol);
             return memberInfo;
         }
 
         private ClassInfo GetMemberInfoRecursive(string name, ITypeSymbol typeSymbol)
         {
-            var typesSeen = new Dictionary<string, Class>();
-
             // TODO: this will break. Include assembly name with type name?
-            // TODO: this is already broken. We need to save "membername-typeInfo" tuples. Members can occur multiple times within the same or multiple types with different or equal names.
             string typeName = typeSymbol.GetTypeName();
-            if (typesSeen.TryGetValue(typeName, out var c))
+            if (_typesSeen.TryGetValue(typeName, out var c))
             {
                 return new ClassInfo
                 {
@@ -29,20 +30,19 @@ namespace CodeCaster.SerializeThis.Serialization.Roslyn
                 };
             }
 
-            var type = GetSymbolType(typeSymbol, out var collectionType, out var isNullableValueType, out var isEnum, out var genericParameters);
-
+            // Save it _before_ diving into members and type parameters. 
             c = new Class
             {
-                Type = type,
-                CollectionType= collectionType,
-                IsNullableValueType = isNullableValueType,
-                IsEnum = isEnum,
-                TypeName = typeName,
+                TypeName = typeName
             };
+            _typesSeen[typeName] = c;
 
-            // Save it _before_ diving into children. 
-            // TODO: will that work for a property of A.B.A.B? We need to pass typesSeen around recursively.
-            typesSeen[typeName] = c;
+            var type = GetSymbolType(typeSymbol, out var collectionType, out var isNullableValueType, out var isEnum, out var genericParameters);
+
+            c.Type = type;
+            c.CollectionType = collectionType;
+            c.IsNullableValueType = isNullableValueType;
+            c.IsEnum = isEnum;
 
             // TODO: handle _all_ generics. There can be a Foo<T1, T2> that (indirectly) inherits List<T2> and adds additional properties...
             // TODO: though for example JSON can't handle that, and do the C# object and collection initializer combine?
@@ -77,7 +77,7 @@ namespace CodeCaster.SerializeThis.Serialization.Roslyn
                 {
                     c.GenericParameters.Add(gp);
                 }
-                
+
                 foreach (var child in GetChildProperties(typeSymbol))
                 {
                     c.Children.Add(child);
@@ -171,15 +171,15 @@ namespace CodeCaster.SerializeThis.Serialization.Roslyn
         private TypeEnum GetSymbolType(ITypeSymbol typeSymbol, out CollectionType? collectionType, out bool isNullableValueType, out bool isEnum, out List<ClassInfo> typeParameters)
         {
             var namedTypeSymbol = typeSymbol as INamedTypeSymbol;
-            
+
             isEnum = namedTypeSymbol.IsEnum();
             isNullableValueType = typeSymbol.IsNullableType();
 
             // Don't count strings as collections, even though they implement IEnumerable<string>.
-            var isArray = typeSymbol.BaseType?.GetTypeName()== "System.Array";
+            var isArray = typeSymbol.BaseType?.GetTypeName() == "System.Array";
             var isCollection = typeSymbol.SpecialType != SpecialType.System_String && typeSymbol.IsCollectionType();
             var isDictionary = isCollection && typeSymbol.IsDictionaryType();
-            
+
             // TODO: we want to support most collection types, as quick starting point ICollection<T> was chosen to detect them.
             // TODO: the proper way would be to look for an Add() method or indexer property, but what would be the appropriate type in the first case?.
             // TODO: also, arrays can be jagged or multidimensional... what code to generate?

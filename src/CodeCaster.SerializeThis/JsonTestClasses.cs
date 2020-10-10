@@ -8,7 +8,8 @@ namespace JsonTestClasses
     /// </summary>
     public class FooBase
     {
-        public string Name { get; set; }
+        public string Firstname { get; set; }
+        public string Lastname { get; set; }
         public bool BoolProperty { get; set; }
     }
 
