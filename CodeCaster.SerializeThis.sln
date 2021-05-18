@@ -19,6 +19,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "images", "images", "{C88A1E
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "1. Solution Items", "1. Solution Items", "{BECEAAB9-CC33-43B4-A702-299AE93E3CA8}"
 	ProjectSection(SolutionItems) = preProject
+		JsonTestClasses.cs = JsonTestClasses.cs
 		src\SolutionInfo.cs = src\SolutionInfo.cs
 	EndProjectSection
 EndProject
@@ -48,11 +49,11 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CodeCaster.SerializeThis.Se
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CodeCaster.SerializeThis.Tests.Shared", "test\CodeCaster.SerializeThis.Tests.Shared\CodeCaster.SerializeThis.Tests.Shared.csproj", "{5DBDC7D3-1E6E-42EB-A85D-0E48F1A92D11}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CodeCaster.SerializeThis.Reflection", "src\CodeCaster.SerializeThis.Reflection\CodeCaster.SerializeThis.Reflection.csproj", "{878BCBF8-E17E-4E35-B285-18D73AE4FD58}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CodeCaster.SerializeThis.Reflection", "src\CodeCaster.SerializeThis.Reflection\CodeCaster.SerializeThis.Reflection.csproj", "{878BCBF8-E17E-4E35-B285-18D73AE4FD58}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CodeCaster.SerializeThis.Nuget.Tests", "test\CodeCaster.SerializeThis.Nuget.Tests\CodeCaster.SerializeThis.Nuget.Tests.csproj", "{05A2C78C-AAF8-49CB-9E83-DA908C65835F}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CodeCaster.SerializeThis.Nuget.Tests", "test\CodeCaster.SerializeThis.Nuget.Tests\CodeCaster.SerializeThis.Nuget.Tests.csproj", "{05A2C78C-AAF8-49CB-9E83-DA908C65835F}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CodeCaster.SerializeThis.Relection.Tests", "test\CodeCaster.SerializeThis.Relection.Tests\CodeCaster.SerializeThis.Relection.Tests.csproj", "{0747C62F-6907-4028-BEA7-0C62D9995923}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CodeCaster.SerializeThis.Relection.Tests", "test\CodeCaster.SerializeThis.Relection.Tests\CodeCaster.SerializeThis.Relection.Tests.csproj", "{0747C62F-6907-4028-BEA7-0C62D9995923}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

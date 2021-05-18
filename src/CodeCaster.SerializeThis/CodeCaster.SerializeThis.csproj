@@ -69,7 +69,6 @@
     <Compile Include="Forms\SerializedModelForm.Designer.cs">
       <DependentUpon>SerializedModelForm.cs</DependentUpon>
     </Compile>
-    <Compile Include="JsonTestClasses.cs" />
     <Compile Include="OutputHandlers\IOutputHandler.cs" />
     <Compile Include="OutputHandlers\MessageBoxOutputHandler.cs" />
     <Compile Include="OutputHandlers\ModelFormOutputHandler.cs" />
