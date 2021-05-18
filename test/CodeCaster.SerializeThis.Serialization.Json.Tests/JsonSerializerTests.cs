@@ -3,7 +3,8 @@ using NUnit.Framework;
 
 namespace CodeCaster.SerializeThis.Serialization.Json.Tests
 {
-    [TestFixture(LifeCycle = LifeCycle.InstancePerTestCase)]
+    // JsonSerializer is not thread safe
+    [FixtureLifeCycle(LifeCycle.InstancePerTestCase)]
     public class JsonSerializerTests
     {
         private readonly IClassInfoSerializer _classUnderTest = new JsonSerializer();
