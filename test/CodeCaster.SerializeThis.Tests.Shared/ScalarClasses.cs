@@ -19,16 +19,13 @@ namespace CodeCaster.SerializeThis.Tests.Shared
                         new ClassInfo
                         {
                             Name = "Bar",
-                            Class = new Class
-                            {
-                                TypeName = "System.String",
-                                Type = TypeEnum.String
-                            }
+                            Class = StringClass()
                         }
                     }
                 }
             };
         }
+
         public static ClassInfo ClassWithBarStringArrayProperty()
         {
             return new ClassInfo
@@ -45,13 +42,28 @@ namespace CodeCaster.SerializeThis.Tests.Shared
                             Name = "Bar",
                             Class = new Class
                             {
+                                Type = TypeEnum.ComplexType,
+                                CollectionType = CollectionType.Array,
+                                GenericParameters = new List<ClassInfo>
+                                {
+                                    new ClassInfo
+                                    {
+                                        Name = "ArrayElementType",
+                                        Class = StringClass()
+                                    }
+                                },
                                 TypeName = "System.String[]",
-                                Type = TypeEnum.ComplexType
                             }
                         }
                     }
                 }
             };
         }
+
+        public static Class StringClass() => new Class
+        {
+            TypeName = "System.String",
+            Type = TypeEnum.String
+        };
     }
 }

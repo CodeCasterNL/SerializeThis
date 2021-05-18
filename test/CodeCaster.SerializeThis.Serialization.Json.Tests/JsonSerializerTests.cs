@@ -3,6 +3,7 @@ using NUnit.Framework;
 
 namespace CodeCaster.SerializeThis.Serialization.Json.Tests
 {
+    [TestFixture(LifeCycle = LifeCycle.InstancePerTestCase)]
     public class JsonSerializerTests
     {
         private readonly IClassInfoSerializer _classUnderTest = new JsonSerializer();
@@ -40,9 +41,9 @@ namespace CodeCaster.SerializeThis.Serialization.Json.Tests
             // Assert
             var expectedJson = @"{
   ""Bar"": [
-    ""Bar-FooString1"",
-    ""Bar-FooString2"",
-    ""Bar-FooString3""
+    ""ArrayElementType-FooString1"",
+    ""ArrayElementType-FooString2"",
+    ""ArrayElementType-FooString3""
   ]
 }";
             Assert.AreEqual(expectedJson, result);

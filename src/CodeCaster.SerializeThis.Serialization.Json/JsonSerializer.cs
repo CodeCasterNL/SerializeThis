@@ -5,6 +5,9 @@ using Newtonsoft.Json.Linq;
 
 namespace CodeCaster.SerializeThis.Serialization.Json
 {
+    /// <summary>
+    /// This class is _not_ thread safe.
+    /// </summary>
     public class JsonSerializer : IClassInfoSerializer
     {
         private int _counter;
@@ -89,7 +92,7 @@ namespace CodeCaster.SerializeThis.Serialization.Json
 
         private JToken GetCollection(ClassInfo child)
         {
-            // We store the collection's type in its first child.
+            // We store the collection's type in its first generic parameter.
             var collectionType = child.Class.GenericParameters.FirstOrDefault();
             if (collectionType == null)
             {
