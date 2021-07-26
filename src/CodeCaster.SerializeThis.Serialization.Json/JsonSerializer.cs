@@ -124,7 +124,7 @@ namespace CodeCaster.SerializeThis.Serialization.Json
                 case TypeEnum.Boolean:
                     return _counter % 2 == 0;
                 case TypeEnum.String:
-                    return $"{toSerialize.Name}-FooString{_counter}";
+                    return $"{toSerialize.Name}FooString{_counter}";
                 case TypeEnum.DateTime:
                     return DateTime.Now.ToUniversalTime().AddSeconds(_counter);
                 case TypeEnum.Int16:
