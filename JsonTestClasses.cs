@@ -99,6 +99,8 @@ namespace JsonTestClasses
     /// </summary>
     public class FooCollections
     {
+        public int[,] MultiDimInt32s { get; set; }
+        public int[][] JaggedInt32s { get; set; }
         public ICollection<FooInherited> ChildrenICollection { get; set; }
         public IMyCollection<FooInherited> InterfaceInheritance { get; set; }
         public IMyCollection2<FooInherited> InterfaceDeeperInheritance { get; set; }

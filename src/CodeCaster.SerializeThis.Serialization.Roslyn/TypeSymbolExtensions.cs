@@ -31,12 +31,12 @@ namespace CodeCaster.SerializeThis.Serialization.Roslyn
             return typeSymbol.TypeKind == TypeKind.Struct && named.ConstructedFrom.SpecialType == SpecialType.System_Nullable_T;
         }
 
-        public static string GetTypeName(this ITypeSymbol typeSymbol)
+        public static string GetTypeName(this ITypeSymbol typeSymbol, bool withGenericParameterNames = false)
         {
             var symbolDisplayFormat = new SymbolDisplayFormat(
                     globalNamespaceStyle: SymbolDisplayGlobalNamespaceStyle.Omitted,
                     typeQualificationStyle: SymbolDisplayTypeQualificationStyle.NameAndContainingTypesAndNamespaces,
-                    genericsOptions: SymbolDisplayGenericsOptions.None, //SymbolDisplayGenericsOptions.IncludeTypeParameters
+                    genericsOptions: withGenericParameterNames ? SymbolDisplayGenericsOptions.IncludeTypeParameters : SymbolDisplayGenericsOptions.None,
                     miscellaneousOptions: SymbolDisplayMiscellaneousOptions.EscapeKeywordIdentifiers
             );
 
@@ -64,18 +64,24 @@ namespace CodeCaster.SerializeThis.Serialization.Roslyn
             return iCollectionInterface;
         }
 
-        private static bool IsCollectionInterfaceType(this ITypeSymbol arg)
+        public static bool IsArray(this ITypeSymbol typeSymbol)
         {
             // TODO: meh.
-            return arg.GetTypeName().StartsWith("System.Collections.Generic.ICollection")
-                   && arg is INamedTypeSymbol n && n.TypeArguments.Length == 1;
+            return typeSymbol.BaseType?.GetTypeName() == "System.Array";
         }
 
-        private static bool IsDictionaryInterfaceType(this ITypeSymbol arg)
+        private static bool IsCollectionInterfaceType(this ITypeSymbol typeSymbol)
         {
             // TODO: meh.
-            return arg.GetTypeName().StartsWith("System.Collections.Generic.IDictionary")
-                   && arg is INamedTypeSymbol n && n.TypeArguments.Length == 2;
+            return typeSymbol.GetTypeName().StartsWith("System.Collections.Generic.ICollection")
+                   && typeSymbol is INamedTypeSymbol n && n.TypeArguments.Length == 1;
+        }
+
+        private static bool IsDictionaryInterfaceType(this ITypeSymbol typeSymbol)
+        {
+            // TODO: meh.
+            return typeSymbol.GetTypeName().StartsWith("System.Collections.Generic.IDictionary")
+                   && typeSymbol is INamedTypeSymbol n && n.TypeArguments.Length == 2;
         }
     }
 }
