@@ -1,21 +1,59 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 15
-VisualStudioVersion = 15.0.27130.2027
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.30517.126
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CodeCaster.SerializeThis", "CodeCaster.SerializeThis\CodeCaster.SerializeThis.csproj", "{47AB8FC5-CE41-40AD-AC3A-F5ADD685B19B}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CodeCaster.SerializeThis.Serialization", "CodeCaster.SerializeThis.Serialization\CodeCaster.SerializeThis.Serialization.csproj", "{D855EF9F-21AB-4BE3-9771-A75D2E059271}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CodeCaster.SerializeThis.Serialization.Json", "CodeCaster.SerializeThis.Serialization.Json\CodeCaster.SerializeThis.Serialization.Json.csproj", "{94488295-EC5E-4AB9-80BC-9590B204936E}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CodeCaster.SerializeThis.Serialization.Roslyn", "CodeCaster.SerializeThis.Serialization.Roslyn\CodeCaster.SerializeThis.Serialization.Roslyn.csproj", "{202C9FEF-1C93-4BCE-AC1B-0C1B7F85AE79}"
-EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{BECEAAB9-CC33-43B4-A702-299AE93E3CA8}"
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "0. GitHub Items", "0. GitHub Items", "{D50D89EC-14C2-42D6-B99E-AA016B6C130E}"
 	ProjectSection(SolutionItems) = preProject
 		LICENSE = LICENSE
-		SolutionInfo.cs = SolutionInfo.cs
+		README.md = README.md
 	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "static", "static", "{22771CC3-7B30-4BFF-A09D-DDF08BE64C9A}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "images", "images", "{C88A1E52-D802-4F58-BC2D-9309CCB5BDDD}"
+	ProjectSection(SolutionItems) = preProject
+		static\images\Serialize_This-Menu.png = static\images\Serialize_This-Menu.png
+		static\images\Serialize_This-Serialized.png = static\images\Serialize_This-Serialized.png
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "1. Solution Items", "1. Solution Items", "{BECEAAB9-CC33-43B4-A702-299AE93E3CA8}"
+	ProjectSection(SolutionItems) = preProject
+		JsonTestClasses.cs = JsonTestClasses.cs
+		src\SolutionInfo.cs = src\SolutionInfo.cs
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "2. Shared", "2. Shared", "{165685AC-A522-483E-ABAB-7B43A7CCC632}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "3. Visual Studio Extension", "3. Visual Studio Extension", "{4EEC3285-E62E-4694-A6A7-FA2FC9B587E3}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "4. NuGet Package", "4. NuGet Package", "{DBE7290A-D19D-4735-9878-78D957E24A52}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CodeCaster.SerializeThis", "src\CodeCaster.SerializeThis\CodeCaster.SerializeThis.csproj", "{47AB8FC5-CE41-40AD-AC3A-F5ADD685B19B}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CodeCaster.SerializeThis.Serialization", "src\CodeCaster.SerializeThis.Serialization\CodeCaster.SerializeThis.Serialization.csproj", "{D855EF9F-21AB-4BE3-9771-A75D2E059271}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CodeCaster.SerializeThis.Serialization.Json", "src\CodeCaster.SerializeThis.Serialization.Json\CodeCaster.SerializeThis.Serialization.Json.csproj", "{94488295-EC5E-4AB9-80BC-9590B204936E}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CodeCaster.SerializeThis.Serialization.Roslyn", "src\CodeCaster.SerializeThis.Serialization.Roslyn\CodeCaster.SerializeThis.Serialization.Roslyn.csproj", "{202C9FEF-1C93-4BCE-AC1B-0C1B7F85AE79}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CodeCaster.SerializeThis.Serialization.CSharp", "src\CodeCaster.SerializeThis.Serialization.CSharp\CodeCaster.SerializeThis.Serialization.CSharp.csproj", "{2AA3E609-B787-4FB2-A271-3CF3C7ECDF4D}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CodeCaster.SerializeThis.NuGet", "src\CodeCaster.SerializeThis.NuGet\CodeCaster.SerializeThis.NuGet.csproj", "{77889D17-FF43-4C7C-9D27-F4D924E357A1}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "5. Tests", "5. Tests", "{D5001EFA-9A47-4F6A-8ACA-76B6B84D2F83}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CodeCaster.SerializeThis.Serialization.CSharp.Tests", "test\CodeCaster.SerializeThis.Serialization.CSharp.Tests\CodeCaster.SerializeThis.Serialization.CSharp.Tests.csproj", "{71E53037-8C45-4B10-B086-355D5C279154}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CodeCaster.SerializeThis.Serialization.Json.Tests", "test\CodeCaster.SerializeThis.Serialization.Json.Tests\CodeCaster.SerializeThis.Serialization.Json.Tests.csproj", "{BAA085E5-B4DB-4FA9-87B9-383D707A0CB6}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CodeCaster.SerializeThis.Tests.Shared", "test\CodeCaster.SerializeThis.Tests.Shared\CodeCaster.SerializeThis.Tests.Shared.csproj", "{5DBDC7D3-1E6E-42EB-A85D-0E48F1A92D11}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CodeCaster.SerializeThis.Reflection", "src\CodeCaster.SerializeThis.Reflection\CodeCaster.SerializeThis.Reflection.csproj", "{878BCBF8-E17E-4E35-B285-18D73AE4FD58}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CodeCaster.SerializeThis.Nuget.Tests", "test\CodeCaster.SerializeThis.Nuget.Tests\CodeCaster.SerializeThis.Nuget.Tests.csproj", "{05A2C78C-AAF8-49CB-9E83-DA908C65835F}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CodeCaster.SerializeThis.Relection.Tests", "test\CodeCaster.SerializeThis.Relection.Tests\CodeCaster.SerializeThis.Relection.Tests.csproj", "{0747C62F-6907-4028-BEA7-0C62D9995923}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -39,9 +77,57 @@ Global
 		{202C9FEF-1C93-4BCE-AC1B-0C1B7F85AE79}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{202C9FEF-1C93-4BCE-AC1B-0C1B7F85AE79}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{202C9FEF-1C93-4BCE-AC1B-0C1B7F85AE79}.Release|Any CPU.Build.0 = Release|Any CPU
+		{2AA3E609-B787-4FB2-A271-3CF3C7ECDF4D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2AA3E609-B787-4FB2-A271-3CF3C7ECDF4D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2AA3E609-B787-4FB2-A271-3CF3C7ECDF4D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2AA3E609-B787-4FB2-A271-3CF3C7ECDF4D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{77889D17-FF43-4C7C-9D27-F4D924E357A1}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{77889D17-FF43-4C7C-9D27-F4D924E357A1}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{77889D17-FF43-4C7C-9D27-F4D924E357A1}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{77889D17-FF43-4C7C-9D27-F4D924E357A1}.Release|Any CPU.Build.0 = Release|Any CPU
+		{71E53037-8C45-4B10-B086-355D5C279154}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{71E53037-8C45-4B10-B086-355D5C279154}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{71E53037-8C45-4B10-B086-355D5C279154}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{71E53037-8C45-4B10-B086-355D5C279154}.Release|Any CPU.Build.0 = Release|Any CPU
+		{BAA085E5-B4DB-4FA9-87B9-383D707A0CB6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{BAA085E5-B4DB-4FA9-87B9-383D707A0CB6}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{BAA085E5-B4DB-4FA9-87B9-383D707A0CB6}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{BAA085E5-B4DB-4FA9-87B9-383D707A0CB6}.Release|Any CPU.Build.0 = Release|Any CPU
+		{5DBDC7D3-1E6E-42EB-A85D-0E48F1A92D11}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5DBDC7D3-1E6E-42EB-A85D-0E48F1A92D11}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5DBDC7D3-1E6E-42EB-A85D-0E48F1A92D11}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5DBDC7D3-1E6E-42EB-A85D-0E48F1A92D11}.Release|Any CPU.Build.0 = Release|Any CPU
+		{878BCBF8-E17E-4E35-B285-18D73AE4FD58}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{878BCBF8-E17E-4E35-B285-18D73AE4FD58}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{878BCBF8-E17E-4E35-B285-18D73AE4FD58}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{878BCBF8-E17E-4E35-B285-18D73AE4FD58}.Release|Any CPU.Build.0 = Release|Any CPU
+		{05A2C78C-AAF8-49CB-9E83-DA908C65835F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{05A2C78C-AAF8-49CB-9E83-DA908C65835F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{05A2C78C-AAF8-49CB-9E83-DA908C65835F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{05A2C78C-AAF8-49CB-9E83-DA908C65835F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{0747C62F-6907-4028-BEA7-0C62D9995923}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0747C62F-6907-4028-BEA7-0C62D9995923}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{0747C62F-6907-4028-BEA7-0C62D9995923}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{0747C62F-6907-4028-BEA7-0C62D9995923}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{22771CC3-7B30-4BFF-A09D-DDF08BE64C9A} = {D50D89EC-14C2-42D6-B99E-AA016B6C130E}
+		{C88A1E52-D802-4F58-BC2D-9309CCB5BDDD} = {22771CC3-7B30-4BFF-A09D-DDF08BE64C9A}
+		{47AB8FC5-CE41-40AD-AC3A-F5ADD685B19B} = {4EEC3285-E62E-4694-A6A7-FA2FC9B587E3}
+		{D855EF9F-21AB-4BE3-9771-A75D2E059271} = {165685AC-A522-483E-ABAB-7B43A7CCC632}
+		{94488295-EC5E-4AB9-80BC-9590B204936E} = {165685AC-A522-483E-ABAB-7B43A7CCC632}
+		{202C9FEF-1C93-4BCE-AC1B-0C1B7F85AE79} = {165685AC-A522-483E-ABAB-7B43A7CCC632}
+		{2AA3E609-B787-4FB2-A271-3CF3C7ECDF4D} = {165685AC-A522-483E-ABAB-7B43A7CCC632}
+		{77889D17-FF43-4C7C-9D27-F4D924E357A1} = {DBE7290A-D19D-4735-9878-78D957E24A52}
+		{71E53037-8C45-4B10-B086-355D5C279154} = {D5001EFA-9A47-4F6A-8ACA-76B6B84D2F83}
+		{BAA085E5-B4DB-4FA9-87B9-383D707A0CB6} = {D5001EFA-9A47-4F6A-8ACA-76B6B84D2F83}
+		{5DBDC7D3-1E6E-42EB-A85D-0E48F1A92D11} = {D5001EFA-9A47-4F6A-8ACA-76B6B84D2F83}
+		{878BCBF8-E17E-4E35-B285-18D73AE4FD58} = {165685AC-A522-483E-ABAB-7B43A7CCC632}
+		{05A2C78C-AAF8-49CB-9E83-DA908C65835F} = {D5001EFA-9A47-4F6A-8ACA-76B6B84D2F83}
+		{0747C62F-6907-4028-BEA7-0C62D9995923} = {D5001EFA-9A47-4F6A-8ACA-76B6B84D2F83}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {18D09F9F-363A-4817-A52C-C5AA696B920B}
