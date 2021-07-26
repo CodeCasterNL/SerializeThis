@@ -75,7 +75,7 @@ namespace CodeCaster.SerializeThis.Extension
                 menuCommandId = new CommandID(CommandSet, XmlCommandId);
                 menuItem = new MenuCommand(MenuItemCallback, menuCommandId);
                 commandService.AddCommand(menuItem);
-                
+
                 menuCommandId = new CommandID(CommandSet, CSharpCommandId);
                 menuItem = new MenuCommand(MenuItemCallback, menuCommandId);
                 commandService.AddCommand(menuItem);
@@ -141,16 +141,27 @@ namespace CodeCaster.SerializeThis.Extension
 
             var selectedSymbol = await GetSymbolUnderCursorAsync(document, semanticModel, position);
 
-            if (!(selectedSymbol is ITypeSymbol typeSymbol))
+            ITypeSymbol symbolToSerialize;
+
+            switch (selectedSymbol)
             {
-                ShowMessageBox(ServiceProvider, "Invoke this menu on a type name.");
-                return;
+                // 'Foo' in `var f = new Foo { ... }`.
+                case IMethodSymbol methodSymbol when methodSymbol.MethodKind == MethodKind.Constructor:
+                    symbolToSerialize = methodSymbol.ReceiverType;
+                    break;
+                // 'Foo' in `public class Foo { ... }`, `public Foo F { get; set; }`.
+                case ITypeSymbol typeSymbol:
+                    symbolToSerialize = typeSymbol;
+                    break;
+                default:
+                    ShowMessageBox(ServiceProvider, "Invoke this menu on a type name.");
+                    return;
             }
 
             // This does the actual magic.
-            var classInfo = new TypeSymbolParser().GetMemberInfoRecursive(typeSymbol, semanticModel);
-
+            var classInfo = new TypeSymbolParser().GetMemberInfoRecursive(symbolToSerialize, semanticModel);
             ShowOutput(classInfo, commandName);
+
         }
 
         private void ShowOutput(ClassInfo classInfo, string menuItemName)

@@ -89,7 +89,8 @@ namespace JsonTestClasses
     {
         private void Foo()
         {
-            
+            var f = new FooInherited();
+            var fd = new FooDictionaries();
         }
     }
 
@@ -115,7 +116,7 @@ namespace JsonTestClasses
     {
         public Dictionary<int, string> IntStringDict { get; set; }
         public IDictionary<string, FooBase> StringFooBaseInterface { get; set; }
-        public IMyDictionary<int, FooComplexType> IntFooComplexDerivedInterface { get; set; }
+        public IMyDictionary<int, Dictionary<int, FooComplexType>> IntFooComplexDerivedInterface { get; set; }
     }
 
     public interface IMyDictionary<TKey, TValue> : IDictionary<TKey, TValue>
