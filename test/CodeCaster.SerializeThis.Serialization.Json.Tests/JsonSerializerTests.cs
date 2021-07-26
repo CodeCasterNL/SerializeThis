@@ -25,7 +25,7 @@ namespace CodeCaster.SerializeThis.Serialization.Json.Tests
 
             // Assert
             var expectedJson = @"{
-  ""Bar"": ""Bar-FooString1""
+  ""Bar"": ""BarFooString1""
 }";
             Assert.AreEqual(expectedJson, result);
         }
@@ -42,9 +42,9 @@ namespace CodeCaster.SerializeThis.Serialization.Json.Tests
             // Assert
             var expectedJson = @"{
   ""Bar"": [
-    ""ArrayElementType-FooString1"",
-    ""ArrayElementType-FooString2"",
-    ""ArrayElementType-FooString3""
+    ""ArrayElementTypeFooString1"",
+    ""ArrayElementTypeFooString2"",
+    ""ArrayElementTypeFooString3""
   ]
 }";
             Assert.AreEqual(expectedJson, result);

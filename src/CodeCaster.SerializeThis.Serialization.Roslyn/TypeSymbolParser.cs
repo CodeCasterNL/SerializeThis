@@ -19,23 +19,26 @@ namespace CodeCaster.SerializeThis.Serialization.Roslyn
 
         private ClassInfo GetMemberInfoRecursive(string name, ITypeSymbol typeSymbol)
         {
-            // TODO: this will break. Include assembly name with type name?
-            string typeName = typeSymbol.GetTypeName();
-            if (_typesSeen.TryGetValue(typeName, out var c))
+            var returnValue = new ClassInfo
             {
-                return new ClassInfo
-                {
-                    Name = name,
-                    Class = c
-                };
+                Name = name
+            };
+
+            // TODO: this will break. Include assembly name with type name?
+            var fullTypeName = typeSymbol.GetTypeName(withGenericParameterNames: true);
+            if (_typesSeen.TryGetValue(fullTypeName, out var c))
+            {
+                returnValue.Class = c;
+                return returnValue;
             }
 
             // Save it _before_ diving into members and type parameters. 
+            var typeName = typeSymbol.GetTypeName();
             c = new Class
             {
                 TypeName = typeName
             };
-            _typesSeen[typeName] = c;
+            _typesSeen[fullTypeName] = c;
 
             var type = GetSymbolType(typeSymbol, out var collectionType, out var isNullableValueType, out var isEnum, out var genericParameters);
 
@@ -84,11 +87,8 @@ namespace CodeCaster.SerializeThis.Serialization.Roslyn
                 }
             }
 
-            return new ClassInfo
-            {
-                Name = name,
-                Class = c
-            };
+            returnValue.Class = c;
+            return returnValue;
         }
 
         /// <summary>
@@ -101,7 +101,11 @@ namespace CodeCaster.SerializeThis.Serialization.Roslyn
                 return null;
             }
 
-            //arrayType.Sizes
+            if (arrayType.Rank > 1)
+            {
+                // TODO: proper T[,] support.
+                return GetMemberInfoRecursive("ArrayElementType", arrayType.ElementType);
+            }
 
             return GetMemberInfoRecursive("ArrayElementType", arrayType.ElementType);
         }
@@ -175,10 +179,17 @@ namespace CodeCaster.SerializeThis.Serialization.Roslyn
             isEnum = namedTypeSymbol.IsEnum();
             isNullableValueType = typeSymbol.IsNullableType();
 
+            var isArray = typeSymbol.IsArray();
+            
             // Don't count strings as collections, even though they implement IEnumerable<string>.
-            var isArray = typeSymbol.BaseType?.GetTypeName() == "System.Array";
             var isCollection = typeSymbol.SpecialType != SpecialType.System_String && typeSymbol.IsCollectionType();
+            
             var isDictionary = isCollection && typeSymbol.IsDictionaryType();
+            if (isDictionary)
+            {
+                // And don't count dictionaries as collections.
+                isCollection = false;
+            }
 
             // TODO: we want to support most collection types, as quick starting point ICollection<T> was chosen to detect them.
             // TODO: the proper way would be to look for an Add() method or indexer property, but what would be the appropriate type in the first case?.

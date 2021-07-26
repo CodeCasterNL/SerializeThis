@@ -10,6 +10,10 @@ namespace CodeCaster.SerializeThis.Serialization.CSharp
         private int _counter;
         public string FileExtension => "cs";
 
+        public string DisplayName => "C# object initializer";
+
+        public bool CanSerialize(ClassInfo type) => true;
+
         public string Serialize(ClassInfo type)
         {
             _counter = 0;
@@ -204,7 +208,7 @@ namespace CodeCaster.SerializeThis.Serialization.CSharp
                 case TypeEnum.Boolean:
                     return _counter % 2 == 0;
                 case TypeEnum.String:
-                    return $"\"{type.Name}-FooString{_counter}\"";
+                    return $"\"{type.Name}FooString{_counter}\"";
                 case TypeEnum.DateTime:
                     return DateTime.Now.ToUniversalTime().AddSeconds(_counter);
                 case TypeEnum.Int16:

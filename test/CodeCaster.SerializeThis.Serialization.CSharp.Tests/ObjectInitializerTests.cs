@@ -23,7 +23,7 @@ namespace CodeCaster.SerializeThis.Serialization.CSharp.Tests
             var result = _classUnderTest.Serialize(type);
 
             // Assert
-            Assert.IsTrue(result.Contains("Bar = \"Bar-FooString1\""));
+            Assert.IsTrue(result.Contains("Bar = \"BarFooString1\""));
         }
 
 

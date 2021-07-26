@@ -15,14 +15,18 @@ namespace CodeCaster.SerializeThis.Serialization.Json
 
         public string FileExtension => "json";
 
+        public string DisplayName => "JSON";
+
+        public bool CanSerialize(ClassInfo type) => type.Class.Type == TypeEnum.ComplexType;
+
         public string Serialize(ClassInfo type)
         {
             _counter = 0;
 
-            if (type.Class.Type != TypeEnum.ComplexType)
+            if (!CanSerialize(type))
             {
                 // Sure, maybe later we'll support collection or scalar types.
-                throw new NotSupportedException("root type must be complex type");
+                throw new NotSupportedException("Root type must be complex type");
             }
 
             var rootObject = GetComplexType(type);
@@ -124,7 +128,7 @@ namespace CodeCaster.SerializeThis.Serialization.Json
                 case TypeEnum.Boolean:
                     return _counter % 2 == 0;
                 case TypeEnum.String:
-                    return $"{toSerialize.Name}-FooString{_counter}";
+                    return $"{toSerialize.Name}FooString{_counter}";
                 case TypeEnum.DateTime:
                     return DateTime.Now.ToUniversalTime().AddSeconds(_counter);
                 case TypeEnum.Int16:
