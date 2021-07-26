@@ -177,13 +177,30 @@ namespace CodeCaster.SerializeThis.Extension
                 return;
             }
 
+            if (!serializer.CanSerialize(classInfo))
+            {
+                ShowMessageBox(ServiceProvider, $"Could not serialize {classInfo.Name} to {serializer.DisplayName}");
+                return;
+            }
+
             foreach (var handler in _outputHandlers)
             {
-                if (handler.Handle(serializer, classInfo))
+                try
                 {
-                    break;
+                    if (handler.Handle(serializer, classInfo))
+                    {
+                        return;
+                    }
+                }
+                catch (Exception e)
+                {
+                    ShowMessageBox(ServiceProvider, $"Error serializing {classInfo.Name}: {e}");
+                    return;
                 }
             }
+
+            ShowMessageBox(ServiceProvider, $"Could not find a handler for {classInfo.Name}");
+
         }
 
         private async Task<ISymbol> GetSymbolUnderCursorAsync(TextDocument document, SemanticModel semanticModel, int position)

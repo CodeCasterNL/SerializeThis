@@ -27,18 +27,16 @@ namespace CodeCaster.SerializeThis.OutputHandlers
             {
                 return false;
             }
-            
+
             ThreadHelper.ThrowIfNotOnUIThread();
+
+            var filename = GenerateUniqueFileName(serializer, classInfo);
 
             try
             {
-                if (TryWriteTempFile(serializer, classInfo, out string filename))
+                if (TryWriteTempFile(filename, serializer, classInfo))
                 {
-                    bool result = ShowTempFile(filename);
-
-                    // Delete the file after opening.
-                    File.Delete(filename);
-                    return result;
+                    return ShowTempFile(filename);
                 }
             }
             catch (UnauthorizedAccessException)
@@ -49,14 +47,16 @@ namespace CodeCaster.SerializeThis.OutputHandlers
             {
                 _enabled = false;
             }
+            finally
+            {
+                File.Delete(filename);
+            }
 
             return false;
         }
 
-        private bool TryWriteTempFile(IClassInfoSerializer serializer, ClassInfo classInfo, out string filename)
+        private bool TryWriteTempFile(string filename, IClassInfoSerializer serializer, ClassInfo classInfo)
         {
-            filename = GenerateUniqueFileName(serializer, classInfo);
-
             string serialized = serializer.Serialize(classInfo);
 
             File.WriteAllText(filename, serialized);

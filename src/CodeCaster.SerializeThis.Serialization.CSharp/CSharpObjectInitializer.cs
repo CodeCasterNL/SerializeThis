@@ -10,6 +10,10 @@ namespace CodeCaster.SerializeThis.Serialization.CSharp
         private int _counter;
         public string FileExtension => "cs";
 
+        public string DisplayName => "C# object initializer";
+
+        public bool CanSerialize(ClassInfo type) => true;
+
         public string Serialize(ClassInfo type)
         {
             _counter = 0;
