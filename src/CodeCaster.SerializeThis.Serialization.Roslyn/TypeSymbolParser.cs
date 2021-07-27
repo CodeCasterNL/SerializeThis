@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.Immutable;
 using System.Linq;
 using Microsoft.CodeAnalysis;
 
@@ -17,11 +18,12 @@ namespace CodeCaster.SerializeThis.Serialization.Roslyn
             return memberInfo;
         }
 
-        private ClassInfo GetMemberInfoRecursive(string name, ITypeSymbol typeSymbol)
+        private ClassInfo GetMemberInfoRecursive(string name, ITypeSymbol typeSymbol, IPropertySymbol propertySymbol = null)
         {
             var returnValue = new ClassInfo
             {
-                Name = name
+                Name = name,
+                Attributes = propertySymbol?.GetAttributes().Map()
             };
 
             // TODO: this will break. Include assembly name with type name?
@@ -46,6 +48,7 @@ namespace CodeCaster.SerializeThis.Serialization.Roslyn
             c.CollectionType = collectionType;
             c.IsNullableValueType = isNullableValueType;
             c.IsEnum = isEnum;
+            c.Attributes = typeSymbol.GetAttributes().Map();
 
             // TODO: handle _all_ generics. There can be a Foo<T1, T2> that (indirectly) inherits List<T2> and adds additional properties...
             // TODO: though for example JSON can't handle that, and do the C# object and collection initializer combine?
@@ -90,7 +93,7 @@ namespace CodeCaster.SerializeThis.Serialization.Roslyn
             returnValue.Class = c;
             return returnValue;
         }
-
+        
         /// <summary>
         /// For a T[] array, return the <see cref="ClassInfo"/> of T.
         /// </summary>
@@ -164,8 +167,7 @@ namespace CodeCaster.SerializeThis.Serialization.Roslyn
                 {
                     if (member is IPropertySymbol memberTypeSymbol)
                     {
-                        var name = memberTypeSymbol.GetPropertyName();
-                        result.Add(GetMemberInfoRecursive(name, memberTypeSymbol.Type));
+                        result.Add(GetMemberInfoRecursive(memberTypeSymbol.Name, memberTypeSymbol.Type, memberTypeSymbol));
                     }
                 }
             }
