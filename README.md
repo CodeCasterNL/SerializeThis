@@ -1,7 +1,7 @@
 # SerializeThis
 
 ## Introduction
-SerializeThis is a Visual Studio Extension. It lets you generate an example JSON for a class by right-clicking a type name. This can be helpful to generate example JSON to use in unit tests or through a REST client such as [Insomnia](https://insomnia.rest/).
+SerializeThis is a [Visual Studio Extension (Marketplace)](https://marketplace.visualstudio.com/items?itemName=CodeCaster.CodeCasterSerializeThis). It lets you generate an example JSON for a class by right-clicking a type name. This can be helpful to generate example JSON to use in unit tests or through a REST client such as [Insomnia](https://insomnia.rest/).
 
 This is not meant as a replacement for documentation and client generators such as [Swagger](http://swagger.io/).
 

@@ -1,10 +1,22 @@
 ﻿using System;
 using System.Collections.Generic;
 
+// For FooAttributes.
+using System.Runtime.Serialization;
+
 namespace JsonTestClasses
 {
-    using System.Runtime.Serialization;
-        
+    class TestInstances
+    {
+        private void Foo()
+        {
+            var fi = new FooInherited();
+            var fd = new FooDictionaries();
+
+            var attributeTest = new FooWithFooBase();
+        }
+    }
+
     /// <summary>
     /// Properties of built-in types.
     /// </summary>
@@ -16,6 +28,15 @@ namespace JsonTestClasses
     }
 
     /// <summary>
+    /// Inheritance.
+    /// </summary>
+    public class FooInherited : FooBase
+    {
+        public int Age { get; set; }
+        public DateTime DateOfBirth { get; set; }
+    }
+
+    /// <summary>
     /// Some simple collections.
     /// </summary>
     public class FooSimpleCollections
@@ -23,15 +44,6 @@ namespace JsonTestClasses
         public string[] StringArray { get; set; }
         public List<FooBase> FooBaseList { get; set; }
         public Dictionary<int, string> IntStringDict { get; set; }
-    }
-
-    /// <summary>
-    /// Inheritance.
-    /// </summary>
-    public class FooInherited : FooBase
-    {
-        public int Age { get; set; }
-        public DateTime DateOfBirth { get; set; }
     }
 
     /// <summary>
@@ -85,15 +97,6 @@ namespace JsonTestClasses
     {
         public FooBase ChildProperty1 { get; set; }
         public FooBase ChildProperty2 { get; set; }
-    }
-
-    internal class Test
-    {
-        private void Foo()
-        {
-            var f = new FooInherited();
-            var fd = new FooDictionaries();
-        }
     }
 
     /// <summary>
@@ -193,10 +196,10 @@ namespace JsonTestClasses
     {
         public T PropertyOfT { get; set; }
     }
-    
+
     /// <summary>
-     /// Attributes to rename stuff.
-     /// </summary>
+    /// Attributes to rename stuff.
+    /// </summary>
     [DataContract]
     public class FooAttributes
     {
@@ -217,7 +220,7 @@ namespace Newtonsoft.Json
     public class JsonPropertyAttribute : System.Attribute
     {
         public string PropertyName { get; set; }
-        
+
         public JsonPropertyAttribute(string propertyName)
         {
             PropertyName = propertyName;
