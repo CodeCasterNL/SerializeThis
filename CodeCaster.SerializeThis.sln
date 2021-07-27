@@ -37,7 +37,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CodeCaster.SerializeThis.Se
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CodeCaster.SerializeThis.Serialization.CSharp", "src\CodeCaster.SerializeThis.Serialization.CSharp\CodeCaster.SerializeThis.Serialization.CSharp.csproj", "{2AA3E609-B787-4FB2-A271-3CF3C7ECDF4D}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "5. Tests", "5. Tests", "{D5001EFA-9A47-4F6A-8ACA-76B6B84D2F83}"
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "4. Tests", "4. Tests", "{D5001EFA-9A47-4F6A-8ACA-76B6B84D2F83}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CodeCaster.SerializeThis.Serialization.CSharp.Tests", "test\CodeCaster.SerializeThis.Serialization.CSharp.Tests\CodeCaster.SerializeThis.Serialization.CSharp.Tests.csproj", "{71E53037-8C45-4B10-B086-355D5C279154}"
 EndProject
