@@ -18,7 +18,8 @@ namespace CodeCaster.SerializeThis.Reflection
                 Name = "value",
                 Class = new Class
                 {
-                    TypeName = type.FullName
+                    TypeName = type.FullName,
+                    //Children = ...
                 }
             };
         }

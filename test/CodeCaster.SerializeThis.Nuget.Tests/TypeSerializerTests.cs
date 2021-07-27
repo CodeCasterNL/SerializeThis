@@ -12,9 +12,9 @@ namespace CodeCaster.SerializeThis.Nuget.Tests
         public void InitializeObject_Uses_TypeSerializerProperties()
         {
             // Arrange
-            var value = new object();
-            var classInfo = new ClassInfo();
+            var value = new { };
             var serialized = "{}";
+            var classInfo = new ClassInfo();
 
             var classInfoBuilderMock = new Mock<IClassInfoBuilder>(MockBehavior.Strict);
             classInfoBuilderMock.Setup(c => c.BuildObjectTree(value)).Returns(classInfo);
