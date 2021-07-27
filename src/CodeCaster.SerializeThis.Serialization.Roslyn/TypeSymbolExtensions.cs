@@ -67,20 +67,20 @@ namespace CodeCaster.SerializeThis.Serialization.Roslyn
         public static bool IsArray(this ITypeSymbol typeSymbol)
         {
             // TODO: meh.
-            return typeSymbol.BaseType?.GetTypeName() == "System.Array";
+            return typeSymbol.BaseType?.GetTypeName() == TypeNameConstants.Array;
         }
 
         private static bool IsCollectionInterfaceType(this ITypeSymbol typeSymbol)
         {
             // TODO: meh.
-            return typeSymbol.GetTypeName().StartsWith("System.Collections.Generic.ICollection")
+            return typeSymbol.GetTypeName().StartsWith(TypeNameConstants.GenericCollectionInterface)
                    && typeSymbol is INamedTypeSymbol n && n.TypeArguments.Length == 1;
         }
 
         private static bool IsDictionaryInterfaceType(this ITypeSymbol typeSymbol)
         {
             // TODO: meh.
-            return typeSymbol.GetTypeName().StartsWith("System.Collections.Generic.IDictionary")
+            return typeSymbol.GetTypeName().StartsWith(TypeNameConstants.GenericDictionaryInterface)
                    && typeSymbol is INamedTypeSymbol n && n.TypeArguments.Length == 2;
         }
     }

@@ -70,7 +70,7 @@ namespace CodeCaster.SerializeThis.OutputHandlers
             int i = 0;
             do
             {
-                filename = Path.Combine(Path.GetTempPath(), classInfo.Name);
+                filename = Path.Combine(Path.GetTempPath(), ReplaceInvalidFilenameChars(classInfo.Name, '_'));
                 if (i > 0)
                 {
                     filename += $"({i})";
@@ -81,6 +81,15 @@ namespace CodeCaster.SerializeThis.OutputHandlers
             }
             while (File.Exists(filename));
 
+            return filename;
+        }
+
+        private string ReplaceInvalidFilenameChars(string filename, char v)
+        {
+            foreach (var c in Path.GetInvalidFileNameChars())
+            {
+                filename = filename.Replace(c, v);
+            }
             return filename;
         }
 

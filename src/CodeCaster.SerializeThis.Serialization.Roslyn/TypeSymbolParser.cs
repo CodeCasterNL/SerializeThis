@@ -13,7 +13,7 @@ namespace CodeCaster.SerializeThis.Serialization.Roslyn
         public ClassInfo GetMemberInfoRecursive(ITypeSymbol typeSymbol, SemanticModel semanticModel)
         {
             _typesSeen.Clear();
-            var memberInfo = GetMemberInfoRecursive(typeSymbol.GetTypeName(), typeSymbol);
+            var memberInfo = GetMemberInfoRecursive(typeSymbol.GetTypeName(withGenericParameterNames: true), typeSymbol);
             return memberInfo;
         }
 
@@ -164,7 +164,8 @@ namespace CodeCaster.SerializeThis.Serialization.Roslyn
                 {
                     if (member is IPropertySymbol memberTypeSymbol)
                     {
-                        result.Add(GetMemberInfoRecursive(memberTypeSymbol.Name, memberTypeSymbol.Type));
+                        var name = memberTypeSymbol.GetPropertyName();
+                        result.Add(GetMemberInfoRecursive(name, memberTypeSymbol.Type));
                     }
                 }
             }
@@ -180,10 +181,10 @@ namespace CodeCaster.SerializeThis.Serialization.Roslyn
             isNullableValueType = typeSymbol.IsNullableType();
 
             var isArray = typeSymbol.IsArray();
-            
+
             // Don't count strings as collections, even though they implement IEnumerable<string>.
             var isCollection = typeSymbol.SpecialType != SpecialType.System_String && typeSymbol.IsCollectionType();
-            
+
             var isDictionary = isCollection && typeSymbol.IsDictionaryType();
             if (isDictionary)
             {
