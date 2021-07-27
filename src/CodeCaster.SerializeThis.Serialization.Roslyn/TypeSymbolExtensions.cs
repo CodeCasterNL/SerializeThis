@@ -83,5 +83,26 @@ namespace CodeCaster.SerializeThis.Serialization.Roslyn
             return typeSymbol.GetTypeName().StartsWith("System.Collections.Generic.IDictionary")
                    && typeSymbol is INamedTypeSymbol n && n.TypeArguments.Length == 2;
         }
+
+        public static string GetArgOrNamedProperty(this AttributeData attribute, int? constructorArgumentIndex, string propertyName)
+        {
+            if (constructorArgumentIndex.HasValue && attribute.ConstructorArguments.Length == constructorArgumentIndex + 1)
+            {
+                return attribute.ConstructorArguments[0].Value?.ToString();
+            }
+
+            if (!string.IsNullOrWhiteSpace(propertyName))
+            {
+                foreach (var namedArg in attribute.NamedArguments)
+                {
+                    if (namedArg.Key == propertyName)
+                    {
+                        return namedArg.Value.Value?.ToString();
+                    }
+                }
+            }
+
+            return null;
+        }
     }
 }

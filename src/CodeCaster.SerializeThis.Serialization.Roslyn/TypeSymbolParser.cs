@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.Immutable;
 using System.Linq;
 using Microsoft.CodeAnalysis;
 
@@ -92,6 +93,39 @@ namespace CodeCaster.SerializeThis.Serialization.Roslyn
         }
 
         /// <summary>
+        /// Considers attributes.
+        /// </summary>
+        private string GetPropertyNameFromContext(string name, ITypeSymbol typeSymbol, ImmutableArray<AttributeData> attributes)
+        {
+            foreach (var attr in attributes)
+            {
+                var attributeName = attr.AttributeClass.GetTypeName(withGenericParameterNames: true);
+
+                switch (attributeName)
+                {
+                    case "Newtonsoft.Json.JsonPropertyAttribute":
+                        return attr.GetArgOrNamedProperty(0, "PropertyName") ?? name;
+
+                    case "System.Text.Json.JsonPropertyNameAttribute":
+                        return attr.GetArgOrNamedProperty(0, "Name") ?? name;
+
+                    // [DataMember] only applies inside a class marked with [DataContract].
+                    case "System.Runtime.Serialization.DataMemberAttribute":
+                        if (typeSymbol.GetAttributes().Any(a => a.AttributeClass.GetTypeName() == "System.Runtime.Serialization.DataContractAttribute"))
+                        {
+                            return attr.GetArgOrNamedProperty(null, "Name") ?? name;
+                        }
+                        break;
+                    default: 
+                        continue;
+                }
+
+            }
+
+            return name;
+        }
+
+        /// <summary>
         /// For a T[] array, return the <see cref="ClassInfo"/> of T.
         /// </summary>
         private ClassInfo GetArrayTypeParameter(ITypeSymbol typeSymbol)
@@ -164,7 +198,8 @@ namespace CodeCaster.SerializeThis.Serialization.Roslyn
                 {
                     if (member is IPropertySymbol memberTypeSymbol)
                     {
-                        result.Add(GetMemberInfoRecursive(memberTypeSymbol.Name, memberTypeSymbol.Type));
+                        var name = GetPropertyNameFromContext(memberTypeSymbol.Name, typeSymbol, memberTypeSymbol.GetAttributes());
+                        result.Add(GetMemberInfoRecursive(name, memberTypeSymbol.Type));
                     }
                 }
             }
@@ -180,10 +215,10 @@ namespace CodeCaster.SerializeThis.Serialization.Roslyn
             isNullableValueType = typeSymbol.IsNullableType();
 
             var isArray = typeSymbol.IsArray();
-            
+
             // Don't count strings as collections, even though they implement IEnumerable<string>.
             var isCollection = typeSymbol.SpecialType != SpecialType.System_String && typeSymbol.IsCollectionType();
-            
+
             var isDictionary = isCollection && typeSymbol.IsDictionaryType();
             if (isDictionary)
             {
