@@ -43,6 +43,7 @@
     <Compile Include="..\SolutionInfo.cs">
       <Link>Properties\SolutionInfo.cs</Link>
     </Compile>
+    <Compile Include="AttributeInfo.cs" />
     <Compile Include="Class.cs" />
     <Compile Include="ClassInfo.cs" />
     <Compile Include="CollectionType.cs" />

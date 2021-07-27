@@ -46,13 +46,14 @@ namespace CodeCaster.SerializeThis.Serialization.Json
 
             foreach (var child in toSerialize.Class.Children)
             {
+                var propertyName = child.GetPropertyName(toSerialize);
                 var childProperty = SerializeChild(child);
-                existing[child.Name] = childProperty;
+                existing[propertyName] = childProperty;
             }
 
             return existing;
         }
-
+        
         private JToken SerializeChild(ClassInfo child)
         {
             if (child.Class.CollectionType == CollectionType.Dictionary)
