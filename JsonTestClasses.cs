@@ -3,6 +3,8 @@ using System.Collections.Generic;
 
 namespace JsonTestClasses
 {
+    using System.Runtime.Serialization;
+        
     /// <summary>
     /// Properties of built-in types.
     /// </summary>
@@ -31,7 +33,7 @@ namespace JsonTestClasses
         public int Age { get; set; }
         public DateTime DateOfBirth { get; set; }
     }
-    
+
     /// <summary>
     /// Nullables.
     /// </summary>
@@ -61,7 +63,7 @@ namespace JsonTestClasses
         public decimal Decimal { get; set; }
         public decimal? NullableDecimal { get; set; }
     }
-    
+
     /// <summary>
     /// Enums.
     /// </summary>
@@ -184,4 +186,61 @@ namespace JsonTestClasses
         public Foo7Child<string> FooString { get; set; }
         public Foo7Child<string>[] FooStrings { get; set; }
     }
+
+    public class FooWithFooBase : FooWithT<FooAttributes> { }
+
+    public class FooWithT<T>
+    {
+        public T PropertyOfT { get; set; }
+    }
+    
+    /// <summary>
+     /// Attributes to rename stuff.
+     /// </summary>
+    [DataContract]
+    public class FooAttributes
+    {
+        [Newtonsoft.Json.JsonProperty("first_name")]
+        public string Firstname { get; set; }
+
+        [System.Text.Json.JsonPropertyName(Name = "Last_Name")]
+        public string Lastname { get; set; }
+
+        [DataMember(Name = "YesNo")]
+        public bool BoolProperty { get; set; }
+    }
+
 }
+
+// These are here so the attribute test works. This is a standalone file without references, so Roslyn won't know the attributes otherwise.
+namespace Newtonsoft.Json
+{
+    public class JsonPropertyAttribute : System.Attribute
+    {
+        public string PropertyName { get; set; }
+        
+        public JsonPropertyAttribute(string propertyName)
+        {
+            PropertyName = propertyName;
+        }
+    }
+}
+
+namespace System.Text.Json
+{
+    public class JsonPropertyNameAttribute : System.Attribute
+    {
+        public string Name { get; set; }
+    }
+}
+
+namespace System.Runtime.Serialization
+{
+    public class DataContractAttribute : System.Attribute { }
+
+    public class DataMemberAttribute : System.Attribute
+    {
+        public string Name { get; set; }
+    }
+}
+// End attributes.
