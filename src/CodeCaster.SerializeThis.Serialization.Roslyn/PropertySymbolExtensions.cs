@@ -26,7 +26,7 @@ namespace CodeCaster.SerializeThis.Serialization.Roslyn
 
                     // [DataMember] only applies inside a class marked with [DataContract].
                     case TypeNameConstants.DataMemberAttribute:
-                        if (property.ContainingType.GetAttributes().Any(a => a.AttributeClass.GetTypeName() == TypeNameConstants.DataContractAttribute))
+                        if (!property.ContainingType.GetAttributes().Any(a => a.AttributeClass.GetTypeName() == TypeNameConstants.DataContractAttribute))
                         {
                             break;
                         }

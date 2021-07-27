@@ -209,7 +209,6 @@ namespace JsonTestClasses
         [DataMember(Name = "YesNo")]
         public bool BoolProperty { get; set; }
     }
-
 }
 
 // These are here so the attribute test works. This is a standalone file without references, so Roslyn won't know the attributes otherwise.
