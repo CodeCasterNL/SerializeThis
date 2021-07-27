@@ -4,23 +4,7 @@ using System.Collections.Generic;
 namespace JsonTestClasses
 {
     using System.Runtime.Serialization;
-
-    /// <summary>
-    /// Properties of built-in types.
-    /// </summary>
-    [DataContract]
-    public class FooAttributes
-    {
-        [Newtonsoft.Json.JsonProperty("first_name")]
-        public string Firstname { get; set; }
-
-        [System.Text.Json.JsonPropertyName(Name = "Last_Name")]
-        public string Lastname { get; set; }
-
-        [DataMember(Name = "YesNo")]
-        public bool BoolProperty { get; set; }
-    }
-
+        
     /// <summary>
     /// Properties of built-in types.
     /// </summary>
@@ -202,6 +186,30 @@ namespace JsonTestClasses
         public Foo7Child<string> FooString { get; set; }
         public Foo7Child<string>[] FooStrings { get; set; }
     }
+
+    public class FooWithFooBase : FooWithT<FooAttributes> { }
+
+    public class FooWithT<T>
+    {
+        public T PropertyOfT { get; set; }
+    }
+    
+    /// <summary>
+     /// Attributes to rename stuff.
+     /// </summary>
+    [DataContract]
+    public class FooAttributes
+    {
+        [Newtonsoft.Json.JsonProperty("first_name")]
+        public string Firstname { get; set; }
+
+        [System.Text.Json.JsonPropertyName(Name = "Last_Name")]
+        public string Lastname { get; set; }
+
+        [DataMember(Name = "YesNo")]
+        public bool BoolProperty { get; set; }
+    }
+
 }
 
 // These are here so the attribute test works. This is a standalone file without references, so Roslyn won't know the attributes otherwise.

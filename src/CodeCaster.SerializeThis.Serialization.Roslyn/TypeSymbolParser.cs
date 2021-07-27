@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Collections.Immutable;
 using System.Linq;
 using Microsoft.CodeAnalysis;
 
@@ -14,7 +13,7 @@ namespace CodeCaster.SerializeThis.Serialization.Roslyn
         public ClassInfo GetMemberInfoRecursive(ITypeSymbol typeSymbol, SemanticModel semanticModel)
         {
             _typesSeen.Clear();
-            var memberInfo = GetMemberInfoRecursive(typeSymbol.GetTypeName(), typeSymbol);
+            var memberInfo = GetMemberInfoRecursive(typeSymbol.GetTypeName(withGenericParameterNames: true), typeSymbol);
             return memberInfo;
         }
 
@@ -93,39 +92,6 @@ namespace CodeCaster.SerializeThis.Serialization.Roslyn
         }
 
         /// <summary>
-        /// Considers attributes.
-        /// </summary>
-        private string GetPropertyNameFromContext(string name, ITypeSymbol typeSymbol, ImmutableArray<AttributeData> attributes)
-        {
-            foreach (var attr in attributes)
-            {
-                var attributeName = attr.AttributeClass.GetTypeName(withGenericParameterNames: true);
-
-                switch (attributeName)
-                {
-                    case "Newtonsoft.Json.JsonPropertyAttribute":
-                        return attr.GetArgOrNamedProperty(0, "PropertyName") ?? name;
-
-                    case "System.Text.Json.JsonPropertyNameAttribute":
-                        return attr.GetArgOrNamedProperty(0, "Name") ?? name;
-
-                    // [DataMember] only applies inside a class marked with [DataContract].
-                    case "System.Runtime.Serialization.DataMemberAttribute":
-                        if (typeSymbol.GetAttributes().Any(a => a.AttributeClass.GetTypeName() == "System.Runtime.Serialization.DataContractAttribute"))
-                        {
-                            return attr.GetArgOrNamedProperty(null, "Name") ?? name;
-                        }
-                        break;
-                    default: 
-                        continue;
-                }
-
-            }
-
-            return name;
-        }
-
-        /// <summary>
         /// For a T[] array, return the <see cref="ClassInfo"/> of T.
         /// </summary>
         private ClassInfo GetArrayTypeParameter(ITypeSymbol typeSymbol)
@@ -198,7 +164,7 @@ namespace CodeCaster.SerializeThis.Serialization.Roslyn
                 {
                     if (member is IPropertySymbol memberTypeSymbol)
                     {
-                        var name = GetPropertyNameFromContext(memberTypeSymbol.Name, typeSymbol, memberTypeSymbol.GetAttributes());
+                        var name = memberTypeSymbol.GetPropertyName();
                         result.Add(GetMemberInfoRecursive(name, memberTypeSymbol.Type));
                     }
                 }
