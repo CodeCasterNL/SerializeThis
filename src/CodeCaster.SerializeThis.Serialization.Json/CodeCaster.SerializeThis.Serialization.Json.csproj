@@ -44,8 +44,11 @@
     <Compile Include="..\SolutionInfo.cs">
       <Link>Properties\SolutionInfo.cs</Link>
     </Compile>
+    <Compile Include="ClassInfoExtensions.cs" />
     <Compile Include="JsonSerializer.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="AttributeExtensions.cs" />
+    <Compile Include="TypeNameConstants.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\CodeCaster.SerializeThis.Serialization\CodeCaster.SerializeThis.Serialization.csproj">

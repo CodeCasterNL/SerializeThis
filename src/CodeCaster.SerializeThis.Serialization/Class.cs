@@ -18,6 +18,8 @@ namespace CodeCaster.SerializeThis.Serialization
         
         public IList<ClassInfo> GenericParameters { get; set; } = new List<ClassInfo>();
 
+        public IList<AttributeInfo> Attributes { get; set; } = new List<AttributeInfo>();
+
         public bool IsComplexType => Type == TypeEnum.ComplexType;
     }
 }

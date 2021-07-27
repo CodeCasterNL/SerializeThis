@@ -32,8 +32,7 @@ namespace CodeCaster.SerializeThis.OutputHandlers
                 typesSeen = new Dictionary<string, string>();
             }
 
-            string representationForType;
-            if (typesSeen.TryGetValue(memberInfo.Class.TypeName, out representationForType))
+            if (typesSeen.TryGetValue(memberInfo.Class.TypeName, out string representationForType))
             {
                 return representationForType;
             }
