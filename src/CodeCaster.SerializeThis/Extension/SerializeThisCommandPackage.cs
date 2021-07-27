@@ -57,10 +57,9 @@ namespace CodeCaster.SerializeThis.Extension
         {            
             base.Initialize();
 
-            // TODO: DI, plugins?
+            // TODO: DI, plugins, config pages?
             var outputHandlers = new IOutputHandler[]
             {
-                new MessageBoxOutputHandler(),
                 new ModelFormOutputHandler(),
                 new TempFileInNewTabOutputHandler(),
             };
