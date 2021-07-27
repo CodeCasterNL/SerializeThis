@@ -73,36 +73,15 @@ namespace CodeCaster.SerializeThis.Serialization.Roslyn
         private static bool IsCollectionInterfaceType(this ITypeSymbol typeSymbol)
         {
             // TODO: meh.
-            return typeSymbol.GetTypeName().StartsWith(TypeNameConstants.CollectionInterface)
+            return typeSymbol.GetTypeName().StartsWith(TypeNameConstants.GenericCollectionInterface)
                    && typeSymbol is INamedTypeSymbol n && n.TypeArguments.Length == 1;
         }
 
         private static bool IsDictionaryInterfaceType(this ITypeSymbol typeSymbol)
         {
             // TODO: meh.
-            return typeSymbol.GetTypeName().StartsWith(TypeNameConstants.DictionaryInterface)
+            return typeSymbol.GetTypeName().StartsWith(TypeNameConstants.GenericDictionaryInterface)
                    && typeSymbol is INamedTypeSymbol n && n.TypeArguments.Length == 2;
-        }
-
-        public static string GetArgOrNamedProperty(this AttributeData attribute, int? constructorArgumentIndex, string propertyName)
-        {
-            if (constructorArgumentIndex.HasValue && attribute.ConstructorArguments.Length == constructorArgumentIndex + 1)
-            {
-                return attribute.ConstructorArguments[0].Value?.ToString();
-            }
-
-            if (!string.IsNullOrWhiteSpace(propertyName))
-            {
-                foreach (var namedArg in attribute.NamedArguments)
-                {
-                    if (namedArg.Key == propertyName)
-                    {
-                        return namedArg.Value.Value?.ToString();
-                    }
-                }
-            }
-
-            return null;
         }
     }
 }

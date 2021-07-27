@@ -18,19 +18,19 @@ namespace CodeCaster.SerializeThis.Serialization.Roslyn
 
                 switch (attributeName)
                 {
-                    case TypeNameConstants.NewtonsoftJsonProperty:
-                        return attr.GetArgOrNamedProperty(0, "PropertyName") ?? name;
+                    case TypeNameConstants.NewtonsoftJsonPropertyAttribute:
+                        return attr.GetArgOrNamedProperty(0, TypeNameConstants.PropertyName) ?? name;
 
-                    case TypeNameConstants.SystemTextJsonProperty:
-                        return attr.GetArgOrNamedProperty(0, "Name") ?? name;
+                    case TypeNameConstants.SystemTextJsonPropertyAttribute:
+                        return attr.GetArgOrNamedProperty(0, TypeNameConstants.Name) ?? name;
 
                     // [DataMember] only applies inside a class marked with [DataContract].
-                    case TypeNameConstants.DataMember:
-                        if (property.ContainingType.GetAttributes().Any(a => a.AttributeClass.GetTypeName() == TypeNameConstants.DataContract))
+                    case TypeNameConstants.DataMemberAttribute:
+                        if (property.ContainingType.GetAttributes().Any(a => a.AttributeClass.GetTypeName() == TypeNameConstants.DataContractAttribute))
                         {
                             break;
                         }
-                        return attr.GetArgOrNamedProperty(null, "Name") ?? name;
+                        return attr.GetArgOrNamedProperty(null, TypeNameConstants.Name) ?? name;
                     default:
                         continue;
                 }
