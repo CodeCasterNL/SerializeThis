@@ -173,21 +173,10 @@ namespace CodeCaster.SerializeThis.Serialization.Roslyn
             return result;
         }
 
-        private TypeEnum GetSymbolType(ITypeSymbol typeSymbol, out CollectionType? collectionType, out bool isNullableValueType, out bool isEnum, out List<ClassInfo> typeParameters)
+        protected override TypeEnum GetComplexSymbolType(ITypeSymbol typeSymbol, out CollectionType? collectionType, out bool isNullableValueType, ref bool isEnum, out List<ClassInfo> typeParameters)
         {
-            var knownValueType = GetKnownValueType(typeSymbol);
-            if (knownValueType != null)
-            {
-                collectionType = null;
-                isNullableValueType = false;
-                isEnum = false;
-                typeParameters = null;
-                return knownValueType.Value;
-            }
-
-            var namedTypeSymbol = typeSymbol as INamedTypeSymbol;
+            collectionType = null;
             
-            isEnum = namedTypeSymbol.IsEnum();
             isNullableValueType = typeSymbol.IsNullableType();
 
             var isArray = typeSymbol.IsArray();
@@ -206,7 +195,6 @@ namespace CodeCaster.SerializeThis.Serialization.Roslyn
             // TODO: we want to support most collection types, as quick starting point ICollection<T> was chosen to detect them.
             // TODO: the proper way would be to look for an Add() method or indexer property, but what would be the appropriate type in the first case?.
             // TODO: also, arrays can be jagged or multidimensional... what code to generate?
-            collectionType = null;
             if (isDictionary)
             {
                 collectionType = CollectionType.Dictionary;
@@ -221,6 +209,7 @@ namespace CodeCaster.SerializeThis.Serialization.Roslyn
             }
 
             typeParameters = new List<ClassInfo>();
+            var namedTypeSymbol = typeSymbol as INamedTypeSymbol;
             if (namedTypeSymbol?.TypeArguments.Any() == true)
             {
                 foreach (var typeArg in namedTypeSymbol.TypeArguments)
@@ -239,7 +228,7 @@ namespace CodeCaster.SerializeThis.Serialization.Roslyn
                 }
             }
             
-            return knownValueType ?? TypeEnum.ComplexType;
+            return TypeEnum.ComplexType;
         }
 
         protected override TypeEnum? GetKnownValueType(ITypeSymbol typeSymbol)
@@ -269,6 +258,12 @@ namespace CodeCaster.SerializeThis.Serialization.Roslyn
             }
 
             return null;
+        }
+
+        protected override bool IsEnum(ITypeSymbol typeSymbol)
+        {
+            var namedTypeSymbol = typeSymbol as INamedTypeSymbol;
+            return namedTypeSymbol.IsEnum();
         }
     }
 }

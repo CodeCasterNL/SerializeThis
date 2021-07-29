@@ -87,19 +87,8 @@ namespace CodeCaster.SerializeThis.Reflection
             }
         }
 
-        private TypeEnum GetSymbolType(Type typeSymbol, out CollectionType? collectionType, out bool isNullableValueType, out bool isEnum, out List<ClassInfo> typeParameters)
+        protected override TypeEnum GetComplexSymbolType(Type typeSymbol, out CollectionType? collectionType, out bool isNullableValueType, ref bool isEnum, out List<ClassInfo> typeParameters)
         {
-            var knownValueType = GetKnownValueType(typeSymbol);
-            if (knownValueType != null)
-            {
-                collectionType = null;
-                isNullableValueType = false;
-                isEnum = false;
-                typeParameters = null;
-                return knownValueType.Value;
-            }
-
-            isEnum = typeSymbol.IsEnum;
             isNullableValueType = System.Nullable.GetUnderlyingType(typeSymbol) != null;
 
             // Don't count strings as collections, even though they implement IEnumerable<string>.
@@ -141,5 +130,7 @@ namespace CodeCaster.SerializeThis.Reflection
             // TODO: 
             return null;
         }
+
+        protected override bool IsEnum(Type typeSymbol) => typeSymbol.IsEnum;
     }
 }
