@@ -1,5 +1,4 @@
 using System;
-using System.Collections.Generic;
 using System.Linq;
 using CodeCaster.SerializeThis.Reflection;
 using CodeCaster.SerializeThis.Serialization;
@@ -9,7 +8,7 @@ namespace CodeCaster.SerializeThis.Relection.Tests
 {
     public class ClassInfoBuilderTests
     {
-        private readonly IClassInfoBuilder _classUnderTest = new ClassInfoBuilder();
+        private readonly IClassInfoBuilder<Type> _classUnderTest = new ClassInfoBuilder();
 
         [Test]
         public void BuildObjectTree_Works_Recursively()
@@ -18,7 +17,7 @@ namespace CodeCaster.SerializeThis.Relection.Tests
             var toSerialize = new JsonTestClasses.FooInherited();
 
             // Act
-            var result = _classUnderTest.BuildObjectTree(toSerialize);
+            var result = _classUnderTest.GetMemberInfoRecursive(toSerialize.GetType(), toSerialize);
 
             // Assert 
             Assert.AreEqual(TypeEnum.ComplexType, result.Class.Type);

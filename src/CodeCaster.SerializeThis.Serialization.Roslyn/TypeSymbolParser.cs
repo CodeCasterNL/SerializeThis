@@ -5,14 +5,11 @@ using Microsoft.CodeAnalysis;
 
 namespace CodeCaster.SerializeThis.Serialization.Roslyn
 {
-    public class TypeSymbolParser
+    public class TypeSymbolParser : SymbolParser<ITypeSymbol>
     {
-        // TODO: this makes it pretty much not thread safe, might we ever need that, store the class/info stuff in a more stateful object?
-        private readonly Dictionary<string, Class> _typesSeen = new Dictionary<string, Class>();
-
-        public ClassInfo GetMemberInfoRecursive(ITypeSymbol typeSymbol, SemanticModel semanticModel)
+        protected override ClassInfo GetMemberInfoRecursiveImpl(ITypeSymbol typeSymbol, object instance)
         {
-            _typesSeen.Clear();
+            // TODO: something with instance, when debugging.
             var memberInfo = GetMemberInfoRecursive(typeSymbol.GetTypeName(withGenericParameterNames: true), typeSymbol);
             return memberInfo;
         }
@@ -27,7 +24,7 @@ namespace CodeCaster.SerializeThis.Serialization.Roslyn
 
             // TODO: this will break. Include assembly name with type name?
             var fullTypeName = typeSymbol.GetTypeName(withGenericParameterNames: true);
-            if (_typesSeen.TryGetValue(fullTypeName, out var c))
+            if (HasSeenType(fullTypeName, out var c))
             {
                 returnValue.Class = c;
                 return returnValue;
@@ -39,7 +36,7 @@ namespace CodeCaster.SerializeThis.Serialization.Roslyn
             {
                 TypeName = typeName
             };
-            _typesSeen[fullTypeName] = c;
+            AddSeenType(fullTypeName, c);
 
             var type = GetSymbolType(typeSymbol, out var collectionType, out var isNullableValueType, out var isEnum, out var genericParameters);
 
@@ -176,8 +173,18 @@ namespace CodeCaster.SerializeThis.Serialization.Roslyn
 
         private TypeEnum GetSymbolType(ITypeSymbol typeSymbol, out CollectionType? collectionType, out bool isNullableValueType, out bool isEnum, out List<ClassInfo> typeParameters)
         {
-            var namedTypeSymbol = typeSymbol as INamedTypeSymbol;
+            var knownValueType = GetKnownValueType(typeSymbol);
+            if (knownValueType != null)
+            {
+                collectionType = null;
+                isNullableValueType = false;
+                isEnum = false;
+                typeParameters = null;
+                return knownValueType.Value;
+            }
 
+            var namedTypeSymbol = typeSymbol as INamedTypeSymbol;
+            
             isEnum = namedTypeSymbol.IsEnum();
             isNullableValueType = typeSymbol.IsNullableType();
 
@@ -229,7 +236,12 @@ namespace CodeCaster.SerializeThis.Serialization.Roslyn
                     return nullableTypeEnum;
                 }
             }
+            
+            return knownValueType ?? TypeEnum.ComplexType;
+        }
 
+        protected override TypeEnum? GetKnownValueType(ITypeSymbol typeSymbol)
+        {
             switch (typeSymbol.SpecialType)
             {
                 case SpecialType.System_Byte:
@@ -254,7 +266,7 @@ namespace CodeCaster.SerializeThis.Serialization.Roslyn
                     return TypeEnum.Decimal;
             }
 
-            return TypeEnum.ComplexType;
+            return null;
         }
     }
 }

@@ -6,11 +6,11 @@ using CodeCaster.SerializeThis.Serialization;
 
 namespace CodeCaster.SerializeThis.Reflection
 {
-    public class ClassInfoBuilder : IClassInfoBuilder
+    public class ClassInfoBuilder : SymbolParser<Type>
     {
         private readonly Dictionary<string, Class> _typesSeen = new Dictionary<string, Class>();
 
-        public ClassInfo BuildObjectTree(object value)
+        protected override ClassInfo GetMemberInfoRecursiveImpl(Type value, object instance)
         {
             if (value == null) throw new ArgumentNullException(nameof(value));
 
@@ -128,6 +128,12 @@ namespace CodeCaster.SerializeThis.Reflection
             typeParameters = new List<ClassInfo>();
 
             return 0;
+        }
+
+        protected override TypeEnum? GetKnownValueType(Type typeSymbol)
+        {
+            // TODO: 
+            return null;
         }
     }
 }

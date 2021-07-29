@@ -1,7 +1,7 @@
 ﻿namespace CodeCaster.SerializeThis.Serialization
 {
-    public interface IClassInfoBuilder
+    public interface IClassInfoBuilder<T>
     {
-        ClassInfo BuildObjectTree(object value);
+        ClassInfo GetMemberInfoRecursive(T typeSymbol, object instance);
     }
 }

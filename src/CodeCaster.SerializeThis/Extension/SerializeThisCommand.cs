@@ -166,9 +166,8 @@ namespace CodeCaster.SerializeThis.Extension
             }
 
             // This does the actual magic.
-            var classInfo = new TypeSymbolParser().GetMemberInfoRecursive(symbolToSerialize, semanticModel);
+            var classInfo = new Serialization.Roslyn.TypeSymbolParser().GetMemberInfoRecursive(symbolToSerialize, null/*, semanticModel*/);
             ShowOutput(classInfo, commandName);
-
         }
 
         private void ShowOutput(ClassInfo classInfo, string menuItemName)
