@@ -1,7 +1,9 @@
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using CodeCaster.SerializeThis.Reflection;
 using CodeCaster.SerializeThis.Serialization;
+using JsonTestClasses;
 using NUnit.Framework;
 
 namespace CodeCaster.SerializeThis.Relection.Tests
@@ -11,7 +13,7 @@ namespace CodeCaster.SerializeThis.Relection.Tests
         private readonly IClassInfoBuilder<Type> _classUnderTest = new ClassInfoBuilder();
 
         [Test]
-        public void BuildObjectTree_Works_Recursively()
+        public void ParentProperties()
         {
             // Arrange
             var toSerialize = new JsonTestClasses.FooInherited();
@@ -23,19 +25,38 @@ namespace CodeCaster.SerializeThis.Relection.Tests
             Assert.AreEqual(TypeEnum.ComplexType, result.Class.Type);
 
             // Base property
-            AssertProperty(result.Class, nameof(JsonTestClasses.FooInherited.Age), typeof(int), TypeEnum.Int32);
-            AssertProperty(result.Class, nameof(JsonTestClasses.FooBase.Firstname), typeof(string), TypeEnum.String);
+            AssertProperty(result.Class, nameof(toSerialize.Age), typeof(int), TypeEnum.Int32);
+            AssertProperty(result.Class, nameof(toSerialize.Firstname), typeof(string), TypeEnum.String);
         }
 
+        [Test]
+        public void Collections()
+        {
+            // Arrange
+            var toSerialize = new JsonTestClasses.FooSimpleCollections();
 
+            // Act
+            var result = _classUnderTest.GetMemberInfoRecursive(toSerialize.GetType(), toSerialize);
 
+            // Assert 
+            Assert.AreEqual(TypeEnum.ComplexType, result.Class.Type);
 
-        private void AssertProperty(Class classInfo, string propertyName, Type propertyType, TypeEnum typeEnum)
+            // Base property
+            AssertProperty(result.Class, nameof(toSerialize.FooBaseList), typeof(List<FooBase>), TypeEnum.ComplexType);
+            AssertProperty(result.Class, nameof(toSerialize.StringArray), typeof(string[]), TypeEnum.ComplexType, collectionType: CollectionType.Array);
+        }
+
+        private void AssertProperty(Class classInfo, string propertyName, Type propertyType, TypeEnum typeEnum, CollectionType? collectionType = null)
         {
             var prop = classInfo.Children.FirstOrDefault(c => c.Name == propertyName);
             if (prop == null)
             {
                 Assert.Fail($"Property '{propertyName}' not found on Class '{classInfo.TypeName}'.");
+            }
+
+            if (collectionType.HasValue && prop.Class.CollectionType != collectionType)
+            {
+                Assert.Fail($"Property '{propertyName}' doesn't have collection type '{collectionType}'.");
             }
 
             AssertProperty(prop, propertyName, propertyType, typeEnum);

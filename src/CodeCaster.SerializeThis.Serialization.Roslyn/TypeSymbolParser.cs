@@ -32,70 +32,27 @@ namespace CodeCaster.SerializeThis.Serialization.Roslyn
                 return returnValue;
             }
 
-            // Save it _before_ diving into members and type parameters. 
+            // Save it _before_ diving into members and type parameters.
             var typeName = typeSymbol.GetTypeName();
             c = new Class
             {
                 TypeName = typeName
             };
+
             AddSeenType(fullTypeName, c);
 
-            var type = GetSymbolType(typeSymbol, out var collectionType, out var isNullableValueType, out var isEnum, out var genericParameters);
-
-            c.Type = type;
-            c.CollectionType = collectionType;
-            c.IsNullableValueType = isNullableValueType;
-            c.IsEnum = isEnum;
-            c.Attributes = typeSymbol.GetAttributes().Map();
-
-            // TODO: handle _all_ generics. There can be a Foo<T1, T2> that (indirectly) inherits List<T2> and adds additional properties...
-            // TODO: though for example JSON can't handle that, and do the C# object and collection initializer combine?
-            if (c.CollectionType == CollectionType.Dictionary)
-            {
-                var keyValueType = GetDictionaryKeyType(typeSymbol);
-                if (keyValueType?.Item1 != null && keyValueType.Item2 != null)
-                {
-                    c.GenericParameters.Add(keyValueType.Item1);
-                    c.GenericParameters.Add(keyValueType.Item2);
-                }
-            }
-            else if (c.CollectionType == CollectionType.Collection)
-            {
-                var collectionTypeParameter = GetCollectionTypeParameter(typeSymbol);
-                if (collectionTypeParameter != null)
-                {
-                    c.GenericParameters.Add(collectionTypeParameter);
-                }
-            }
-            else if (c.CollectionType == CollectionType.Array)
-            {
-                var arrayTypeParameter = GetArrayTypeParameter(typeSymbol);
-                if (arrayTypeParameter != null)
-                {
-                    c.GenericParameters.Add(arrayTypeParameter);
-                }
-            }
-            else if (c.Type == TypeEnum.ComplexType && !isNullableValueType)
-            {
-                foreach (var gp in genericParameters)
-                {
-                    c.GenericParameters.Add(gp);
-                }
-
-                foreach (var child in GetChildProperties(typeSymbol))
-                {
-                    c.Children.Add(child);
-                }
-            }
+            ParseClass(c, typeSymbol, value: null);
 
             returnValue.Class = c;
             return returnValue;
         }
-        
+
+        protected override IList<AttributeInfo> GetAttributes(ITypeSymbol typeSymbol) => typeSymbol.GetAttributes().Map();
+
         /// <summary>
         /// For a T[] array, return the <see cref="ClassInfo"/> of T.
         /// </summary>
-        private ClassInfo GetArrayTypeParameter(ITypeSymbol typeSymbol)
+        protected override ClassInfo GetArrayTypeParameter(ITypeSymbol typeSymbol)
         {
             if (!(typeSymbol is IArrayTypeSymbol arrayType))
             {
@@ -114,7 +71,7 @@ namespace CodeCaster.SerializeThis.Serialization.Roslyn
         /// <summary>
         /// For an ICollection{T}-implementing type, return the <see cref="ClassInfo"/> of T.
         /// </summary>
-        private ClassInfo GetCollectionTypeParameter(ITypeSymbol typeSymbol)
+        protected override ClassInfo GetCollectionTypeParameter(ITypeSymbol typeSymbol)
         {
             INamedTypeSymbol iCollectionInterface = typeSymbol.GetICollectionTInterface();
 
@@ -131,7 +88,7 @@ namespace CodeCaster.SerializeThis.Serialization.Roslyn
         /// <summary>
         /// For an IDictionary{TKey, TValue}, return the <see cref="ClassInfo"/> of TKey and TValue.
         /// </summary>
-        private Tuple<ClassInfo, ClassInfo> GetDictionaryKeyType(ITypeSymbol typeSymbol)
+        protected override (ClassInfo, ClassInfo) GetDictionaryKeyType(ITypeSymbol typeSymbol)
         {
             INamedTypeSymbol iDictionarynInterface = typeSymbol.GetIDictionaryTKeyTValueInterface();
 
@@ -143,20 +100,20 @@ namespace CodeCaster.SerializeThis.Serialization.Roslyn
                 var keyInfo = GetMemberInfoRecursive("KeyType", keyType);
                 var valueInfo = GetMemberInfoRecursive("ValueType", valueType);
 
-                return Tuple.Create(keyInfo, valueInfo);
+                return (keyInfo, valueInfo);
             }
 
-            return null;
+            return (null, null);
         }
 
-        private IList<ClassInfo> GetChildProperties(ITypeSymbol typeSymbol)
+        protected override IList<ClassInfo> GetChildProperties(ITypeSymbol typeSymbol, object value)
         {
             var result = new List<ClassInfo>();
 
             // Walking up the inheritance tree. Root is System.Object without any more BaseTypes.
             if (typeSymbol.BaseType != null)
             {
-                result.AddRange(GetChildProperties(typeSymbol.BaseType));
+                result.AddRange(GetChildProperties(typeSymbol.BaseType, value));
             }
 
             foreach (var member in typeSymbol.GetMembers())

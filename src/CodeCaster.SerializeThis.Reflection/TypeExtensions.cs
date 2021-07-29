@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 
 namespace CodeCaster.SerializeThis.Reflection
@@ -11,7 +12,7 @@ namespace CodeCaster.SerializeThis.Reflection
 
         public static Type GetICollectionTInterface(this Type typeSymbol)
         {
-            return GetInterface(typeSymbol, x => x.IsAssignableFrom(CollectionInterfaceType));
+            return GetInterface(typeSymbol, x => CollectionInterfaceType.IsAssignableFrom(x));
         }
 
         public static Type GetIDictionaryTKeyTValueInterface(this Type typeSymbol)
@@ -31,9 +32,12 @@ namespace CodeCaster.SerializeThis.Reflection
 
         private static Type GetInterface(Type typeSymbol, Func<Type, bool> testFunction)
         {
-            return testFunction(typeSymbol) 
-                ? typeSymbol 
-                : null;
+            if (testFunction(typeSymbol))
+            {
+                return typeSymbol;
+            }
+
+            return typeSymbol.GetInterfaces().FirstOrDefault(testFunction);
         }
     }
 }

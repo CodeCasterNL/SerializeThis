@@ -16,16 +16,16 @@ namespace CodeCaster.SerializeThis.Reflection
             return memberInfo;
         }
 
-        private ClassInfo GetMemberInfoRecursive(string name, Type type, ICollection<AttributeInfo> propertyAttributes, object value)
+        private ClassInfo GetMemberInfoRecursive(string name, Type typeSymbol, ICollection<AttributeInfo> propertyAttributes = null, object value = null)
         {
             var returnValue = new ClassInfo
             {
                 Name = name,
-                Attributes = propertyAttributes
+                Attributes = propertyAttributes ?? Array.Empty<AttributeInfo>()
             };
 
             // TODO: this will break. Include assembly name with type name?
-            var fullTypeName = type.FullName;
+            var fullTypeName = typeSymbol.FullName;
             if (HasSeenType(fullTypeName, out var c))
             {
                 returnValue.Class = c;
@@ -40,51 +40,32 @@ namespace CodeCaster.SerializeThis.Reflection
             };
             AddSeenType(fullTypeName, c);
 
-            var typeEnum = GetSymbolType(type, out var collectionType, out var isNullableValueType, out var isEnum, out var genericParameters);
-
-            c.Type = typeEnum;
-            c.CollectionType = collectionType;
-            c.IsNullableValueType = isNullableValueType;
-            c.IsEnum = isEnum;
-            c.Attributes = type.GetCustomAttributes(true).Cast<Attribute>().Map();
-
-            // TODO: implement the whole thing
-            if (c.Type == TypeEnum.ComplexType && !isNullableValueType)
-            {
-                foreach (var gp in genericParameters)
-                {
-                    c.GenericParameters.Add(gp);
-                }
-
-                foreach (var child in GetChildProperties(type, value))
-                {
-                    c.Children.Add(child);
-                }
-            }
+            ParseClass(c, typeSymbol, value);
 
             returnValue.Class = c;
             return returnValue;
         }
 
-        private IEnumerable<ClassInfo> GetChildProperties(Type type, object value)
+        protected override IList<ClassInfo> GetChildProperties(Type type, object value)
         {
+            var result = new List<ClassInfo>();
+
             // First go to the root, the first class deriving from System.Object, then walk up to "kind of" order the properties.
             // No guarantees are made on the order in the docs though.
             var baseType = type.BaseType;
-            if (baseType != typeof(object))
+            if (baseType != null && baseType != typeof(object))
             {
-                foreach (var baseClassProperty in GetChildProperties(type.BaseType, value))
-                {
-                    yield return baseClassProperty;
-                }
+                result.AddRange(GetChildProperties(baseType, value));
             }
 
             // Then iterate over this type's public instance properties, not the inherited ones.
             foreach (var p in type.GetProperties(BindingFlags.Instance | BindingFlags.Public | BindingFlags.DeclaredOnly))
             {
                 var propertyValue = value == null ? null : p.GetValue(value);
-                yield return GetMemberInfoRecursive(p.Name, p.PropertyType, p.GetCustomAttributes().Map(), propertyValue);
+                result.Add(GetMemberInfoRecursive(p.Name, p.PropertyType, p.GetCustomAttributes().Map(), propertyValue));
             }
+
+            return result;
         }
 
         protected override TypeEnum GetComplexSymbolType(Type typeSymbol, out CollectionType? collectionType, out bool isNullableValueType, ref bool isEnum, out List<ClassInfo> typeParameters)
@@ -102,7 +83,7 @@ namespace CodeCaster.SerializeThis.Reflection
                 // And don't count dictionaries as collections.
                 isCollection = false;
             }
-            
+
             // TODO: we want to support most collection types, as quick starting point ICollection<T> was chosen to detect them.
             // TODO: the proper way would be to look for an Add() method or indexer property, but what would be the appropriate type in the first case?.
             // TODO: also, arrays can be jagged or multidimensional... what code to generate?
@@ -119,7 +100,7 @@ namespace CodeCaster.SerializeThis.Reflection
             {
                 collectionType = CollectionType.Collection;
             }
-            
+
             typeParameters = new List<ClassInfo>();
 
             return 0;
@@ -147,5 +128,43 @@ namespace CodeCaster.SerializeThis.Reflection
         }
 
         protected override bool IsEnum(Type typeSymbol) => typeSymbol.IsEnum;
+
+        protected override IList<AttributeInfo> GetAttributes(Type typeSymbol) => typeSymbol.GetCustomAttributes().Map();
+
+        protected override ClassInfo GetArrayTypeParameter(Type typeSymbol)
+        {
+            if (!typeSymbol.IsArray)
+            {
+                throw new ArgumentException($"{typeSymbol.FullName} is not an array");
+            }
+
+            if (typeSymbol.GetArrayRank() > 1)
+            {
+                // TODO: proper T[,] support.
+                return GetMemberInfoRecursive("ArrayElementType", typeSymbol.MakeArrayType());
+            }
+
+            return GetMemberInfoRecursive("ArrayElementType", typeSymbol.GetElementType());
+        }
+
+        protected override (ClassInfo TKey, ClassInfo TValue) GetDictionaryKeyType(Type typeSymbol)
+        {
+            var dictionaryInterface = typeSymbol.GetIDictionaryTKeyTValueInterface();
+
+            var keyType = dictionaryInterface.GenericTypeArguments[0];
+            var valueType = dictionaryInterface.GenericTypeArguments[1];
+
+            var keyInfo = GetMemberInfoRecursive("KeyType", keyType);
+            var valueInfo = GetMemberInfoRecursive("ValueType", valueType);
+
+            return (keyInfo, valueInfo);
+        }
+
+        protected override ClassInfo GetCollectionTypeParameter(Type typeSymbol)
+        {
+            var collectionInterface = typeSymbol.GetICollectionTInterface();
+            var collectionType = collectionInterface.GenericTypeArguments[0];
+            return GetMemberInfoRecursive("CollectionType", collectionType);
+        }
     }
 }
