@@ -184,7 +184,8 @@ namespace CodeCaster.SerializeThis.Serialization.Roslyn
             var isArray = typeSymbol.IsArray();
 
             // Don't count strings as collections, even though they implement IEnumerable<string>.
-            var isCollection = typeSymbol.SpecialType != SpecialType.System_String && typeSymbol.IsCollectionType();
+            var isCollection = typeSymbol.SpecialType != SpecialType.System_String 
+                            && typeSymbol.IsCollectionType();
 
             var isDictionary = isCollection && typeSymbol.IsDictionaryType();
             if (isDictionary)

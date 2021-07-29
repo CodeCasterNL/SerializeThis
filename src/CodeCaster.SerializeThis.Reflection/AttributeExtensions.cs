@@ -5,7 +5,7 @@ using System.Linq;
 
 namespace CodeCaster.SerializeThis.Reflection
 {
-    public static class ReflectionExtensions
+    public static class AttributeExtensions
     {
         public static AttributeInfo[] Map(this IEnumerable<Attribute> attributes)
         {

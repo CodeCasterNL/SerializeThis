@@ -20,7 +20,7 @@ namespace CodeCaster.SerializeThis.Reflection
             return memberInfo;
         }
 
-        private ClassInfo GetMemberInfoRecursive(string name, Type type, object value1)
+        private ClassInfo GetMemberInfoRecursive(string name, Type type, object value)
         {
             var returnValue = new ClassInfo
             {
@@ -60,7 +60,7 @@ namespace CodeCaster.SerializeThis.Reflection
                     c.GenericParameters.Add(gp);
                 }
 
-                foreach (var child in GetChildProperties(type))
+                foreach (var child in GetChildProperties(type, value))
                 {
                     c.Children.Add(child);
                 }
@@ -70,16 +70,61 @@ namespace CodeCaster.SerializeThis.Reflection
             return returnValue;
         }
 
-        private IEnumerable<ClassInfo> GetChildProperties(Type type)
+        private IEnumerable<ClassInfo> GetChildProperties(Type type, object value)
         {
-            return Array.Empty<ClassInfo>();
+            // First go to the root, the first class deriving from System.Object, then walk up to "kind of" order the properties.
+            // No guarantees are made on the order in the docs though.
+            var baseType = type.BaseType;
+            if (baseType != typeof(object))
+            {
+                foreach (var baseClassProperty in GetChildProperties(type.BaseType, value))
+                {
+                    yield return baseClassProperty;
+                }
+            }
+
+            // Then iterate over this type's public instance properties, not the inherited ones.
+            foreach (var p in type.GetProperties(BindingFlags.Instance | BindingFlags.Public | BindingFlags.DeclaredOnly))
+            {
+                var propertyValue = value == null ? null : p.GetValue(value);
+                yield return GetMemberInfoRecursive(p.Name, p.PropertyType, propertyValue);
+            }
         }
 
         private TypeEnum GetSymbolType(Type typeSymbol, out CollectionType? collectionType, out bool isNullableValueType, out bool isEnum, out List<ClassInfo> typeParameters)
         {
+            isEnum = typeSymbol.IsEnum;
+            isNullableValueType = System.Nullable.GetUnderlyingType(typeSymbol) != null;
+
+            // Don't count strings as collections, even though they implement IEnumerable<string>.
+            var isCollection = typeSymbol != typeof(string)
+                            && typeSymbol.IsCollectionType();
+
+            var isArray = typeSymbol.IsArray;
+            var isDictionary = isCollection && typeSymbol.IsDictionaryType();
+            if (isDictionary)
+            {
+                // And don't count dictionaries as collections.
+                isCollection = false;
+            }
+            
+            // TODO: we want to support most collection types, as quick starting point ICollection<T> was chosen to detect them.
+            // TODO: the proper way would be to look for an Add() method or indexer property, but what would be the appropriate type in the first case?.
+            // TODO: also, arrays can be jagged or multidimensional... what code to generate?
             collectionType = null;
-            isNullableValueType = false;
-            isEnum = false;
+            if (isDictionary)
+            {
+                collectionType = CollectionType.Dictionary;
+            }
+            else if (isArray)
+            {
+                collectionType = CollectionType.Array;
+            }
+            else if (isCollection)
+            {
+                collectionType = CollectionType.Collection;
+            }
+            
             typeParameters = new List<ClassInfo>();
 
             return 0;
