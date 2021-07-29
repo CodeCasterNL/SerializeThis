@@ -217,9 +217,9 @@ namespace CodeCaster.SerializeThis.Serialization.CSharp
                     return (Int32)_counter;
                 case TypeEnum.Int64:
                     return (Int64)_counter;
-                case TypeEnum.Float16:
-                    return (_counter + .42f).ToString(CultureInfo.InvariantCulture) + "f";
                 case TypeEnum.Float32:
+                    return (_counter + .42f).ToString(CultureInfo.InvariantCulture) + "f";
+                case TypeEnum.Float64:
                     return (_counter + .42d).ToString(CultureInfo.InvariantCulture) + "d";
                 case TypeEnum.Decimal:
                     return (_counter + .42m).ToString(CultureInfo.InvariantCulture) + "m";

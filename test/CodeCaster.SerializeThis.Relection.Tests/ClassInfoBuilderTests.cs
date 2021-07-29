@@ -27,6 +27,9 @@ namespace CodeCaster.SerializeThis.Relection.Tests
             AssertProperty(result.Class, nameof(JsonTestClasses.FooBase.Firstname), typeof(string), TypeEnum.String);
         }
 
+
+
+
         private void AssertProperty(Class classInfo, string propertyName, Type propertyType, TypeEnum typeEnum)
         {
             var prop = classInfo.Children.FirstOrDefault(c => c.Name == propertyName);

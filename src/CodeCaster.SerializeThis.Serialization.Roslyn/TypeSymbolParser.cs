@@ -250,9 +250,9 @@ namespace CodeCaster.SerializeThis.Serialization.Roslyn
                 case SpecialType.System_Int64:
                     return TypeEnum.Int64;
                 case SpecialType.System_Single:
-                    return TypeEnum.Float16;
-                case SpecialType.System_Double:
                     return TypeEnum.Float32;
+                case SpecialType.System_Double:
+                    return TypeEnum.Float64;
                 case SpecialType.System_Decimal:
                     return TypeEnum.Decimal;
             }

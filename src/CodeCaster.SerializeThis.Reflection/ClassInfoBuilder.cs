@@ -125,10 +125,25 @@ namespace CodeCaster.SerializeThis.Reflection
             return 0;
         }
 
+        private static readonly Dictionary<Type, TypeEnum> KnownValueTypes = new Dictionary<Type, TypeEnum>
+        {
+            { typeof(Boolean), TypeEnum.Boolean },
+            { typeof(String), TypeEnum.String },
+            { typeof(Byte), TypeEnum.Byte },
+            { typeof(Int16), TypeEnum.Int16 },
+            { typeof(Int32), TypeEnum.Int32 },
+            { typeof(Int64), TypeEnum.Int64 },
+            { typeof(Single), TypeEnum.Float32 },
+            { typeof(Double), TypeEnum.Float64 },
+            { typeof(Decimal), TypeEnum.Decimal },
+            { typeof(DateTime), TypeEnum.DateTime },
+        };
+
         protected override TypeEnum? GetKnownValueType(Type typeSymbol)
         {
-            // TODO: 
-            return null;
+            return KnownValueTypes.TryGetValue(typeSymbol, out var knownType)
+                ? knownType
+                : (TypeEnum?)null;
         }
 
         protected override bool IsEnum(Type typeSymbol) => typeSymbol.IsEnum;

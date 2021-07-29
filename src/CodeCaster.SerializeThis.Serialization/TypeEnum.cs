@@ -11,19 +11,16 @@
 
         String = 2,
 
-        Int8 = 3,
+        Byte = 3,
         Int16 = 4,
         Int32 = 5,
         Int64 = 6,
 
-        Float8 = 7,
-        Float16 = 8,
-        Float32 = 9,
+        Float32 = 7,
+        Float64 = 8,
 
-        Decimal = 10,
+        Decimal = 9,
 
-        DateTime = 11,
-
-        Byte = 12,
+        DateTime = 10,
     }
 }

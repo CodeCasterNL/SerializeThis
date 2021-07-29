@@ -138,9 +138,9 @@ namespace CodeCaster.SerializeThis.Serialization.Json
                     return (Int32)_counter;
                 case TypeEnum.Int64:
                     return (Int64)_counter;
-                case TypeEnum.Float16:
-                    return ((Single)_counter) + .42;
                 case TypeEnum.Float32:
+                    return ((Single)_counter) + .42;
+                case TypeEnum.Float64:
                     return ((Double)_counter) +.42;
                 case TypeEnum.Decimal:
                     return ((Decimal)_counter) + .42m;
