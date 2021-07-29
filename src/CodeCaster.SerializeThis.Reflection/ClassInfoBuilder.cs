@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Reflection;
 using CodeCaster.SerializeThis.Serialization;
 
@@ -8,44 +7,15 @@ namespace CodeCaster.SerializeThis.Reflection
 {
     public class ClassInfoBuilder : SymbolParser<Type>
     {
-        protected override ClassInfo GetMemberInfoRecursiveImpl(Type typeSymbol, object instance)
-        {
-            if (typeSymbol == null) throw new ArgumentNullException(nameof(typeSymbol));
+        protected override string GetClassName(Type typeSymbol) => typeSymbol.GetNameWithoutGenerics();
+        
+        // TODO: this will break. Include assembly name with type name?
+        protected override string GetCacheName(Type typeSymbol) => typeSymbol.FullName;
 
-            var memberInfo = GetMemberInfoRecursive(typeSymbol.FullName, typeSymbol, propertyAttributes: null, instance);
-            return memberInfo;
-        }
+        protected override bool IsEnum(Type typeSymbol) => typeSymbol.IsEnum;
 
-        private ClassInfo GetMemberInfoRecursive(string name, Type typeSymbol, ICollection<AttributeInfo> propertyAttributes = null, object value = null)
-        {
-            var returnValue = new ClassInfo
-            {
-                Name = name,
-                Attributes = propertyAttributes ?? Array.Empty<AttributeInfo>()
-            };
-
-            // TODO: this will break. Include assembly name with type name?
-            var fullTypeName = typeSymbol.FullName;
-            if (HasSeenType(fullTypeName, out var c))
-            {
-                returnValue.Class = c;
-                return returnValue;
-            }
-
-            // Save it _before_ diving into members and type parameters. 
-            var typeName = fullTypeName;
-            c = new Class
-            {
-                TypeName = typeName
-            };
-            AddSeenType(fullTypeName, c);
-
-            ParseClass(c, typeSymbol, value);
-
-            returnValue.Class = c;
-            return returnValue;
-        }
-
+        protected override IList<AttributeInfo> GetAttributes(Type typeSymbol) => typeSymbol.GetCustomAttributes().Map();
+        
         protected override IList<ClassInfo> GetChildProperties(Type type, object value)
         {
             var result = new List<ClassInfo>();
@@ -103,6 +73,8 @@ namespace CodeCaster.SerializeThis.Reflection
 
             typeParameters = new List<ClassInfo>();
 
+            // TODO: generics and nullables.
+
             return 0;
         }
 
@@ -126,10 +98,6 @@ namespace CodeCaster.SerializeThis.Reflection
                 ? knownType
                 : (TypeEnum?)null;
         }
-
-        protected override bool IsEnum(Type typeSymbol) => typeSymbol.IsEnum;
-
-        protected override IList<AttributeInfo> GetAttributes(Type typeSymbol) => typeSymbol.GetCustomAttributes().Map();
 
         protected override ClassInfo GetArrayTypeParameter(Type typeSymbol)
         {

@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using Microsoft.CodeAnalysis;
 
@@ -7,44 +6,15 @@ namespace CodeCaster.SerializeThis.Serialization.Roslyn
 {
     public class TypeSymbolParser : SymbolParser<ITypeSymbol>
     {
-        protected override ClassInfo GetMemberInfoRecursiveImpl(ITypeSymbol typeSymbol, object instance)
+        protected override string GetClassName(ITypeSymbol typeSymbol) => typeSymbol.GetTypeName();
+
+        // TODO: this will break. Include assembly name with type name?
+        protected override string GetCacheName(ITypeSymbol typeSymbol) => typeSymbol.GetTypeName(withGenericParameterNames: true);
+
+        protected override bool IsEnum(ITypeSymbol typeSymbol)
         {
-            if (typeSymbol == null) throw new ArgumentNullException(nameof(typeSymbol));
-
-            // TODO: something with instance, when debugging.
-            var memberInfo = GetMemberInfoRecursive(typeSymbol.GetTypeName(withGenericParameterNames: true), typeSymbol);
-            return memberInfo;
-        }
-
-        private ClassInfo GetMemberInfoRecursive(string name, ITypeSymbol typeSymbol, IPropertySymbol propertySymbol = null)
-        {
-            var returnValue = new ClassInfo
-            {
-                Name = name,
-                Attributes = propertySymbol?.GetAttributes().Map()
-            };
-
-            // TODO: this will break. Include assembly name with type name?
-            var fullTypeName = typeSymbol.GetTypeName(withGenericParameterNames: true);
-            if (HasSeenType(fullTypeName, out var c))
-            {
-                returnValue.Class = c;
-                return returnValue;
-            }
-
-            // Save it _before_ diving into members and type parameters.
-            var typeName = typeSymbol.GetTypeName();
-            c = new Class
-            {
-                TypeName = typeName
-            };
-
-            AddSeenType(fullTypeName, c);
-
-            ParseClass(c, typeSymbol, value: null);
-
-            returnValue.Class = c;
-            return returnValue;
+            var namedTypeSymbol = typeSymbol as INamedTypeSymbol;
+            return namedTypeSymbol.IsEnum();
         }
 
         protected override IList<AttributeInfo> GetAttributes(ITypeSymbol typeSymbol) => typeSymbol.GetAttributes().Map();
@@ -122,7 +92,7 @@ namespace CodeCaster.SerializeThis.Serialization.Roslyn
                 {
                     if (member is IPropertySymbol memberTypeSymbol)
                     {
-                        result.Add(GetMemberInfoRecursive(memberTypeSymbol.Name, memberTypeSymbol.Type, memberTypeSymbol));
+                        result.Add(GetMemberInfoRecursive(memberTypeSymbol.Name, memberTypeSymbol.Type, memberTypeSymbol.GetAttributes().Map()));
                     }
                 }
             }
@@ -215,12 +185,6 @@ namespace CodeCaster.SerializeThis.Serialization.Roslyn
             }
 
             return null;
-        }
-
-        protected override bool IsEnum(ITypeSymbol typeSymbol)
-        {
-            var namedTypeSymbol = typeSymbol as INamedTypeSymbol;
-            return namedTypeSymbol.IsEnum();
         }
     }
 }

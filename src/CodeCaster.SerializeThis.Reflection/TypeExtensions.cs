@@ -30,6 +30,26 @@ namespace CodeCaster.SerializeThis.Reflection
             return typeSymbol.GetICollectionTInterface() != null;
         }
 
+        public static string GetNameWithoutGenerics(this Type typeSymbol)
+        {
+            var name = typeSymbol.Namespace + "." + typeSymbol.Name;
+
+            return name.RemoveAfter('[', '`');
+        }
+
+        public static string RemoveAfter(this string value, params char[] parts)
+        {
+            for (int i = 0; i < value.Length; i++)
+            {
+                if (parts.Any(p => p == value[i]))
+                {
+                    return value.Substring(0, i);
+                }
+            }
+
+            return value;
+        }
+
         private static Type GetInterface(Type typeSymbol, Func<Type, bool> testFunction)
         {
             if (testFunction(typeSymbol))

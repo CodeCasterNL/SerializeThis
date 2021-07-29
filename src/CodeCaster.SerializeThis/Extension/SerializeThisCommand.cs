@@ -39,6 +39,7 @@ namespace CodeCaster.SerializeThis.Extension
 
         private readonly ISerializerFactory _serializerFactory;
         private readonly IOutputHandler[] _outputHandlers;
+        private readonly IClassInfoBuilder<ITypeSymbol> _roslynParser;
 
         public static SerializeThisCommand Instance { get; private set; }
 
@@ -48,9 +49,9 @@ namespace CodeCaster.SerializeThis.Extension
         /// <param name="package">Owner package, not null.</param>
         /// <param name="serializerFactory"></param>
         /// <param name="outputHandlers"></param>
-        public static void Initialize(Microsoft.VisualStudio.Shell.Package package, ISerializerFactory serializerFactory, IEnumerable<IOutputHandler> outputHandlers)
+        public static void Initialize(Microsoft.VisualStudio.Shell.Package package, IClassInfoBuilder<ITypeSymbol> roslynParser, ISerializerFactory serializerFactory, IEnumerable<IOutputHandler> outputHandlers)
         {
-            Instance = new SerializeThisCommand(package, serializerFactory, outputHandlers);
+            Instance = new SerializeThisCommand(package, roslynParser, serializerFactory, outputHandlers);
         }
 
         /// <summary>
@@ -60,8 +61,9 @@ namespace CodeCaster.SerializeThis.Extension
         /// <param name="package">Owner package, not null.</param>
         /// <param name="serializerFactory"></param>
         /// <param name="outputHandlers"></param>
-        private SerializeThisCommand(Microsoft.VisualStudio.Shell.Package package, ISerializerFactory serializerFactory, IEnumerable<IOutputHandler> outputHandlers)
+        private SerializeThisCommand(Microsoft.VisualStudio.Shell.Package package, IClassInfoBuilder<ITypeSymbol> roslynParser, ISerializerFactory serializerFactory, IEnumerable<IOutputHandler> outputHandlers)
         {
+            _roslynParser = roslynParser;
             _outputHandlers = outputHandlers.OrderByDescending(o => o.Priority).ToArray();
             _serializerFactory = serializerFactory ?? throw new ArgumentNullException(nameof(serializerFactory));
             _package = package ?? throw new ArgumentNullException(nameof(package));
@@ -83,6 +85,7 @@ namespace CodeCaster.SerializeThis.Extension
                 // TODO: let other plugins add their own menu item to this plugin's context menu.
             }
 
+            
             InitializeOutputHandlers();
         }
 
@@ -166,7 +169,7 @@ namespace CodeCaster.SerializeThis.Extension
             }
 
             // This does the actual magic.
-            var classInfo = new Serialization.Roslyn.TypeSymbolParser().GetMemberInfoRecursive(symbolToSerialize, null/*, semanticModel*/);
+            var classInfo = _roslynParser.GetMemberInfoRecursive(symbolToSerialize, null/*, semanticModel*/);
             ShowOutput(classInfo, commandName);
         }
 

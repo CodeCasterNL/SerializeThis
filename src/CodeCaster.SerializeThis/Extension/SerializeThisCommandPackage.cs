@@ -3,6 +3,7 @@ using System.Diagnostics.CodeAnalysis;
 using System.Runtime.InteropServices;
 using System.Threading;
 using CodeCaster.SerializeThis.OutputHandlers;
+using CodeCaster.SerializeThis.Serialization.Roslyn;
 using Microsoft.VisualStudio.Shell;
 
 namespace CodeCaster.SerializeThis.Extension
@@ -64,7 +65,9 @@ namespace CodeCaster.SerializeThis.Extension
                 new TempFileInNewTabOutputHandler(),
             };
 
-            SerializeThisCommand.Initialize(this, new DefaultSerializerFactory(), outputHandlers);
+            var roslynParser = new TypeSymbolParser();
+
+            SerializeThisCommand.Initialize(this, roslynParser, new DefaultSerializerFactory(), outputHandlers);
 
             return System.Threading.Tasks.Task.CompletedTask;
         }

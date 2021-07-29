@@ -67,7 +67,7 @@ namespace CodeCaster.SerializeThis.Relection.Tests
             // Just to be sure
             Assert.AreEqual(propertyName, c.Name);
 
-            Assert.AreEqual(propertyType.FullName, c.Class.TypeName);
+            Assert.AreEqual(propertyType.GetNameWithoutGenerics(), c.Class.TypeName);
             Assert.AreEqual(typeEnum, c.Class.Type);
         }
     }

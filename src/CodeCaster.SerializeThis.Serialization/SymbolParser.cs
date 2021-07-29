@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 
 namespace CodeCaster.SerializeThis.Serialization
 {
@@ -17,7 +18,41 @@ namespace CodeCaster.SerializeThis.Serialization
         ClassInfo IClassInfoBuilder<T>.GetMemberInfoRecursive(T typeSymbol, object instance)
         {
             _typesSeen.Clear();
-            return GetMemberInfoRecursiveImpl(typeSymbol, instance);
+            if (typeSymbol == null) throw new ArgumentNullException(nameof(typeSymbol));
+
+
+            // TODO: something with instance, when debugging.
+            var memberInfo = GetMemberInfoRecursive("(root)", typeSymbol);
+            return memberInfo;
+        }
+
+        protected ClassInfo GetMemberInfoRecursive(string name, T typeSymbol, IList<AttributeInfo> propertyAttributes = null, object instance = null)
+        {
+            var returnValue = new ClassInfo
+            {
+                Name = name,
+                Attributes = propertyAttributes
+            };
+
+            var fullTypeName = GetCacheName(typeSymbol);
+            if (_typesSeen.TryGetValue(fullTypeName, out var classInfo))
+            {
+                returnValue.Class = classInfo;
+                return returnValue;
+            }
+
+            // Save it _before_ diving into members and type parameters.
+            var typeName = GetClassName(typeSymbol);
+            classInfo = new Class
+            {
+                TypeName = typeName
+            };
+            _typesSeen[fullTypeName] = classInfo;
+
+            ParseClass(classInfo, typeSymbol, instance);
+
+            returnValue.Class = classInfo;
+            return returnValue;
         }
 
         protected TypeEnum GetSymbolType(T typeSymbol, out CollectionType? collectionType, out bool isNullableValueType, out bool isEnum, out List<ClassInfo> typeParameters)
@@ -37,9 +72,7 @@ namespace CodeCaster.SerializeThis.Serialization
             return GetComplexSymbolType(typeSymbol, out collectionType, out isNullableValueType, ref isEnum, out typeParameters);
         }
 
-        protected abstract bool IsEnum(T typeSymbol);
-
-        protected void ParseClass(Class c, T typeSymbol, object value)
+        private void ParseClass(Class c, T typeSymbol, object value)
         {
             var type = GetSymbolType(typeSymbol, out var collectionType, out var isNullableValueType, out var isEnum, out var genericParameters);
 
@@ -90,9 +123,18 @@ namespace CodeCaster.SerializeThis.Serialization
             }
         }
 
-        protected abstract IList<ClassInfo> GetChildProperties(T typeSymbol, object value);
+        protected abstract bool IsEnum(T typeSymbol);
 
+        protected abstract string GetClassName(T typeSymbol);
+
+        /// <summary>
+        /// Return a cachable name for the given type.
+        /// </summary>
+        protected abstract string GetCacheName(T typeSymbol);
+        
         protected abstract IList<AttributeInfo> GetAttributes(T typeSymbol);
+
+        protected abstract IList<ClassInfo> GetChildProperties(T typeSymbol, object value);
 
         /// <summary>
         /// Should try to parse the given type symbol for all <see cref="TypeEnum"/> members except <see cref="TypeEnum.ComplexType"/>.
@@ -101,21 +143,10 @@ namespace CodeCaster.SerializeThis.Serialization
 
         protected abstract TypeEnum GetComplexSymbolType(T typeSymbol, out CollectionType? collectionType, out bool isNullableValueType, ref bool isEnum, out List<ClassInfo> typeParameters);
 
-
-        /// <summary>
-        /// This takes the deep dive.
-        /// </summary>
-        protected abstract ClassInfo GetMemberInfoRecursiveImpl(T typeSymbol, object instance);
-
         protected abstract ClassInfo GetArrayTypeParameter(T typeSymbol);
 
         protected abstract ClassInfo GetCollectionTypeParameter(T typeSymbol);
 
         protected abstract (ClassInfo TKey, ClassInfo TValue) GetDictionaryKeyType(T typeSymbol);
-
-
-        protected bool HasSeenType(string fullTypeName, out Class classInfo) => _typesSeen.TryGetValue(fullTypeName, out classInfo);
-
-        protected void AddSeenType(string fullTypeName, Class classInfo) => _typesSeen[fullTypeName] = classInfo;
     }
 }
