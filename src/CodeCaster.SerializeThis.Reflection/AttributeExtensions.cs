@@ -7,7 +7,12 @@ namespace CodeCaster.SerializeThis.Reflection
 {
     public static class AttributeExtensions
     {
-        public static AttributeInfo[] Map(this IEnumerable<Attribute> attributes)
+        /// <summary>
+        /// It's an IList for indexing, but don't you dare add something.
+        /// </summary>
+        /// <param name="attributes"></param>
+        /// <returns></returns>
+        public static IList<AttributeInfo> Map(this IEnumerable<Attribute> attributes)
         {
             return attributes == null
                 ? Array.Empty<AttributeInfo>()

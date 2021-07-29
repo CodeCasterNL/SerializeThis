@@ -8,29 +8,25 @@ namespace CodeCaster.SerializeThis.Reflection
 {
     public class ClassInfoBuilder : SymbolParser<Type>
     {
-        private readonly Dictionary<string, Class> _typesSeen = new Dictionary<string, Class>();
-
-        protected override ClassInfo GetMemberInfoRecursiveImpl(Type value, object instance)
+        protected override ClassInfo GetMemberInfoRecursiveImpl(Type typeSymbol, object instance)
         {
-            if (value == null) throw new ArgumentNullException(nameof(value));
+            if (typeSymbol == null) throw new ArgumentNullException(nameof(typeSymbol));
 
-            _typesSeen.Clear();
-            var type = value.GetType();
-            var memberInfo = GetMemberInfoRecursive(type.FullName, type, value);
+            var memberInfo = GetMemberInfoRecursive(typeSymbol.FullName, typeSymbol, propertyAttributes: null, instance);
             return memberInfo;
         }
 
-        private ClassInfo GetMemberInfoRecursive(string name, Type type, object value)
+        private ClassInfo GetMemberInfoRecursive(string name, Type type, ICollection<AttributeInfo> propertyAttributes, object value)
         {
             var returnValue = new ClassInfo
             {
                 Name = name,
-                //Attributes = propertySymbol?.GetAttributes().Map()
+                Attributes = propertyAttributes
             };
 
             // TODO: this will break. Include assembly name with type name?
             var fullTypeName = type.FullName;
-            if (_typesSeen.TryGetValue(fullTypeName, out var c))
+            if (HasSeenType(fullTypeName, out var c))
             {
                 returnValue.Class = c;
                 return returnValue;
@@ -42,7 +38,7 @@ namespace CodeCaster.SerializeThis.Reflection
             {
                 TypeName = typeName
             };
-            _typesSeen[fullTypeName] = c;
+            AddSeenType(fullTypeName, c);
 
             var typeEnum = GetSymbolType(type, out var collectionType, out var isNullableValueType, out var isEnum, out var genericParameters);
 
@@ -87,12 +83,22 @@ namespace CodeCaster.SerializeThis.Reflection
             foreach (var p in type.GetProperties(BindingFlags.Instance | BindingFlags.Public | BindingFlags.DeclaredOnly))
             {
                 var propertyValue = value == null ? null : p.GetValue(value);
-                yield return GetMemberInfoRecursive(p.Name, p.PropertyType, propertyValue);
+                yield return GetMemberInfoRecursive(p.Name, p.PropertyType, p.GetCustomAttributes().Map(), propertyValue);
             }
         }
 
         private TypeEnum GetSymbolType(Type typeSymbol, out CollectionType? collectionType, out bool isNullableValueType, out bool isEnum, out List<ClassInfo> typeParameters)
         {
+            var knownValueType = GetKnownValueType(typeSymbol);
+            if (knownValueType != null)
+            {
+                collectionType = null;
+                isNullableValueType = false;
+                isEnum = false;
+                typeParameters = null;
+                return knownValueType.Value;
+            }
+
             isEnum = typeSymbol.IsEnum;
             isNullableValueType = System.Nullable.GetUnderlyingType(typeSymbol) != null;
 

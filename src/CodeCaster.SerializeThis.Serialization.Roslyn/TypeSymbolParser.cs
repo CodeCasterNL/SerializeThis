@@ -9,6 +9,8 @@ namespace CodeCaster.SerializeThis.Serialization.Roslyn
     {
         protected override ClassInfo GetMemberInfoRecursiveImpl(ITypeSymbol typeSymbol, object instance)
         {
+            if (typeSymbol == null) throw new ArgumentNullException(nameof(typeSymbol));
+
             // TODO: something with instance, when debugging.
             var memberInfo = GetMemberInfoRecursive(typeSymbol.GetTypeName(withGenericParameterNames: true), typeSymbol);
             return memberInfo;
