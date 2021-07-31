@@ -1,4 +1,5 @@
 ﻿using JsonTestClasses;
+using System;
 using System.Diagnostics;
 
 namespace SerializeThis.Sample
@@ -10,8 +11,14 @@ namespace SerializeThis.Sample
     {
         static void Main(string[] args)
         {
-
-            var fi = new FooInherited();
+            var fi = new FooInherited
+            {
+                Firstname = "@Runtime1",
+                Lastname = null, // PlzGenerate
+                Age = 42,
+                DateOfBirth = new DateTime(2021, 07, 31),
+            };
+            
             var fd = new FooDictionaries();
 
             var attributeTest = new FooWithFooBase();

@@ -11,6 +11,7 @@ namespace CodeCaster.SerializeThis.Relection.Tests
     public class ClassInfoBuilderTests
     {
         private readonly IClassInfoBuilder<Type> _classUnderTest = new ClassInfoBuilder();
+        private readonly string _rootObjectName = "test";
 
         [Test]
         public void ParentProperties()
@@ -19,9 +20,10 @@ namespace CodeCaster.SerializeThis.Relection.Tests
             var toSerialize = new JsonTestClasses.FooInherited();
 
             // Act
-            var result = _classUnderTest.GetMemberInfoRecursive(toSerialize.GetType(), toSerialize);
+            var result = _classUnderTest.GetMemberInfoRecursive(_rootObjectName, toSerialize.GetType(), toSerialize);
 
             // Assert 
+            Assert.AreEqual(_rootObjectName, result.Name);
             Assert.AreEqual(TypeEnum.ComplexType, result.Class.Type);
 
             // Base property
@@ -36,9 +38,10 @@ namespace CodeCaster.SerializeThis.Relection.Tests
             var toSerialize = new JsonTestClasses.FooSimpleCollections();
 
             // Act
-            var result = _classUnderTest.GetMemberInfoRecursive(toSerialize.GetType(), toSerialize);
+            var result = _classUnderTest.GetMemberInfoRecursive(_rootObjectName, toSerialize.GetType(), toSerialize);
 
             // Assert 
+            Assert.AreEqual(_rootObjectName, result.Name);
             Assert.AreEqual(TypeEnum.ComplexType, result.Class.Type);
 
             // Base property

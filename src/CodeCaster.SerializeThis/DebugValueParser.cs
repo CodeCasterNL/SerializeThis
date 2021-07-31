@@ -1,74 +1,90 @@
 ﻿using CodeCaster.SerializeThis.Serialization;
 using EnvDTE;
 using System;
-using System.Collections.Generic;
 
 namespace CodeCaster.SerializeThis
 {
-    public class DebugValueParser : SymbolParser<Expression>
+    /// <summary>
+    /// TODO.
+    /// </summary>
+    public class DebugValueParser
     {
-        protected override TypeEnum? GetKnownValueType(Expression typeSymbol)
+        private readonly Debugger _debugger;
+
+        public DebugValueParser(Debugger debugger)
         {
-            var value = typeSymbol.Value;
+            _debugger = debugger;
+        }
 
-            var valueTypeName = typeSymbol.Name.EndsWith("?")
-                ? typeSymbol.Name.Substring(0, typeSymbol.Name.Length - 1)
-                : typeSymbol.Name;
+        internal void PopulateClassFromLocal(ClassInfo classInfo)
+        {
+            var stackFrame = _debugger.CurrentStackFrame;
 
-            switch (valueTypeName)
+            foreach (Expression local in stackFrame.Locals)
             {
-                case "int":
-                case "System.Int32":
-                    return TypeEnum.Int32;
+                if (local.Name == classInfo.Name)
+                {
+                    PopulateClassInfo(classInfo, local);
+                    break;
+                }
+            }
+        }
 
+        private void PopulateClassInfo(ClassInfo classInfo, Expression local)
+        {
+            if (classInfo.Class.Type != TypeEnum.ComplexType)
+            {
+                if (local.IsValidValue)
+                {
+                    var valueTypeValue = GetValueTypeValue(classInfo, local);
+                    classInfo.Value = valueTypeValue?.ToString() != "null"
+                        ? valueTypeValue
+                        : null;
+                }
+
+                return;
             }
 
-            return TypeEnum.String;
+            // TODO: collection types
+            foreach (var prop in classInfo.Class.Children)
+            {
+                var localMember = FindMember(local, prop);
+                PopulateClassInfo(prop, localMember);
+            }
         }
 
-        protected override ClassInfo GetArrayTypeParameter(Expression typeSymbol)
+        private Expression FindMember(Expression local, ClassInfo prop)
         {
-            throw new NotImplementedException();
+            foreach (Expression dataMember in local.DataMembers)
+            {
+                if (dataMember.Name == prop.Name)
+                {
+                    return dataMember;
+                }
+            }
+
+            return null;
         }
 
-        protected override IList<AttributeInfo> GetAttributes(Expression typeSymbol)
+        private object GetValueTypeValue(ClassInfo classInfo, Expression local)
         {
-            throw new NotImplementedException();
-        }
+            switch (classInfo.Class.Type)
+            {
+                case TypeEnum.Boolean:
+                case TypeEnum.String:
+                case TypeEnum.Byte:
+                case TypeEnum.Int16:
+                case TypeEnum.Int32:
+                case TypeEnum.Int64:
+                case TypeEnum.Float32:
+                case TypeEnum.Float64:
+                case TypeEnum.Decimal:
+                case TypeEnum.DateTime:
+                case TypeEnum.DateTimeOffset:
+                    return local.Value;
+            }
 
-        protected override string GetCacheName(Expression typeSymbol)
-        {
-            throw new NotImplementedException();
-        }
-
-        protected override IList<ClassInfo> GetChildProperties(Expression typeSymbol, object value)
-        {
-            throw new NotImplementedException();
-        }
-
-        protected override string GetClassName(Expression typeSymbol)
-        {
-            throw new NotImplementedException();
-        }
-
-        protected override ClassInfo GetCollectionTypeParameter(Expression typeSymbol)
-        {
-            throw new NotImplementedException();
-        }
-
-        protected override TypeEnum GetComplexSymbolType(Expression typeSymbol, out CollectionType? collectionType, out bool isNullableValueType, ref bool isEnum, out List<ClassInfo> typeParameters)
-        {
-            throw new NotImplementedException();
-        }
-
-        protected override (ClassInfo TKey, ClassInfo TValue) GetDictionaryKeyType(Expression typeSymbol)
-        {
-            throw new NotImplementedException();
-        }
-
-        protected override bool IsEnum(Expression typeSymbol)
-        {
-            throw new NotImplementedException();
+            return null;
         }
     }
 }

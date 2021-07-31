@@ -150,20 +150,9 @@ namespace CodeCaster.SerializeThis.Extension
             var semanticModel = await document.GetSemanticModelAsync();
 
             var selectedSymbol = await GetSymbolUnderCursorAsync(document, semanticModel, position);
-
-            var debugger = GetDebugger();
-            var stackFrame = debugger.CurrentStackFrame;
-
-            object instance = null;
-            foreach (EnvDTE.Expression local in stackFrame.Locals)
-            {
-                if (local.Name == selectedSymbol.Name)
-                {
-                    instance = ((IClassInfoBuilder<EnvDTE.Expression>)new DebugValueParser()).GetMemberInfoRecursive(local, instance: local);
-                }
-            }
-
+            
             ITypeSymbol symbolToSerialize;
+            var objectName = "(root)";
 
             switch (selectedSymbol)
             {
@@ -172,8 +161,14 @@ namespace CodeCaster.SerializeThis.Extension
                     symbolToSerialize = methodSymbol.ReceiverType;
                     break;
                 // 'Foo' in `public class Foo { ... }`, `public Foo F { get; set; }`.
+                // 'var' in `var f = new Foo { ... }`.
                 case ITypeSymbol typeSymbol:
                     symbolToSerialize = typeSymbol;
+                    break;
+                // 'f' in `var f = new Foo { ... }`.
+                case ILocalSymbol localSymbol:
+                    objectName = localSymbol.Name;
+                    symbolToSerialize = localSymbol.Type;
                     break;
                 default:
                     ShowMessageBox(ServiceProvider, "Invoke this menu on a type name.");
@@ -181,7 +176,15 @@ namespace CodeCaster.SerializeThis.Extension
             }
 
             // This does the actual magic.
-            var classInfo = _roslynParser.GetMemberInfoRecursive(symbolToSerialize, instance/*, semanticModel*/);
+            var classInfo = _roslynParser.GetMemberInfoRecursive(objectName, symbolToSerialize, null/*, semanticModel*/);
+
+            var debugger = GetDebugger();
+            if (debugger != null)
+            {
+                var debugValueParser = new DebugValueParser(debugger);
+                debugValueParser.PopulateClassFromLocal(classInfo);
+            }
+
             ShowOutput(classInfo, commandName);
         }
 

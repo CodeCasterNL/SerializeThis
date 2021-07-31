@@ -100,7 +100,7 @@ namespace CodeCaster.SerializeThis.Serialization.Roslyn
             return result;
         }
 
-        protected override TypeEnum GetComplexSymbolType(ITypeSymbol typeSymbol, out CollectionType? collectionType, out bool isNullableValueType, ref bool isEnum, out List<ClassInfo> typeParameters)
+        protected override TypeEnum GetComplexSymbolType(ITypeSymbol typeSymbol, out CollectionType? collectionType, out bool isNullableValueType, ref bool isEnum, out IList<ClassInfo> typeParameters)
         {
             collectionType = null;
             

@@ -38,7 +38,7 @@ namespace CodeCaster.SerializeThis.Reflection
             return result;
         }
 
-        protected override TypeEnum GetComplexSymbolType(Type typeSymbol, out CollectionType? collectionType, out bool isNullableValueType, ref bool isEnum, out List<ClassInfo> typeParameters)
+        protected override TypeEnum GetComplexSymbolType(Type typeSymbol, out CollectionType? collectionType, out bool isNullableValueType, ref bool isEnum, out IList<ClassInfo> typeParameters)
         {
             isNullableValueType = System.Nullable.GetUnderlyingType(typeSymbol) != null;
 

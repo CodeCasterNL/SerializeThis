@@ -117,6 +117,11 @@ namespace CodeCaster.SerializeThis.Serialization.Json
         // ReSharper disable BuiltInTypeReferenceStyle - for consistent naming
         private object GetContents(ClassInfo toSerialize)
         {
+            if (toSerialize.Value != null)
+            {
+                return toSerialize.Value;
+            }
+
             _counter++;
 
             if (toSerialize.Class.IsEnum)
@@ -139,11 +144,11 @@ namespace CodeCaster.SerializeThis.Serialization.Json
                 case TypeEnum.Int64:
                     return (Int64)_counter;
                 case TypeEnum.Float32:
-                    return ((Single)_counter) + .42;
+                    return ((Single)_counter) + .000042;
                 case TypeEnum.Float64:
-                    return ((Double)_counter) +.42;
+                    return ((Double)_counter) + .000000000000042;
                 case TypeEnum.Decimal:
-                    return ((Decimal)_counter) + .42m;
+                    return ((Decimal)_counter) + .00000000000042m;
                 case TypeEnum.Byte:
                     return (Byte)_counter;
 

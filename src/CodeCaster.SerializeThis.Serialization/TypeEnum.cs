@@ -22,5 +22,6 @@
         Decimal = 9,
 
         DateTime = 10,
+        DateTimeOffset = 11,
     }
 }

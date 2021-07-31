@@ -15,14 +15,14 @@ namespace CodeCaster.SerializeThis.Serialization
         /// <summary>
         /// This is what the caller calls. It does not support recursion and should not be called from within or derived classes.
         /// </summary>
-        ClassInfo IClassInfoBuilder<T>.GetMemberInfoRecursive(T typeSymbol, object instance)
+        ClassInfo IClassInfoBuilder<T>.GetMemberInfoRecursive(string objectName, T typeSymbol, object instance)
         {
             _typesSeen.Clear();
             if (typeSymbol == null) throw new ArgumentNullException(nameof(typeSymbol));
 
 
             // TODO: something with instance, when debugging.
-            var memberInfo = GetMemberInfoRecursive("(root)", typeSymbol);
+            var memberInfo = GetMemberInfoRecursive(objectName, typeSymbol);
             return memberInfo;
         }
 
@@ -55,7 +55,7 @@ namespace CodeCaster.SerializeThis.Serialization
             return returnValue;
         }
 
-        protected TypeEnum GetSymbolType(T typeSymbol, out CollectionType? collectionType, out bool isNullableValueType, out bool isEnum, out List<ClassInfo> typeParameters)
+        protected TypeEnum GetSymbolType(T typeSymbol, out CollectionType? collectionType, out bool isNullableValueType, out bool isEnum, out IList<ClassInfo> typeParameters)
         {
             var knownValueType = GetKnownValueType(typeSymbol);
             if (knownValueType != null)
@@ -63,7 +63,7 @@ namespace CodeCaster.SerializeThis.Serialization
                 collectionType = null;
                 isNullableValueType = false;
                 isEnum = false;
-                typeParameters = null;
+                typeParameters = Array.Empty<ClassInfo>();
                 return knownValueType.Value;
             }
             
@@ -141,7 +141,7 @@ namespace CodeCaster.SerializeThis.Serialization
         /// </summary>
         protected abstract TypeEnum? GetKnownValueType(T typeSymbol);
 
-        protected abstract TypeEnum GetComplexSymbolType(T typeSymbol, out CollectionType? collectionType, out bool isNullableValueType, ref bool isEnum, out List<ClassInfo> typeParameters);
+        protected abstract TypeEnum GetComplexSymbolType(T typeSymbol, out CollectionType? collectionType, out bool isNullableValueType, ref bool isEnum, out IList<ClassInfo> typeParameters);
 
         protected abstract ClassInfo GetArrayTypeParameter(T typeSymbol);
 

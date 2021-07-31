@@ -196,6 +196,11 @@ namespace CodeCaster.SerializeThis.Serialization.CSharp
 
         private object GetValue(ClassInfo type)
         {
+            if (type.Value != null)
+            {
+                return type.Value;
+            }
+
             if (type.Class.IsEnum)
             {
                 // TODO: get enum example member (or 0)?

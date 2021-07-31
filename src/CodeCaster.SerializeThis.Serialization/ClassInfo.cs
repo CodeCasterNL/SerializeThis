@@ -13,5 +13,7 @@ namespace CodeCaster.SerializeThis.Serialization
         public ICollection<AttributeInfo> Attributes { get; set; } = Array.Empty<AttributeInfo>();
 
         public Class Class { get; set; }
+
+        public object Value { get; set; }
     }
 }
