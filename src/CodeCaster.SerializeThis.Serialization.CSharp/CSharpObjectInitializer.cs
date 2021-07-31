@@ -187,7 +187,7 @@ namespace CodeCaster.SerializeThis.Serialization.CSharp
             }
             else
             {
-                foreach (var item in (IEnumerable<KeyValuePair<object, object>>)type.Value)
+                foreach (var item in (IEnumerable<object>)type.Value)
                 {
                     EmitDictionaryEntry(indent + 1, value: item, generateValue: false);
                 }
