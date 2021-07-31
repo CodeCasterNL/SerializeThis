@@ -69,7 +69,6 @@
       <DependentUpon>SerializedModelForm.cs</DependentUpon>
     </Compile>
     <Compile Include="OutputHandlers\IOutputHandler.cs" />
-    <Compile Include="OutputHandlers\MessageBoxOutputHandler.cs" />
     <Compile Include="OutputHandlers\ModelFormOutputHandler.cs" />
     <Compile Include="OutputHandlers\TempFileInNewTabOutputHandler.cs" />
     <Compile Include="Package\VSPackage.Designer.cs">
@@ -83,7 +82,7 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="Package\[Content_Types].xml" />
-    <Content Include="Resources\Serialize_This-Menu.png">
+    <Content Include="Resources\SerializeThisPreview.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
       <IncludeInVSIX>true</IncludeInVSIX>
     </Content>

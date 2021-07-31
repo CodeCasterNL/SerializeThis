@@ -5,6 +5,10 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Include="..\..\JsonTestClasses.cs" Link="JsonTestClasses.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
     <ProjectReference Include="..\..\src\CodeCaster.SerializeThis.Serialization\CodeCaster.SerializeThis.Serialization.csproj" />
   </ItemGroup>
 

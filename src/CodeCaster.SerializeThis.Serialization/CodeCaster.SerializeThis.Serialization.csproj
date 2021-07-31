@@ -50,6 +50,7 @@
     <Compile Include="IClassInfoBuilder.cs" />
     <Compile Include="IClassInfoSerializer.cs" />
     <Compile Include="ISerializerFactory.cs" />
+    <Compile Include="SymbolParser.cs" />
     <Compile Include="TypeEnum.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>

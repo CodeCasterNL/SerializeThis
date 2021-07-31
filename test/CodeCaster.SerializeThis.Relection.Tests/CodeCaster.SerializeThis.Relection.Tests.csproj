@@ -15,6 +15,7 @@
   <ItemGroup>
     <ProjectReference Include="..\..\src\CodeCaster.SerializeThis.Reflection\CodeCaster.SerializeThis.Reflection.csproj" />
     <ProjectReference Include="..\..\src\CodeCaster.SerializeThis.Serialization\CodeCaster.SerializeThis.Serialization.csproj" />
+    <ProjectReference Include="..\CodeCaster.SerializeThis.Tests.Shared\CodeCaster.SerializeThis.Tests.Shared.csproj" />
   </ItemGroup>
 
 </Project>

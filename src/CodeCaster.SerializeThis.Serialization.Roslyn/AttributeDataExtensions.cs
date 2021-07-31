@@ -2,12 +2,13 @@
 using System.Collections.Immutable;
 using Microsoft.CodeAnalysis;
 using System.Linq;
+using System.Collections.Generic;
 
 namespace CodeCaster.SerializeThis.Serialization.Roslyn
 {
     public static class AttributeDataExtensions
     {
-        public static AttributeInfo[] Map(this ImmutableArray<AttributeData> attributes)
+        public static IList<AttributeInfo> Map(this ImmutableArray<AttributeData> attributes)
         {
             return attributes == null
                 ? Array.Empty<AttributeInfo>()

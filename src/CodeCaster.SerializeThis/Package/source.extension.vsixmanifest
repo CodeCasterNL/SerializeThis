@@ -7,7 +7,7 @@
     <MoreInfo>https://github.com/CodeCasterNL/CodeCaster.SerializeThis/blob/master/README.md</MoreInfo>
     <License>LICENSE</License>
     <Icon>Resources\SerializeThisCommandPackage.ico</Icon>
-    <PreviewImage>Resources\Serialize_This-Menu.png</PreviewImage>
+    <PreviewImage>Resources\SerializeThisPreview.png</PreviewImage>
     <Tags>Testing, Code Generator, JSON, WebApi</Tags>
   </Metadata>
   <Installation>
