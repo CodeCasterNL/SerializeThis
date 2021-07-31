@@ -152,7 +152,9 @@ namespace CodeCaster.SerializeThis.Extension
             var selectedSymbol = await GetSymbolUnderCursorAsync(document, semanticModel, position);
             
             ITypeSymbol symbolToSerialize;
-            var objectName = "(root)";
+            
+            // Longish name so it's an easy double-click target.
+            var objectName = "rootObject";
 
             switch (selectedSymbol)
             {
@@ -178,24 +180,29 @@ namespace CodeCaster.SerializeThis.Extension
             // This does the actual magic.
             var classInfo = _roslynParser.GetMemberInfoRecursive(objectName, symbolToSerialize, null/*, semanticModel*/);
 
+            // Need to get the DTE on the UI thread.
+            await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();
+            
             var debugger = GetDebugger();
+            
             if (debugger != null)
             {
+
                 var debugValueParser = new DebugValueParser(debugger);
+                
                 debugValueParser.PopulateClassFromLocal(classInfo);
             }
 
             ShowOutput(classInfo, commandName);
         }
 
+#pragma warning disable VSTHRD010 // Caller calls ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync()
         private EnvDTE.Debugger GetDebugger()
         {
-            ThreadHelper.ThrowIfNotOnUIThread();
-
-            var dte = this.ServiceProvider.GetService(typeof(EnvDTE.DTE)) as EnvDTE.DTE;
-
+            var dte = ServiceProvider.GetService(typeof(EnvDTE.DTE)) as EnvDTE.DTE;
             return dte?.Debugger;
         }
+#pragma warning restore VSTHRD010
 
         private void ShowOutput(ClassInfo classInfo, string menuItemName)
         {

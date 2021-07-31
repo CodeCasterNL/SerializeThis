@@ -23,6 +23,18 @@ namespace SerializeThis.Sample
 
             var attributeTest = new FooWithFooBase();
 
+            var fooSimpleCollections = new FooSimpleCollections
+            {
+                StringArray = new[]
+                {
+                    "1",
+                    null,
+                    null,
+                    "4",
+                    "Foo5",
+                }
+            };
+
             Debugger.Break();
         }
     }

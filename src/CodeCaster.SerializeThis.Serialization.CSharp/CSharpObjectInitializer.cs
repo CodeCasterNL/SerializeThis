@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Collections;
+using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 using System.Text;
@@ -19,9 +21,12 @@ namespace CodeCaster.SerializeThis.Serialization.CSharp
             _counter = 0;
             
             var builder = new StringBuilder();
-            builder.Append("var foo = ");
 
-            EmitInitializer(builder, type, 0, StatementEndOptions.Semicolon | StatementEndOptions.Newline);
+            var rootTypeName = type.Name ?? "foo";
+
+            builder.Append($"var {rootTypeName} = ");
+            
+            EmitInitializer(builder, type, indent: 0, StatementEndOptions.Semicolon | StatementEndOptions.Newline);
             
             return builder.ToString();
         }
@@ -124,7 +129,7 @@ namespace CodeCaster.SerializeThis.Serialization.CSharp
 
         private void EmitCollectionInitializer(StringBuilder builder, ClassInfo elementType, int indent, string spaces, StatementEndOptions statementEnd)
         {
-            void EmitCollectionEntry(int elementIndent, StatementEndOptions elementStatementEnd = StatementEndOptions.Comma | StatementEndOptions.Newline)
+            void EmitCollectionEntry(int elementIndent, object value = null, bool generateValue = true, StatementEndOptions elementStatementEnd = StatementEndOptions.Comma | StatementEndOptions.Newline)
             {
                 builder.Append(GetSpaces(elementIndent));
                 EmitInitializer(builder, elementType, elementIndent, elementStatementEnd);
@@ -132,10 +137,20 @@ namespace CodeCaster.SerializeThis.Serialization.CSharp
 
             builder.Append(spaces).AppendLine("{");
 
-            // TODO: 3 is hardcoded here
-            EmitCollectionEntry(indent + 1);
-            EmitCollectionEntry(indent + 1);
-            EmitCollectionEntry(indent + 1, StatementEndOptions.Newline);
+            if (elementType.Value == null)
+            {
+                // TODO: 3 is hardcoded here
+                EmitCollectionEntry(indent + 1, value: null, generateValue: true);
+                EmitCollectionEntry(indent + 1, value: null, generateValue: true);
+                EmitCollectionEntry(indent + 1, value: null, generateValue: true, StatementEndOptions.Newline);
+            }
+            else
+            {
+                foreach (var item in (IEnumerable<object>)elementType.Value)
+                {
+                    EmitCollectionEntry(indent + 1, value: item, generateValue: false);
+                }
+            }
 
             builder.Append(spaces).Append("}");
             EndStatement(builder, statementEnd);
@@ -146,7 +161,7 @@ namespace CodeCaster.SerializeThis.Serialization.CSharp
             var keyType = type.Class.GenericParameters[0];
             var valueType = type.Class.GenericParameters[1];
 
-            void EmitDictionaryEntry(int elementIndent, StatementEndOptions elementStatementEnd = StatementEndOptions.Comma | StatementEndOptions.Newline)
+            void EmitDictionaryEntry(int elementIndent, object value = null, bool generateValue = true, StatementEndOptions elementStatementEnd = StatementEndOptions.Comma | StatementEndOptions.Newline)
             {
                 builder.Append(GetSpaces(elementIndent)).Append("{ ");
                 EmitInitializer(builder, keyType, indent + 1, StatementEndOptions.None);
@@ -162,12 +177,22 @@ namespace CodeCaster.SerializeThis.Serialization.CSharp
 
             builder.AppendFormat("new {0}{1}", typeName, Environment.NewLine);
             builder.Append(spaces).AppendLine("{");
-            
-            // TODO: 3 is hardcoded here
-            EmitDictionaryEntry(indent + 1);
-            EmitDictionaryEntry(indent + 1);
-            EmitDictionaryEntry(indent + 1, StatementEndOptions.Newline);
-            
+
+            if (type.Value == null)
+            {
+                // TODO: 3 is hardcoded here
+                EmitDictionaryEntry(indent + 1);
+                EmitDictionaryEntry(indent + 1);
+                EmitDictionaryEntry(indent + 1, StatementEndOptions.Newline);
+            }
+            else
+            {
+                foreach (var item in (IEnumerable<KeyValuePair<object, object>>)type.Value)
+                {
+                    EmitDictionaryEntry(indent + 1, value: item, generateValue: false);
+                }
+            }
+
             builder.Append(spaces).Append("}");
             EndStatement(builder, statementEnd);
         }

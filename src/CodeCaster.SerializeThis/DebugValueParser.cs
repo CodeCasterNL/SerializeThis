@@ -1,6 +1,10 @@
 ﻿using CodeCaster.SerializeThis.Serialization;
 using EnvDTE;
 using System;
+using System.Collections;
+using System.Collections.Generic;
+using System.Collections.ObjectModel;
+using System.Linq;
 
 namespace CodeCaster.SerializeThis
 {
@@ -45,11 +49,40 @@ namespace CodeCaster.SerializeThis
                 return;
             }
 
+            if (classInfo.Class.CollectionType.HasValue)
+            {
+                classInfo.Value = CreateCollection(classInfo.Class, local);
+                return;
+            }
+
             // TODO: collection types
             foreach (var prop in classInfo.Class.Children)
             {
                 var localMember = FindMember(local, prop);
                 PopulateClassInfo(prop, localMember);
+            }
+        }
+
+        private IEnumerable CreateCollection(Class classInfo, Expression local)
+        {
+            IEnumerable<object> items = GetItemsFromCollection(local);
+
+            switch (classInfo.CollectionType)
+            {
+                case CollectionType.Array:
+                case CollectionType.Collection:
+                case CollectionType.Dictionary:
+                    return items.ToArray();
+            }
+
+            throw new NotImplementedException($"Unsupported collection type {classInfo.CollectionType}");
+        }
+
+        private IEnumerable<object> GetItemsFromCollection(Expression expression)
+        {
+            foreach (var member in expression.DataMembers)
+            {
+                yield return member;
             }
         }
 
