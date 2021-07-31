@@ -6,7 +6,6 @@ using System.Threading;
 using System.Threading.Tasks;
 using CodeCaster.SerializeThis.OutputHandlers;
 using CodeCaster.SerializeThis.Serialization;
-using CodeCaster.SerializeThis.Serialization.Roslyn;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.FindSymbols;
 using Microsoft.CodeAnalysis.Text;
@@ -101,6 +100,7 @@ namespace CodeCaster.SerializeThis.Extension
         {
             try
             {
+                await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();
                 var commandName = GetContentType(((MenuCommand)sender).CommandID.ID);
                 await DoWorkAsync(commandName);
             }
@@ -151,6 +151,18 @@ namespace CodeCaster.SerializeThis.Extension
 
             var selectedSymbol = await GetSymbolUnderCursorAsync(document, semanticModel, position);
 
+            var debugger = GetDebugger();
+            var stackFrame = debugger.CurrentStackFrame;
+
+            object instance = null;
+            foreach (EnvDTE.Expression local in stackFrame.Locals)
+            {
+                if (local.Name == selectedSymbol.Name)
+                {
+                    instance = ((IClassInfoBuilder<EnvDTE.Expression>)new DebugValueParser()).GetMemberInfoRecursive(local, instance: local);
+                }
+            }
+
             ITypeSymbol symbolToSerialize;
 
             switch (selectedSymbol)
@@ -169,8 +181,17 @@ namespace CodeCaster.SerializeThis.Extension
             }
 
             // This does the actual magic.
-            var classInfo = _roslynParser.GetMemberInfoRecursive(symbolToSerialize, null/*, semanticModel*/);
+            var classInfo = _roslynParser.GetMemberInfoRecursive(symbolToSerialize, instance/*, semanticModel*/);
             ShowOutput(classInfo, commandName);
+        }
+
+        private EnvDTE.Debugger GetDebugger()
+        {
+            ThreadHelper.ThrowIfNotOnUIThread();
+
+            var dte = this.ServiceProvider.GetService(typeof(EnvDTE.DTE)) as EnvDTE.DTE;
+
+            return dte?.Debugger;
         }
 
         private void ShowOutput(ClassInfo classInfo, string menuItemName)

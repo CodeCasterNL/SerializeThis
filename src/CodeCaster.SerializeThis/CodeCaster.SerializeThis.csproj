@@ -7,7 +7,7 @@
     <!-- From Rob Prouse (http://stackoverflow.com/users/30827/rob-prouse) in http://stackoverflow.com/questions/9281662/how-to-debug-visual-studio-extensions -->
     <StartAction>Program</StartAction>
     <StartProgram>$(DevEnvDir)\devenv.exe</StartProgram>
-    <StartArguments>/rootsuffix Exp</StartArguments>
+    <StartArguments>$(SolutionDir)\SerializeThis.Sample.sln /rootsuffix Exp /Run</StartArguments>
     <TargetFrameworkVersion>v4.7.2</TargetFrameworkVersion>
   </PropertyGroup>
   <PropertyGroup>
@@ -61,6 +61,7 @@
     <Compile Include="..\SolutionInfo.cs">
       <Link>Properties\SolutionInfo.cs</Link>
     </Compile>
+    <Compile Include="DebugValueParser.cs" />
     <Compile Include="DefaultSerializerFactory.cs" />
     <Compile Include="Forms\SerializedModelForm.cs">
       <SubType>Form</SubType>
