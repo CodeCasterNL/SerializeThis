@@ -49,7 +49,7 @@ namespace CodeCaster.SerializeThis.Relection.Tests
             AssertProperty(result.Class, nameof(toSerialize.StringArray), typeof(string[]), TypeEnum.ComplexType, collectionType: CollectionType.Array);
         }
 
-        private void AssertProperty(Class classInfo, string propertyName, Type propertyType, TypeEnum typeEnum, CollectionType? collectionType = null)
+        private void AssertProperty(TypeInfo classInfo, string propertyName, Type propertyType, TypeEnum typeEnum, CollectionType? collectionType = null)
         {
             var prop = classInfo.Children.FirstOrDefault(c => c.Name == propertyName);
             if (prop == null)
@@ -65,7 +65,7 @@ namespace CodeCaster.SerializeThis.Relection.Tests
             AssertProperty(prop, propertyName, propertyType, typeEnum);
         }
 
-        private static void AssertProperty(ClassInfo c, string propertyName, Type propertyType, TypeEnum typeEnum)
+        private static void AssertProperty(MemberInfo c, string propertyName, Type propertyType, TypeEnum typeEnum)
         {
             // Just to be sure
             Assert.AreEqual(propertyName, c.Name);

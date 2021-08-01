@@ -7,13 +7,13 @@ namespace CodeCaster.SerializeThis.Serialization.Json
         /// <summary>
         /// Returns the declared property name, or its name if overridden through any known attributes such as [JsonProperty], [DataMember].
         /// </summary>
-        public static string GetPropertyName(this ClassInfo typeInfo, ClassInfo containingTypeInfo)
+        public static string GetPropertyName(this MemberInfo typeInfo, MemberInfo containingTypeInfo)
         {
             return typeInfo.GetPropertyNameFromAttributes(containingTypeInfo)
                    ?? typeInfo.Name;
         }
 
-        private static string GetPropertyNameFromAttributes(this ClassInfo typeInfo, ClassInfo containingTypeInfo)
+        private static string GetPropertyNameFromAttributes(this MemberInfo typeInfo, MemberInfo containingTypeInfo)
         {
             if (!typeInfo.Attributes.Any())
             {

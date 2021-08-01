@@ -20,7 +20,7 @@ namespace CodeCaster.SerializeThis.OutputHandlers
             _modelForm = _modelForm ?? new SerializedModelForm();
         }
 
-        public bool Handle(IClassInfoSerializer serializer, ClassInfo classInfo)
+        public bool Handle(IClassInfoSerializer serializer, MemberInfo classInfo)
         {
             if (_modelForm == null || _modelForm.IsDisposed)
             {

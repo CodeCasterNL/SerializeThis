@@ -2,6 +2,6 @@
 {
     public interface IClassInfoBuilder<T>
     {
-        ClassInfo GetMemberInfoRecursive(string objectName, T typeSymbol, object instance);
+        MemberInfo GetMemberInfoRecursive(string objectName, T typeSymbol, object instance);
     }
 }

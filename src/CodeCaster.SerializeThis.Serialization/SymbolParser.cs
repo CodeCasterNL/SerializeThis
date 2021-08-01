@@ -10,12 +10,12 @@ namespace CodeCaster.SerializeThis.Serialization
     public abstract class SymbolParser<T> : IClassInfoBuilder<T>
     {
         // TODO: this makes it pretty much not thread safe, might we ever need that, store the class/info stuff in a more stateful object?
-        private readonly Dictionary<string, Class> _typesSeen = new Dictionary<string, Class>();
+        private readonly Dictionary<string, TypeInfo> _typesSeen = new Dictionary<string, TypeInfo>();
 
         /// <summary>
         /// This is what the caller calls. It does not support recursion and should not be called from within or derived classes.
         /// </summary>
-        ClassInfo IClassInfoBuilder<T>.GetMemberInfoRecursive(string objectName, T typeSymbol, object instance)
+        MemberInfo IClassInfoBuilder<T>.GetMemberInfoRecursive(string objectName, T typeSymbol, object instance)
         {
             _typesSeen.Clear();
             if (typeSymbol == null) throw new ArgumentNullException(nameof(typeSymbol));
@@ -26,9 +26,9 @@ namespace CodeCaster.SerializeThis.Serialization
             return memberInfo;
         }
 
-        protected ClassInfo GetMemberInfoRecursive(string name, T typeSymbol, IList<AttributeInfo> propertyAttributes = null, object instance = null)
+        protected MemberInfo GetMemberInfoRecursive(string name, T typeSymbol, IList<AttributeInfo> propertyAttributes = null, object instance = null)
         {
-            var returnValue = new ClassInfo
+            var returnValue = new MemberInfo
             {
                 Name = name,
                 Attributes = propertyAttributes
@@ -43,7 +43,7 @@ namespace CodeCaster.SerializeThis.Serialization
 
             // Save it _before_ diving into members and type parameters.
             var typeName = GetClassName(typeSymbol);
-            classInfo = new Class
+            classInfo = new TypeInfo
             {
                 TypeName = typeName
             };
@@ -55,7 +55,7 @@ namespace CodeCaster.SerializeThis.Serialization
             return returnValue;
         }
 
-        protected TypeEnum GetSymbolType(T typeSymbol, out CollectionType? collectionType, out bool isNullableValueType, out bool isEnum, out IList<ClassInfo> typeParameters)
+        protected TypeEnum GetSymbolType(T typeSymbol, out CollectionType? collectionType, out bool isNullableValueType, out bool isEnum, out IList<MemberInfo> typeParameters)
         {
             var knownValueType = GetKnownValueType(typeSymbol);
             if (knownValueType != null)
@@ -63,7 +63,7 @@ namespace CodeCaster.SerializeThis.Serialization
                 collectionType = null;
                 isNullableValueType = false;
                 isEnum = false;
-                typeParameters = Array.Empty<ClassInfo>();
+                typeParameters = Array.Empty<MemberInfo>();
                 return knownValueType.Value;
             }
             
@@ -72,7 +72,7 @@ namespace CodeCaster.SerializeThis.Serialization
             return GetComplexSymbolType(typeSymbol, out collectionType, out isNullableValueType, ref isEnum, out typeParameters);
         }
 
-        private void ParseClass(Class c, T typeSymbol, object value)
+        private void ParseClass(TypeInfo c, T typeSymbol, object value)
         {
             var type = GetSymbolType(typeSymbol, out var collectionType, out var isNullableValueType, out var isEnum, out var genericParameters);
 
@@ -134,19 +134,19 @@ namespace CodeCaster.SerializeThis.Serialization
         
         protected abstract IList<AttributeInfo> GetAttributes(T typeSymbol);
 
-        protected abstract IList<ClassInfo> GetChildProperties(T typeSymbol, object value);
+        protected abstract IList<MemberInfo> GetChildProperties(T typeSymbol, object value);
 
         /// <summary>
         /// Should try to parse the given type symbol for all <see cref="TypeEnum"/> members except <see cref="TypeEnum.ComplexType"/>.
         /// </summary>
         protected abstract TypeEnum? GetKnownValueType(T typeSymbol);
 
-        protected abstract TypeEnum GetComplexSymbolType(T typeSymbol, out CollectionType? collectionType, out bool isNullableValueType, ref bool isEnum, out IList<ClassInfo> typeParameters);
+        protected abstract TypeEnum GetComplexSymbolType(T typeSymbol, out CollectionType? collectionType, out bool isNullableValueType, ref bool isEnum, out IList<MemberInfo> typeParameters);
 
-        protected abstract ClassInfo GetArrayTypeParameter(T typeSymbol);
+        protected abstract MemberInfo GetArrayTypeParameter(T typeSymbol);
 
-        protected abstract ClassInfo GetCollectionTypeParameter(T typeSymbol);
+        protected abstract MemberInfo GetCollectionTypeParameter(T typeSymbol);
 
-        protected abstract (ClassInfo TKey, ClassInfo TValue) GetDictionaryKeyType(T typeSymbol);
+        protected abstract (MemberInfo TKey, MemberInfo TValue) GetDictionaryKeyType(T typeSymbol);
     }
 }

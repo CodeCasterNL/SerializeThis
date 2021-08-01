@@ -4,8 +4,13 @@ using System.Diagnostics;
 
 namespace CodeCaster.SerializeThis.Serialization
 {
+    public class LocalInfo : MemberInfo
+    {
+
+    }
+
     [DebuggerDisplay("{ToDebugString(),nq}")]
-    public class ClassInfo
+    public class MemberInfo
     {
         public string Name { get; set; }
 
@@ -14,7 +19,7 @@ namespace CodeCaster.SerializeThis.Serialization
         /// </summary>
         public ICollection<AttributeInfo> Attributes { get; set; } = Array.Empty<AttributeInfo>();
 
-        public Class Class { get; set; }
+        public TypeInfo Class { get; set; }
 
         public object Value { get; set; }
 

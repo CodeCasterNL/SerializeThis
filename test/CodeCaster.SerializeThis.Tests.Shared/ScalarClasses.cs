@@ -5,18 +5,18 @@ namespace CodeCaster.SerializeThis.Tests.Shared
 {
     public static class ScalarClasses
     {
-        public static ClassInfo ClassWithBarStringProperty()
+        public static MemberInfo ClassWithBarStringProperty()
         {
-            return new ClassInfo
+            return new MemberInfo
             {
                 Name = "FooWithBarString",
-                Class = new Class
+                Class = new TypeInfo
                 {
                     Type = TypeEnum.ComplexType,
                     TypeName = "Foo",
-                    Children = new List<ClassInfo>
+                    Children = new List<MemberInfo>
                     {
-                        new ClassInfo
+                        new MemberInfo
                         {
                             Name = "Bar",
                             Class = StringClass()
@@ -26,27 +26,27 @@ namespace CodeCaster.SerializeThis.Tests.Shared
             };
         }
 
-        public static ClassInfo ClassWithBarStringArrayProperty()
+        public static MemberInfo ClassWithBarStringArrayProperty()
         {
-            return new ClassInfo
+            return new MemberInfo
             {
                 Name = "FooWithBarStringArray",
-                Class = new Class
+                Class = new TypeInfo
                 {
                     Type = TypeEnum.ComplexType,
                     TypeName = "Foo",
-                    Children = new List<ClassInfo>
+                    Children = new List<MemberInfo>
                     {
-                        new ClassInfo
+                        new MemberInfo
                         {
                             Name = "Bar",
-                            Class = new Class
+                            Class = new TypeInfo
                             {
                                 Type = TypeEnum.ComplexType,
                                 CollectionType = CollectionType.Array,
-                                GenericParameters = new List<ClassInfo>
+                                GenericParameters = new List<MemberInfo>
                                 {
-                                    new ClassInfo
+                                    new MemberInfo
                                     {
                                         Name = "ArrayElementType",
                                         Class = StringClass()
@@ -60,7 +60,7 @@ namespace CodeCaster.SerializeThis.Tests.Shared
             };
         }
 
-        public static Class StringClass() => new Class
+        public static TypeInfo StringClass() => new TypeInfo
         {
             TypeName = "System.String",
             Type = TypeEnum.String

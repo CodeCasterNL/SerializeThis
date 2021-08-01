@@ -19,7 +19,7 @@ namespace CodeCaster.SerializeThis
             _debugger = debugger;
         }
 
-        public bool PopulateClassFromLocal(ClassInfo classInfo)
+        public bool PopulateClassFromLocal(MemberInfo classInfo)
         {
             var stackFrame = _debugger.CurrentStackFrame;
 
@@ -35,7 +35,7 @@ namespace CodeCaster.SerializeThis
             return false;
         }
 
-        private void PopulateClassInfo(ClassInfo classInfo, Expression local)
+        private void PopulateClassInfo(MemberInfo classInfo, Expression local)
         {
             if (classInfo.Class.Type != TypeEnum.ComplexType)
             {
@@ -48,7 +48,7 @@ namespace CodeCaster.SerializeThis
                 return;
             }
 
-            if (classInfo.Class.CollectionType.HasValue)
+            if (classInfo.Class.IsCollectionType)
             {
                 classInfo.Value = CreateCollection(classInfo.Class, local);
                 return;
@@ -63,7 +63,7 @@ namespace CodeCaster.SerializeThis
             }
         }
 
-        private IEnumerable CreateCollection(Class classInfo, Expression local)
+        private IEnumerable CreateCollection(TypeInfo classInfo, Expression local)
         {
             IEnumerable<Expression> items = GetItemsFromCollection(local);
             return items.ToArray();
@@ -77,7 +77,7 @@ namespace CodeCaster.SerializeThis
             }
         }
 
-        private Expression FindMember(Expression local, ClassInfo prop)
+        private Expression FindMember(Expression local, MemberInfo prop)
         {
             foreach (Expression dataMember in local.DataMembers)
             {
@@ -90,7 +90,7 @@ namespace CodeCaster.SerializeThis
             return null;
         }
 
-        private object GetValueTypeValue(ClassInfo classInfo, Expression local)
+        private object GetValueTypeValue(MemberInfo classInfo, Expression local)
         {
             switch (classInfo.Class.Type)
             {

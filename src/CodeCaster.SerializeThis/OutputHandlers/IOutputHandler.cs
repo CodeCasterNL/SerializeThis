@@ -9,6 +9,6 @@ namespace CodeCaster.SerializeThis.OutputHandlers
 
         void Initialize(IServiceProvider serviceProvider);
 
-        bool Handle(IClassInfoSerializer serializer, ClassInfo classInfo);
+        bool Handle(IClassInfoSerializer serializer, MemberInfo classInfo);
     }
 }

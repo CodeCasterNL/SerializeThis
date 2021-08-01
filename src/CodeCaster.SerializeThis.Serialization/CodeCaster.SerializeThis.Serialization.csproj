@@ -44,8 +44,8 @@
       <Link>Properties\SolutionInfo.cs</Link>
     </Compile>
     <Compile Include="AttributeInfo.cs" />
-    <Compile Include="Class.cs" />
-    <Compile Include="ClassInfo.cs" />
+    <Compile Include="TypeInfo.cs" />
+    <Compile Include="MemberInfo.cs" />
     <Compile Include="CollectionType.cs" />
     <Compile Include="IClassInfoBuilder.cs" />
     <Compile Include="IClassInfoSerializer.cs" />

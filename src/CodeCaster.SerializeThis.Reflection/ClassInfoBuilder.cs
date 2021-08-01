@@ -16,9 +16,9 @@ namespace CodeCaster.SerializeThis.Reflection
 
         protected override IList<AttributeInfo> GetAttributes(Type typeSymbol) => typeSymbol.GetCustomAttributes().Map();
         
-        protected override IList<ClassInfo> GetChildProperties(Type type, object value)
+        protected override IList<Serialization.MemberInfo> GetChildProperties(Type type, object value)
         {
-            var result = new List<ClassInfo>();
+            var result = new List<Serialization.MemberInfo>();
 
             // First go to the root, the first class deriving from System.Object, then walk up to "kind of" order the properties.
             // No guarantees are made on the order in the docs though.
@@ -38,7 +38,7 @@ namespace CodeCaster.SerializeThis.Reflection
             return result;
         }
 
-        protected override TypeEnum GetComplexSymbolType(Type typeSymbol, out CollectionType? collectionType, out bool isNullableValueType, ref bool isEnum, out IList<ClassInfo> typeParameters)
+        protected override TypeEnum GetComplexSymbolType(Type typeSymbol, out CollectionType? collectionType, out bool isNullableValueType, ref bool isEnum, out IList<Serialization.MemberInfo> typeParameters)
         {
             isNullableValueType = System.Nullable.GetUnderlyingType(typeSymbol) != null;
 
@@ -71,7 +71,7 @@ namespace CodeCaster.SerializeThis.Reflection
                 collectionType = CollectionType.Collection;
             }
 
-            typeParameters = new List<ClassInfo>();
+            typeParameters = new List<Serialization.MemberInfo>();
 
             // TODO: generics and nullables.
 
@@ -99,7 +99,7 @@ namespace CodeCaster.SerializeThis.Reflection
                 : (TypeEnum?)null;
         }
 
-        protected override ClassInfo GetArrayTypeParameter(Type typeSymbol)
+        protected override Serialization.MemberInfo GetArrayTypeParameter(Type typeSymbol)
         {
             if (!typeSymbol.IsArray)
             {
@@ -115,7 +115,7 @@ namespace CodeCaster.SerializeThis.Reflection
             return GetMemberInfoRecursive("ArrayElementType", typeSymbol.GetElementType());
         }
 
-        protected override (ClassInfo TKey, ClassInfo TValue) GetDictionaryKeyType(Type typeSymbol)
+        protected override (Serialization.MemberInfo TKey, Serialization.MemberInfo TValue) GetDictionaryKeyType(Type typeSymbol)
         {
             var dictionaryInterface = typeSymbol.GetIDictionaryTKeyTValueInterface();
 
@@ -128,7 +128,7 @@ namespace CodeCaster.SerializeThis.Reflection
             return (keyInfo, valueInfo);
         }
 
-        protected override ClassInfo GetCollectionTypeParameter(Type typeSymbol)
+        protected override Serialization.MemberInfo GetCollectionTypeParameter(Type typeSymbol)
         {
             var collectionInterface = typeSymbol.GetICollectionTInterface();
             var collectionType = collectionInterface.GenericTypeArguments[0];

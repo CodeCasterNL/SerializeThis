@@ -12,22 +12,20 @@ namespace CodeCaster.SerializeThis.Serialization.CSharp
 
         public string DisplayName => "C# object initializer";
 
-        public bool CanSerialize(ClassInfo type) => true;
+        public bool CanSerialize(MemberInfo type) => true;
 
-        public string Serialize(ClassInfo type)
+        public string Serialize(MemberInfo type)
         {
             var builder = new StringBuilder();
 
-            var rootTypeName = type.Name ?? "foo";
-
-            builder.Append($"var {rootTypeName} = ");
+            builder.Append($"var {type.Name} = ");
 
             EmitInitializer(builder, type, indent: 0, StatementEndOptions.Semicolon | StatementEndOptions.Newline);
 
             return builder.ToString();
         }
 
-        private void EmitInitializer(StringBuilder builder, ClassInfo type, int indent, StatementEndOptions statementEnd = StatementEndOptions.Comma | StatementEndOptions.Newline)
+        private void EmitInitializer(StringBuilder builder, MemberInfo type, int indent, StatementEndOptions statementEnd = StatementEndOptions.Comma | StatementEndOptions.Newline)
         {
             switch (type.Class.CollectionType)
             {
@@ -62,7 +60,7 @@ namespace CodeCaster.SerializeThis.Serialization.CSharp
 
         private static string GetSpaces(int indent) => new string(' ', indent * 4);
 
-        private void EmitComplexType(StringBuilder builder, ClassInfo type, int indent, StatementEndOptions statementEnd)
+        private void EmitComplexType(StringBuilder builder, MemberInfo type, int indent, StatementEndOptions statementEnd)
         {
             var spaces = GetSpaces(indent);
             var typeName = GetGenericTypeName(type.Class);
@@ -84,7 +82,7 @@ namespace CodeCaster.SerializeThis.Serialization.CSharp
             EndStatement(builder, statementEnd);
         }
 
-        private string GetGenericTypeName(Class type)
+        private string GetGenericTypeName(TypeInfo type)
         {
             if (!type.GenericParameters.Any())
             {
@@ -95,7 +93,7 @@ namespace CodeCaster.SerializeThis.Serialization.CSharp
             return type.TypeName + "<" + string.Join(", ", type.GenericParameters.Select(p => GetGenericTypeName(p.Class))) + ">";
         }
 
-        private void AppendChild(StringBuilder builder, ClassInfo type, ClassInfo child, int indent, StatementEndOptions statementEnd)
+        private void AppendChild(StringBuilder builder, MemberInfo type, MemberInfo child, int indent, StatementEndOptions statementEnd)
         {
             var spaces = GetSpaces(indent);
 
@@ -104,7 +102,7 @@ namespace CodeCaster.SerializeThis.Serialization.CSharp
             EmitInitializer(builder, child, indent, statementEnd);
         }
 
-        private void EmitArray(StringBuilder builder, ClassInfo type, int indent, StatementEndOptions statementEnd)
+        private void EmitArray(StringBuilder builder, MemberInfo type, int indent, StatementEndOptions statementEnd)
         {
             var spaces = GetSpaces(indent);
             var elementType = type.Class.GenericParameters[0];
@@ -114,7 +112,7 @@ namespace CodeCaster.SerializeThis.Serialization.CSharp
             EmitCollectionInitializer(builder, elementType, indent, spaces, statementEnd);
         }
 
-        private void EmitCollection(StringBuilder builder, ClassInfo type, int indent, StatementEndOptions statementEnd)
+        private void EmitCollection(StringBuilder builder, MemberInfo type, int indent, StatementEndOptions statementEnd)
         {
             var spaces = GetSpaces(indent);
             var elementType = type.Class.GenericParameters[0];
@@ -125,7 +123,7 @@ namespace CodeCaster.SerializeThis.Serialization.CSharp
             EmitCollectionInitializer(builder, elementType, indent, spaces, statementEnd);
         }
 
-        private void EmitCollectionInitializer(StringBuilder builder, ClassInfo elementType, int indent, string spaces, StatementEndOptions statementEnd)
+        private void EmitCollectionInitializer(StringBuilder builder, MemberInfo elementType, int indent, string spaces, StatementEndOptions statementEnd)
         {
             void EmitCollectionEntry(int elementIndent, object value = null, StatementEndOptions elementStatementEnd = StatementEndOptions.Comma | StatementEndOptions.Newline)
             {
@@ -147,7 +145,7 @@ namespace CodeCaster.SerializeThis.Serialization.CSharp
             EndStatement(builder, statementEnd);
         }
 
-        private void EmitDictionary(StringBuilder builder, ClassInfo type, int indent, StatementEndOptions statementEnd)
+        private void EmitDictionary(StringBuilder builder, MemberInfo type, int indent, StatementEndOptions statementEnd)
         {
             var keyType = type.Class.GenericParameters[0];
             var valueType = type.Class.GenericParameters[1];
@@ -181,7 +179,7 @@ namespace CodeCaster.SerializeThis.Serialization.CSharp
             EndStatement(builder, statementEnd);
         }
 
-        private void EmitValueTypeConstant(StringBuilder builder, ClassInfo type)
+        private void EmitValueTypeConstant(StringBuilder builder, MemberInfo type)
         {
             switch (type.Value)
             {

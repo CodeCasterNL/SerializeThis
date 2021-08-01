@@ -197,7 +197,7 @@ namespace CodeCaster.SerializeThis.Extension
             ShowOutput(classInfo, commandName);
         }
 
-        private async Task<bool> PopulateFromDebuggerAsync(ClassInfo classInfo)
+        private async Task<bool> PopulateFromDebuggerAsync(MemberInfo classInfo)
         {
             // Need to get the DTE on the UI thread.
             await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();
@@ -221,7 +221,7 @@ namespace CodeCaster.SerializeThis.Extension
         }
 #pragma warning restore VSTHRD010
 
-        private void ShowOutput(ClassInfo classInfo, string menuItemName)
+        private void ShowOutput(MemberInfo classInfo, string menuItemName)
         {
             IClassInfoSerializer serializer;
             try

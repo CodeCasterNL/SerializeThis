@@ -10,7 +10,7 @@ namespace CodeCaster.SerializeThis.Serialization
         private int _counter;
         private DateTime _startTime;
 
-        public void Populate(ClassInfo classInfo)
+        public void Populate(MemberInfo classInfo)
         {
             _counter = 0;
             _startTime = DateTime.Now.ToUniversalTime();
@@ -18,7 +18,7 @@ namespace CodeCaster.SerializeThis.Serialization
             PopulateValue(classInfo);
         }
 
-        private void PopulateValue(ClassInfo classInfo)
+        private void PopulateValue(MemberInfo classInfo)
         {
             if (classInfo.Class.Type == TypeEnum.ComplexType)
             {
@@ -67,7 +67,7 @@ namespace CodeCaster.SerializeThis.Serialization
             }
         }
 
-        public object GetValue(ClassInfo type)
+        public object GetValue(MemberInfo type)
         {
             _counter++;
 

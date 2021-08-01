@@ -15,11 +15,11 @@
         /// <summary>
         /// Generates initialization code for the given <paramref name="type"/></para>.
         /// </summary>
-        string Serialize(ClassInfo type);
+        string Serialize(MemberInfo type);
         
         /// <summary>
         /// Asks whether this serializer can handle the given type.
         /// </summary>
-        bool CanSerialize(ClassInfo type);
+        bool CanSerialize(MemberInfo type);
     }
 }

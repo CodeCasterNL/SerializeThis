@@ -20,9 +20,9 @@ namespace CodeCaster.SerializeThis.Serialization.Roslyn
         protected override IList<AttributeInfo> GetAttributes(ITypeSymbol typeSymbol) => typeSymbol.GetAttributes().Map();
 
         /// <summary>
-        /// For a T[] array, return the <see cref="ClassInfo"/> of T.
+        /// For a T[] array, return the <see cref="MemberInfo"/> of T.
         /// </summary>
-        protected override ClassInfo GetArrayTypeParameter(ITypeSymbol typeSymbol)
+        protected override MemberInfo GetArrayTypeParameter(ITypeSymbol typeSymbol)
         {
             if (!(typeSymbol is IArrayTypeSymbol arrayType))
             {
@@ -39,9 +39,9 @@ namespace CodeCaster.SerializeThis.Serialization.Roslyn
         }
 
         /// <summary>
-        /// For an ICollection{T}-implementing type, return the <see cref="ClassInfo"/> of T.
+        /// For an ICollection{T}-implementing type, return the <see cref="MemberInfo"/> of T.
         /// </summary>
-        protected override ClassInfo GetCollectionTypeParameter(ITypeSymbol typeSymbol)
+        protected override MemberInfo GetCollectionTypeParameter(ITypeSymbol typeSymbol)
         {
             INamedTypeSymbol iCollectionInterface = typeSymbol.GetICollectionTInterface();
 
@@ -56,9 +56,9 @@ namespace CodeCaster.SerializeThis.Serialization.Roslyn
         }
 
         /// <summary>
-        /// For an IDictionary{TKey, TValue}, return the <see cref="ClassInfo"/> of TKey and TValue.
+        /// For an IDictionary{TKey, TValue}, return the <see cref="MemberInfo"/> of TKey and TValue.
         /// </summary>
-        protected override (ClassInfo, ClassInfo) GetDictionaryKeyType(ITypeSymbol typeSymbol)
+        protected override (MemberInfo, MemberInfo) GetDictionaryKeyType(ITypeSymbol typeSymbol)
         {
             INamedTypeSymbol iDictionarynInterface = typeSymbol.GetIDictionaryTKeyTValueInterface();
 
@@ -76,9 +76,9 @@ namespace CodeCaster.SerializeThis.Serialization.Roslyn
             return (null, null);
         }
 
-        protected override IList<ClassInfo> GetChildProperties(ITypeSymbol typeSymbol, object value)
+        protected override IList<MemberInfo> GetChildProperties(ITypeSymbol typeSymbol, object value)
         {
-            var result = new List<ClassInfo>();
+            var result = new List<MemberInfo>();
 
             // Walking up the inheritance tree. Root is System.Object without any more BaseTypes.
             if (typeSymbol.BaseType != null)
@@ -100,11 +100,10 @@ namespace CodeCaster.SerializeThis.Serialization.Roslyn
             return result;
         }
 
-        protected override TypeEnum GetComplexSymbolType(ITypeSymbol typeSymbol, out CollectionType? collectionType, out bool isNullableValueType, ref bool isEnum, out IList<ClassInfo> typeParameters)
+        protected override TypeEnum GetComplexSymbolType(ITypeSymbol typeSymbol, out CollectionType? collectionType, out bool isNullableValueType, ref bool isEnum, out IList<MemberInfo> typeParameters)
         {
             collectionType = null;
             
-            isNullableValueType = typeSymbol.IsNullableType();
 
             //isAnonymousType = typeSymbol.IsAnonymousType;
 
@@ -137,7 +136,7 @@ namespace CodeCaster.SerializeThis.Serialization.Roslyn
                 collectionType = CollectionType.Collection;
             }
 
-            typeParameters = new List<ClassInfo>();
+            typeParameters = new List<MemberInfo>();
             var namedTypeSymbol = typeSymbol as INamedTypeSymbol;
             if (namedTypeSymbol?.TypeArguments.Any() == true)
             {
@@ -146,6 +145,8 @@ namespace CodeCaster.SerializeThis.Serialization.Roslyn
                     typeParameters.Add(GetMemberInfoRecursive(typeArg.Name, typeArg));
                 }
             }
+            
+            isNullableValueType = typeSymbol.IsNullableType();
 
             if (isNullableValueType)
             {

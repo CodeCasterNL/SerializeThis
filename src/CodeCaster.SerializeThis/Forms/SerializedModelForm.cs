@@ -10,7 +10,7 @@ namespace CodeCaster.SerializeThis.Forms
             InitializeComponent();
         }
 
-        public void UpdateModel(IClassInfoSerializer serializer, ClassInfo classInfo)
+        public void UpdateModel(IClassInfoSerializer serializer, MemberInfo classInfo)
         {
             this.serializedModelTextBox.Text = serializer.Serialize(classInfo);
         }

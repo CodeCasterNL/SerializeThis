@@ -21,7 +21,7 @@ namespace CodeCaster.SerializeThis.OutputHandlers
             _enabled = true;
         }
 
-        public bool Handle(IClassInfoSerializer serializer, ClassInfo classInfo)
+        public bool Handle(IClassInfoSerializer serializer, MemberInfo classInfo)
         {
             if (!_enabled)
             {
@@ -55,7 +55,7 @@ namespace CodeCaster.SerializeThis.OutputHandlers
             return false;
         }
 
-        private bool TryWriteTempFile(string filename, IClassInfoSerializer serializer, ClassInfo classInfo)
+        private bool TryWriteTempFile(string filename, IClassInfoSerializer serializer, MemberInfo classInfo)
         {
             string serialized = serializer.Serialize(classInfo);
 
@@ -64,7 +64,7 @@ namespace CodeCaster.SerializeThis.OutputHandlers
             return true;
         }
 
-        private string GenerateUniqueFileName(IClassInfoSerializer serializer, ClassInfo classInfo)
+        private string GenerateUniqueFileName(IClassInfoSerializer serializer, MemberInfo classInfo)
         {
             string filename;
             int i = 0;

@@ -16,9 +16,9 @@ namespace CodeCaster.SerializeThis.Serialization.Json
 
         public string DisplayName => "JSON";
 
-        public bool CanSerialize(ClassInfo type) => type.Class.Type == TypeEnum.ComplexType;
+        public bool CanSerialize(MemberInfo type) => type.Class.Type == TypeEnum.ComplexType;
 
-        public string Serialize(ClassInfo type)
+        public string Serialize(MemberInfo type)
         {
             if (!CanSerialize(type))
             {
@@ -30,7 +30,7 @@ namespace CodeCaster.SerializeThis.Serialization.Json
             return rootObject.ToString();
         }
 
-        private JObject GetComplexType(ClassInfo toSerialize)
+        private JObject GetComplexType(MemberInfo toSerialize)
         {
             if (_typesSeen.TryGetValue(toSerialize.Class.TypeName, out var existing))
             {
@@ -51,7 +51,7 @@ namespace CodeCaster.SerializeThis.Serialization.Json
             return existing;
         }
         
-        private JToken SerializeChild(ClassInfo child)
+        private JToken SerializeChild(MemberInfo child)
         {
             if (child.Class.CollectionType == CollectionType.Dictionary)
             {
@@ -71,7 +71,7 @@ namespace CodeCaster.SerializeThis.Serialization.Json
             return new JValue(GetContents(child));
         }
 
-        private JToken GetDictionary(ClassInfo child)
+        private JToken GetDictionary(MemberInfo child)
         {
             // A dictionary's key type is the first child, the value type the second.
             var keyType = child.Class.GenericParameters.FirstOrDefault();
@@ -98,7 +98,7 @@ namespace CodeCaster.SerializeThis.Serialization.Json
             return jObject;
         }
 
-        private JToken GetCollection(ClassInfo child)
+        private JToken GetCollection(MemberInfo child)
         {
             // We store the collection's type in its first generic parameter.
             var collectionType = child.Class.GenericParameters.FirstOrDefault();
@@ -120,7 +120,7 @@ namespace CodeCaster.SerializeThis.Serialization.Json
         }
 
         // ReSharper disable BuiltInTypeReferenceStyle - for consistent naming
-        private object GetContents(ClassInfo toSerialize)
+        private object GetContents(MemberInfo toSerialize)
         {
             return toSerialize.Class.IsEnum 
                 ? toSerialize.Value?.ToString() 
