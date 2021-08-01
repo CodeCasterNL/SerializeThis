@@ -8,16 +8,16 @@ namespace CodeCaster.SerializeThis
 {
     public class DefaultSerializerFactory : ISerializerFactory
     {
-        public IClassInfoSerializer GetSerializer(object serializer)
+        public IClassInfoSerializer GetSerializer(object serializer, IPropertyValueProvider valueProvider)
         {
             var serializerString = serializer as string;
 
             switch (serializerString?.ToLowerInvariant())
             {
                 case "json":
-                    return new JsonSerializer();
+                    return new JsonSerializer(valueProvider);
                 case "c#":
-                    return new CSharpObjectInitializer();
+                    return new CSharpObjectInitializer(valueProvider);
 
                 default:
                     // TODO: DI.

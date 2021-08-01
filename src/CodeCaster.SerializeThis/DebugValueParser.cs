@@ -10,58 +10,152 @@ namespace CodeCaster.SerializeThis
     /// <summary>
     /// TODO.
     /// </summary>
-    public class DebugValueParser
+    public class DebugValueParser : IPropertyValueProvider
     {
+        private class ExpressionInfo
+        {
+            public string Path { get; }
+
+            public Expression Expression { get; }
+
+            public TypeInfo Type { get; }
+
+            public ExpressionInfo(string path, EnvDTE.Expression expression, TypeInfo type)
+            {
+                Path = path;
+                Expression = expression;
+                Type = type;
+            }
+        }
+
         private readonly Debugger _debugger;
+
+        private Dictionary<string, ExpressionInfo> _valueDictionary;
 
         public DebugValueParser(Debugger debugger)
         {
             _debugger = debugger;
         }
 
-        public bool PopulateClassFromLocal(MemberInfo classInfo)
+        public void Initialize(TypeInfo declaredType, string name)
+        {
+            _valueDictionary = new Dictionary<string, ExpressionInfo>();
+            
+            var expression = FindLocalVariable(name);
+
+            if (expression != null)
+            {
+                var info = new ExpressionInfo(name, expression, declaredType);
+                _valueDictionary[name] = info;
+            }
+        }
+
+        public object GetScalarValue(MemberInfo toSerialize, string path)
+        {
+            if (toSerialize.Class.IsComplexType)
+            {
+                return null;
+            }
+
+            // No local variables.
+            if (!_valueDictionary.Any())
+            {
+                return null;
+            }
+
+            var expression = GetExpression(path, toSerialize);
+
+            return GetValueTypeValue(expression);
+        }
+
+        private ExpressionInfo GetExpression(string path, MemberInfo toSerialize)
+        {
+            var parentPath = path;
+            
+            var lastDotIndex = path.LastIndexOf('.');
+            if (lastDotIndex >= 0)
+            {
+                parentPath = parentPath.Substring(0, lastDotIndex);
+            }
+
+            if (!_valueDictionary.TryGetValue(parentPath, out var parentExpression))
+            {
+                parentExpression = FindParent(parentPath);
+            }
+
+            var currentExpression = FindMember(parentExpression, toSerialize);
+            
+            return _valueDictionary[path] = new ExpressionInfo(path, currentExpression, toSerialize.Class);
+        }
+
+        private ExpressionInfo FindParent(string parentPath)
+        {
+            // TODO: walk up from foo.Bar.Baz to foo.Bar
+
+            return null;
+        }
+
+        // TODO: collections (and syntax, [i]?)
+        public IEnumerable<object> GetCollectionElements(MemberInfo child, string path, MemberInfo collectionType)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Expression FindLocalVariable(string localName)
         {
             var stackFrame = _debugger.CurrentStackFrame;
 
             foreach (Expression local in stackFrame.Locals)
             {
-                if (local.Name == classInfo.Name)
+                if (local.Name == localName)
                 {
-                    PopulateClassInfo(classInfo, local);
-                    return true;
+                    return local;
                 }
             }
 
-            return false;
+            return null;
         }
 
-        private void PopulateClassInfo(MemberInfo classInfo, Expression local)
+        public Expression FindMemeber(Expression expression, string memberName)
         {
-            if (classInfo.Class.Type != TypeEnum.ComplexType)
+            foreach (Expression member in expression.DataMembers)
             {
-                if (local.IsValidValue)
+                if (member.Name == memberName)
                 {
-                    var valueTypeValue = GetValueTypeValue(classInfo, local);
-                    classInfo.Value = valueTypeValue;
+                    return member;
                 }
-
-                return;
             }
 
-            if (classInfo.Class.IsCollectionType)
-            {
-                classInfo.Value = CreateCollection(classInfo.Class, local);
-                return;
-            }
-
-            // TODO: collection types
-            // TODO: inheritance! Runtime can be different, update class? Find existing class by name?
-            foreach (var prop in classInfo.Class.Children)
-            {
-                var localMember = FindMember(local, prop);
-                PopulateClassInfo(prop, localMember);
-            }
+            return null;
         }
+
+        //private void PopulateClassInfo(MemberInfo classInfo, Expression local)
+        //{
+        //    if (classInfo.Class.Type != TypeEnum.ComplexType)
+        //    {
+        //        if (local.IsValidValue)
+        //        {
+        //            var valueTypeValue = GetValueTypeValue(new ExpressionInfo()classInfo.Class, local);
+        //            classInfo.Value = valueTypeValue;
+        //        }
+
+        //        return;
+        //    }
+
+        //    if (classInfo.Class.IsCollectionType)
+        //    {
+        //        classInfo.Value = CreateCollection(classInfo.Class, local);
+        //        return;
+        //    }
+
+        //    // TODO: collection types
+        //    // TODO: inheritance! Runtime can be different, update class? Find existing class by name?
+        //    foreach (var prop in classInfo.Class.Children)
+        //    {
+        //        var localMember = FindMember(local, prop);
+        //        PopulateClassInfo(prop, localMember);
+        //    }
+        //}
 
         private IEnumerable CreateCollection(TypeInfo classInfo, Expression local)
         {
@@ -77,9 +171,9 @@ namespace CodeCaster.SerializeThis
             }
         }
 
-        private Expression FindMember(Expression local, MemberInfo prop)
+        private Expression FindMember(ExpressionInfo member, MemberInfo prop)
         {
-            foreach (Expression dataMember in local.DataMembers)
+            foreach (Expression dataMember in member.Expression.DataMembers)
             {
                 if (dataMember.Name == prop.Name)
                 {
@@ -90,32 +184,49 @@ namespace CodeCaster.SerializeThis
             return null;
         }
 
-        private object GetValueTypeValue(MemberInfo classInfo, Expression local)
+        private object GetValueTypeValue(ExpressionInfo expressionInfo)
         {
-            switch (classInfo.Class.Type)
+            if (expressionInfo == null)
+            {
+                return null;
+            }
+
+            var value = expressionInfo.Expression.Value;
+
+            switch (expressionInfo.Type.Type)
             {
                 case TypeEnum.Boolean:
-                    return Boolean.Parse(local.Value);
+                    return Boolean.Parse(value);
+
                 case TypeEnum.String:
-                    return (String)local.Value == null || local.Value == "null" ? null : local.Value.Substring(1, local.Value.Length - 2);
+                    return (String)value == null || value == "null" ? null : value.Substring(1, value.Length - 2);
+
                 case TypeEnum.Byte:
-                    return Byte.Parse(local.Value);
+                    return Byte.Parse(value);
+
                 case TypeEnum.Int16:
-                    return Int16.Parse(local.Value);
+                    return Int16.Parse(value);
+
                 case TypeEnum.Int32:
-                    return Int32.Parse(local.Value);
+                    return Int32.Parse(value);
+
                 case TypeEnum.Int64:
-                    return Int64.Parse(local.Value);
+                    return Int64.Parse(value);
+
                 case TypeEnum.Float32:
-                    return Single.Parse(local.Value);
+                    return Single.Parse(value);
+
                 case TypeEnum.Float64:
-                    return Double.Parse(local.Value);
+                    return Double.Parse(value);
+
                 case TypeEnum.Decimal:
-                    return Decimal.Parse(local.Value);
+                    return Decimal.Parse(value);
+
                 case TypeEnum.DateTime:
-                    return DateTime.Parse(local.Value);
+                    return DateTime.Parse(value);
+
                 case TypeEnum.DateTimeOffset:
-                    return DateTimeOffset.Parse(local.Value);
+                    return DateTimeOffset.Parse(value);
             }
 
             return null;

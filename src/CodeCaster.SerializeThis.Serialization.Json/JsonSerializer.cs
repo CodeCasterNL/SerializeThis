@@ -10,6 +10,8 @@ namespace CodeCaster.SerializeThis.Serialization.Json
     /// </summary>
     public class JsonSerializer : IClassInfoSerializer
     {
+        private readonly IPropertyValueProvider _valueProvider;
+        
         private readonly Dictionary<string, JObject> _typesSeen = new Dictionary<string, JObject>();
 
         public string FileExtension => "json";
@@ -17,6 +19,11 @@ namespace CodeCaster.SerializeThis.Serialization.Json
         public string DisplayName => "JSON";
 
         public bool CanSerialize(MemberInfo type) => type.Class.Type == TypeEnum.ComplexType;
+
+        public JsonSerializer(IPropertyValueProvider valueProvider)
+        {
+            _valueProvider = valueProvider;
+        }
 
         public string Serialize(MemberInfo type)
         {
@@ -26,11 +33,13 @@ namespace CodeCaster.SerializeThis.Serialization.Json
                 throw new NotSupportedException("Root type must be complex type");
             }
 
-            var rootObject = GetComplexType(type);
+            _valueProvider.Initialize(type.Class, type.Name);
+
+            var rootObject = GetComplexType(type, "");
             return rootObject.ToString();
         }
 
-        private JObject GetComplexType(MemberInfo toSerialize)
+        private JObject GetComplexType(MemberInfo toSerialize, string path)
         {
             if (_typesSeen.TryGetValue(toSerialize.Class.TypeName, out var existing))
             {
@@ -44,34 +53,44 @@ namespace CodeCaster.SerializeThis.Serialization.Json
             foreach (var child in toSerialize.Class.Children)
             {
                 var propertyName = child.GetPropertyName(toSerialize);
-                var childProperty = SerializeChild(child);
+                var childProperty = SerializeChild(child, AppendPath(path, child.Name));
                 existing[propertyName] = childProperty;
             }
 
             return existing;
         }
-        
-        private JToken SerializeChild(MemberInfo child)
+
+        private string AppendPath(string path, string subpath)
+        {
+            if (string.IsNullOrWhiteSpace(path))
+            {
+                return subpath;
+            }
+
+            return path + "." + subpath;
+        }
+
+        private JToken SerializeChild(MemberInfo child, string path)
         {
             if (child.Class.CollectionType == CollectionType.Dictionary)
             {
-                return GetDictionary(child);
+                return GetDictionary(child, path);
             }
 
             if (child.Class.CollectionType == CollectionType.Collection || child.Class.CollectionType == CollectionType.Array)
             {
-                return GetCollection(child);
+                return GetCollection(child, path);
             }
 
             if (child.Class.IsComplexType)
             {
-                return GetComplexType(child);
+                return GetComplexType(child, path);
             }
 
-            return new JValue(GetContents(child));
+            return new JValue(GetContents(child, path));
         }
 
-        private JToken GetDictionary(MemberInfo child)
+        private JToken GetDictionary(MemberInfo child, string path)
         {
             // A dictionary's key type is the first child, the value type the second.
             var keyType = child.Class.GenericParameters.FirstOrDefault();
@@ -83,12 +102,12 @@ namespace CodeCaster.SerializeThis.Serialization.Json
             {
                 foreach (var item in dictionary)
                 {
-                    // TODO: use item.Key and item.Value...
-                    var exampleKey = SerializeChild(keyType);
-                    var exampleValue = SerializeChild(valueType);
+                    //// TODO: use item.Key and item.Value...
+                    //var exampleKey = SerializeChild(keyType, AppendPath(path, $"[{keyType.Value}]"));
+                    //var exampleValue = SerializeChild(valueType);
 
-                    var property = new JProperty(exampleKey.ToString(), exampleValue);
-                    jObject.Add(property);
+                    //var property = new JProperty(exampleKey.ToString(), exampleValue);
+                    //jObject.Add(property);
 
                     //EmitDictionaryEntry(indent + 1, value: item, generateValue: false);
                 }
@@ -98,7 +117,7 @@ namespace CodeCaster.SerializeThis.Serialization.Json
             return jObject;
         }
 
-        private JToken GetCollection(MemberInfo child)
+        private JToken GetCollection(MemberInfo child, string path)
         {
             // We store the collection's type in its first generic parameter.
             var collectionType = child.Class.GenericParameters.FirstOrDefault();
@@ -108,24 +127,19 @@ namespace CodeCaster.SerializeThis.Serialization.Json
             }
 
             var arrayMembers = new List<object>();
-            if (child.Value is IEnumerable<object> collectionItems)
+
+            foreach (var collectionElement in _valueProvider.GetCollectionElements(child, path, collectionType))
             {
-                foreach (var item in collectionItems)
-                {
-                    arrayMembers.Add(item);
-                }
+                //arrayMembers.Add(SerializeChild(collectionElement));
             }
+
 
             return new JArray(arrayMembers);
         }
 
-        // ReSharper disable BuiltInTypeReferenceStyle - for consistent naming
-        private object GetContents(MemberInfo toSerialize)
+        private object GetContents(MemberInfo toSerialize, string path)
         {
-            return toSerialize.Class.IsEnum 
-                ? toSerialize.Value?.ToString() 
-                : toSerialize.Value;
+            return _valueProvider.GetScalarValue(toSerialize, path);
         }
-        // ReSharper enable BuiltInTypeReferenceStyle - for consistent naming
     }
 }

@@ -2,6 +2,6 @@
 {
     public interface ISerializerFactory
     {
-        IClassInfoSerializer GetSerializer(object serializer);
+        IClassInfoSerializer GetSerializer(object serializer, IPropertyValueProvider valueProvider);
     }
 }

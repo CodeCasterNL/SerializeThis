@@ -8,6 +8,13 @@ namespace CodeCaster.SerializeThis.Serialization.CSharp
 {
     public class CSharpObjectInitializer : IClassInfoSerializer
     {
+        private readonly IPropertyValueProvider _valueProvider;
+
+        public CSharpObjectInitializer(IPropertyValueProvider valueProvider)
+        {
+            _valueProvider = valueProvider;
+        }
+
         public string FileExtension => "cs";
 
         public string DisplayName => "C# object initializer";
@@ -20,12 +27,12 @@ namespace CodeCaster.SerializeThis.Serialization.CSharp
 
             builder.Append($"var {type.Name} = ");
 
-            EmitInitializer(builder, type, indent: 0, StatementEndOptions.Semicolon | StatementEndOptions.Newline);
+            EmitInitializer(builder, type, indent: 0, path: type.Name, StatementEndOptions.Semicolon | StatementEndOptions.Newline);
 
             return builder.ToString();
         }
 
-        private void EmitInitializer(StringBuilder builder, MemberInfo type, int indent, StatementEndOptions statementEnd = StatementEndOptions.Comma | StatementEndOptions.Newline)
+        private void EmitInitializer(StringBuilder builder, MemberInfo type, int indent, string path = null, StatementEndOptions statementEnd = StatementEndOptions.Comma | StatementEndOptions.Newline)
         {
             switch (type.Class.CollectionType)
             {
@@ -49,18 +56,18 @@ namespace CodeCaster.SerializeThis.Serialization.CSharp
                 // TODO: how often to repeat the pattern A.B.C.D[.A.B.C.D[...]] if D has a property of type A?)
                 // TODO: maybe print `// A.B.C.D.A = max recursion depth reached` or something like that.
 
-                EmitComplexType(builder, type, indent, statementEnd);
+                EmitComplexType(builder, type, indent, path, statementEnd);
                 return;
             }
 
             // Leaf nodes.
-            EmitValueTypeConstant(builder, type);
+            EmitValueTypeConstant(builder, type, path);
             EndStatement(builder, statementEnd);
         }
 
         private static string GetSpaces(int indent) => new string(' ', indent * 4);
 
-        private void EmitComplexType(StringBuilder builder, MemberInfo type, int indent, StatementEndOptions statementEnd)
+        private void EmitComplexType(StringBuilder builder, MemberInfo type, int indent, string path, StatementEndOptions statementEnd)
         {
             var spaces = GetSpaces(indent);
             var typeName = GetGenericTypeName(type.Class);
@@ -74,12 +81,22 @@ namespace CodeCaster.SerializeThis.Serialization.CSharp
                     ? StatementEndOptions.Newline
                     : StatementEndOptions.Comma | StatementEndOptions.Newline;
 
-                AppendChild(builder, type, child, indent + 1, childEnd);
+                AppendChild(builder, type, child, indent + 1, AppendPath(path, child.Name), childEnd);
             }
 
             builder.Append(spaces).Append("}");
 
             EndStatement(builder, statementEnd);
+        }
+
+        private string AppendPath(string path, string name)
+        {
+            if (string.IsNullOrWhiteSpace(path))
+            {
+                return name;
+            }
+
+            return path + "." + name;
         }
 
         private string GetGenericTypeName(TypeInfo type)
@@ -93,13 +110,13 @@ namespace CodeCaster.SerializeThis.Serialization.CSharp
             return type.TypeName + "<" + string.Join(", ", type.GenericParameters.Select(p => GetGenericTypeName(p.Class))) + ">";
         }
 
-        private void AppendChild(StringBuilder builder, MemberInfo type, MemberInfo child, int indent, StatementEndOptions statementEnd)
+        private void AppendChild(StringBuilder builder, MemberInfo type, MemberInfo child, int indent, string path, StatementEndOptions statementEnd)
         {
             var spaces = GetSpaces(indent);
 
             builder.Append(spaces).Append(child.Name).Append(" = ");
 
-            EmitInitializer(builder, child, indent, statementEnd);
+            EmitInitializer(builder, child, indent, path, statementEnd);
         }
 
         private void EmitArray(StringBuilder builder, MemberInfo type, int indent, StatementEndOptions statementEnd)
@@ -125,21 +142,22 @@ namespace CodeCaster.SerializeThis.Serialization.CSharp
 
         private void EmitCollectionInitializer(StringBuilder builder, MemberInfo elementType, int indent, string spaces, StatementEndOptions statementEnd)
         {
-            void EmitCollectionEntry(int elementIndent, object value = null, StatementEndOptions elementStatementEnd = StatementEndOptions.Comma | StatementEndOptions.Newline)
+            void EmitCollectionEntry(int elementIndent, string path, StatementEndOptions elementStatementEnd = StatementEndOptions.Comma | StatementEndOptions.Newline)
             {
                 builder.Append(GetSpaces(elementIndent));
-                EmitInitializer(builder, elementType, elementIndent, elementStatementEnd);
+                EmitInitializer(builder, elementType, elementIndent, path, elementStatementEnd);
             }
 
             builder.Append(spaces).AppendLine("{");
 
-            if (elementType.Value is IEnumerable<object> collectionItems)
-            {
-                foreach (var item in collectionItems)
-                {
-                    EmitCollectionEntry(indent + 1, value: item);
-                }
-            }
+            //if (elementType.Value is IEnumerable<object> collectionItems)
+            //{
+            //    int i = 0;
+            //    foreach (var item in collectionItems)
+            //    {
+            //        EmitCollectionEntry(indent + 1, AppendPath(path, "[i]"));
+            //    }
+            //}
 
             builder.Append(spaces).Append("}");
             EndStatement(builder, statementEnd);
@@ -150,12 +168,12 @@ namespace CodeCaster.SerializeThis.Serialization.CSharp
             var keyType = type.Class.GenericParameters[0];
             var valueType = type.Class.GenericParameters[1];
 
-            void EmitDictionaryEntry(int elementIndent, (object, object) value = default, StatementEndOptions elementStatementEnd = StatementEndOptions.Comma | StatementEndOptions.Newline)
+            void EmitDictionaryEntry(int elementIndent, string path, StatementEndOptions elementStatementEnd = StatementEndOptions.Comma | StatementEndOptions.Newline)
             {
                 builder.Append(GetSpaces(elementIndent)).Append("{ ");
-                EmitInitializer(builder, keyType, indent + 1, StatementEndOptions.None);
+                EmitInitializer(builder, keyType, indent + 1, path, StatementEndOptions.None);
                 builder.Append(", ");
-                EmitInitializer(builder, valueType, indent + 1, StatementEndOptions.None);
+                EmitInitializer(builder, valueType, indent + 1, path, StatementEndOptions.None);
                 builder.Append(" }");
                 EndStatement(builder, elementStatementEnd);
             }
@@ -167,21 +185,23 @@ namespace CodeCaster.SerializeThis.Serialization.CSharp
             builder.AppendFormat("new {0}{1}", typeName, Environment.NewLine);
             builder.Append(spaces).AppendLine("{");
 
-            if (type.Value is IEnumerable<(object, object)> dictionary)
-            {
-                foreach (var item in dictionary)
-                {
-                    EmitDictionaryEntry(indent + 1, value: item);
-                }
-            }
+            //if (type.Value is IEnumerable<(object, object)> dictionary)
+            //{
+            //    foreach (var item in dictionary)
+            //    {
+            //        EmitDictionaryEntry(indent + 1, value: item);
+            //    }
+            //}
 
             builder.Append(spaces).Append("}");
             EndStatement(builder, statementEnd);
         }
 
-        private void EmitValueTypeConstant(StringBuilder builder, MemberInfo type)
+        private void EmitValueTypeConstant(StringBuilder builder, MemberInfo type, string path)
         {
-            switch (type.Value)
+            var value = _valueProvider.GetScalarValue(type, path);
+
+            switch (value)
             {
                 case Single s:
                     builder.Append(s.ToString(CultureInfo.InvariantCulture) + "f");

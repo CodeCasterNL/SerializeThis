@@ -7,7 +7,7 @@ namespace CodeCaster.SerializeThis.Serialization.Json.Tests
     [FixtureLifeCycle(LifeCycle.InstancePerTestCase)]
     public class JsonSerializerTests
     {
-        private readonly IClassInfoSerializer _classUnderTest = new JsonSerializer();
+        private readonly IClassInfoSerializer _classUnderTest = new JsonSerializer(new ValueGenerator());
 
         [SetUp]
         public void Setup()

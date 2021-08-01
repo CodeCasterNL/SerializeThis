@@ -5,17 +5,24 @@ using System.Linq;
 
 namespace CodeCaster.SerializeThis.Serialization
 {
-    public class ValueGenerator
+    public class ValueGenerator : IPropertyValueProvider
     {
         private int _counter;
         private DateTime _startTime;
-
-        public void Populate(MemberInfo classInfo)
+        
+        public void Initialize(TypeInfo typeInfo, string name)
         {
-            _counter = 0;
-            _startTime = DateTime.Now.ToUniversalTime();
+            _startTime = DateTime.Now;
+        }
 
-            PopulateValue(classInfo);
+        public object GetScalarValue(MemberInfo toSerialize, string path)
+        {
+            return GetValue(toSerialize);
+        }
+
+        public IEnumerable<object> GetCollectionElements(MemberInfo child, string path, MemberInfo collectionType)
+        {
+            throw new NotImplementedException();
         }
 
         private void PopulateValue(MemberInfo classInfo)
@@ -23,7 +30,7 @@ namespace CodeCaster.SerializeThis.Serialization
             if (classInfo.Class.Type == TypeEnum.ComplexType)
             {
                 // TODO: this won't work, we can't populate a type's children.
-                if (classInfo.Class.CollectionType != null)
+                if (classInfo.Class.IsCollectionType)
                 {
                     switch (classInfo.Class.CollectionType)
                     {
@@ -67,7 +74,7 @@ namespace CodeCaster.SerializeThis.Serialization
             }
         }
 
-        public object GetValue(MemberInfo type)
+        private object GetValue(MemberInfo type)
         {
             _counter++;
 
@@ -105,6 +112,5 @@ namespace CodeCaster.SerializeThis.Serialization
                     return null;
             }
         }
-
     }
 }

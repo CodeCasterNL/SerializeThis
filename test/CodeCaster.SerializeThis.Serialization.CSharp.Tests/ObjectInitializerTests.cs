@@ -1,4 +1,3 @@
-using System.Collections.Generic;
 using CodeCaster.SerializeThis.Tests.Shared;
 using NUnit.Framework;
 
@@ -6,7 +5,7 @@ namespace CodeCaster.SerializeThis.Serialization.CSharp.Tests
 {
     public class ObjectInitializerTests
     {
-        private readonly CSharpObjectInitializer _classUnderTest = new CSharpObjectInitializer();
+        private readonly CSharpObjectInitializer _classUnderTest = new CSharpObjectInitializer(new ValueGenerator());
 
         [SetUp]
         public void Setup()

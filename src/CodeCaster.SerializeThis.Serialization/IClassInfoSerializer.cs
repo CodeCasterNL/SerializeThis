@@ -13,7 +13,7 @@
         string DisplayName { get; }
 
         /// <summary>
-        /// Generates initialization code for the given <paramref name="type"/></para>.
+        /// Generates initialization code for the given <paramref name="type"/>.
         /// </summary>
         string Serialize(MemberInfo type);
         

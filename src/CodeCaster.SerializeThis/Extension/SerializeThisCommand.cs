@@ -181,23 +181,23 @@ namespace CodeCaster.SerializeThis.Extension
             // This does the actual magic of parsing the type under the caret.
             var classInfo = _roslynParser.GetMemberInfoRecursive(objectName, symbolToSerialize, null/*, semanticModel*/);
 
-            bool populated = false;
+            IPropertyValueProvider valueProvider = null;
 
             // Only when we were invoked on a local.
             if (selectedSymbol is ILocalSymbol)
             {
-                populated = await PopulateFromDebuggerAsync(classInfo);
+                valueProvider = await PopulateFromDebuggerAsync(classInfo);
             }
 
-            if (!populated)
+            if (valueProvider == null)
             {
-                new ValueGenerator().Populate(classInfo);
+                valueProvider = new ValueGenerator();
             }
 
-            ShowOutput(classInfo, commandName);
+            ShowOutput(classInfo, valueProvider, commandName);
         }
 
-        private async Task<bool> PopulateFromDebuggerAsync(MemberInfo classInfo)
+        private async Task<IPropertyValueProvider> PopulateFromDebuggerAsync(MemberInfo classInfo)
         {
             // Need to get the DTE on the UI thread.
             await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();
@@ -206,11 +206,11 @@ namespace CodeCaster.SerializeThis.Extension
 
             if (debugger == null)
             {
-                return false;
+                return null;
             }
 
             var debugValueParser = new DebugValueParser(debugger);
-            return debugValueParser.PopulateClassFromLocal(classInfo);
+            return debugValueParser;
         }
 
 #pragma warning disable VSTHRD010 // Caller calls ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync()
@@ -221,12 +221,12 @@ namespace CodeCaster.SerializeThis.Extension
         }
 #pragma warning restore VSTHRD010
 
-        private void ShowOutput(MemberInfo classInfo, string menuItemName)
+        private void ShowOutput(MemberInfo classInfo, IPropertyValueProvider valueProvider, string menuItemName)
         {
             IClassInfoSerializer serializer;
             try
             {
-                serializer = _serializerFactory.GetSerializer(menuItemName);
+                serializer = _serializerFactory.GetSerializer(menuItemName, valueProvider);
             }
             catch (ArgumentException ex)
             {
