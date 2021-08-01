@@ -106,6 +106,8 @@ namespace CodeCaster.SerializeThis.Serialization.Roslyn
             
             isNullableValueType = typeSymbol.IsNullableType();
 
+            //isAnonymousType = typeSymbol.IsAnonymousType;
+
             var isArray = typeSymbol.IsArray();
 
             // Don't count strings as collections, even though they implement IEnumerable<string>.

@@ -84,7 +84,7 @@ namespace CodeCaster.SerializeThis.Extension
                 // TODO: let other plugins add their own menu item to this plugin's context menu.
             }
 
-            
+
             InitializeOutputHandlers();
         }
 
@@ -106,6 +106,7 @@ namespace CodeCaster.SerializeThis.Extension
             }
             catch (Exception ex)
             {
+                await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();
                 ShowMessageBox(ServiceProvider, "Error serializing: " + ex);
             }
         }
@@ -117,7 +118,7 @@ namespace CodeCaster.SerializeThis.Extension
                 case XmlCommandId: return "xml";
                 case JsonCommandId: return "json";
                 case CSharpCommandId: return "c#";
-                default: throw new ArgumentException(nameof(menuCommandId));
+                default: throw new ArgumentException($"Cannot execute {nameof(menuCommandId)} {menuCommandId}.");
             }
         }
 
@@ -150,9 +151,9 @@ namespace CodeCaster.SerializeThis.Extension
             var semanticModel = await document.GetSemanticModelAsync();
 
             var selectedSymbol = await GetSymbolUnderCursorAsync(document, semanticModel, position);
-            
+
             ITypeSymbol symbolToSerialize;
-            
+
             // Longish name so it's an easy double-click target.
             var objectName = "rootObject";
 
@@ -177,23 +178,39 @@ namespace CodeCaster.SerializeThis.Extension
                     return;
             }
 
-            // This does the actual magic.
+            // This does the actual magic of parsing the type under the caret.
             var classInfo = _roslynParser.GetMemberInfoRecursive(objectName, symbolToSerialize, null/*, semanticModel*/);
 
-            // Need to get the DTE on the UI thread.
-            await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();
-            
-            var debugger = GetDebugger();
-            
-            if (debugger != null)
-            {
+            bool populated = false;
 
-                var debugValueParser = new DebugValueParser(debugger);
-                
-                debugValueParser.PopulateClassFromLocal(classInfo);
+            // Only when we were invoked on a local.
+            if (selectedSymbol is ILocalSymbol)
+            {
+                populated = await PopulateFromDebuggerAsync(classInfo);
+            }
+
+            if (!populated)
+            {
+                new ValueGenerator().Populate(classInfo);
             }
 
             ShowOutput(classInfo, commandName);
+        }
+
+        private async Task<bool> PopulateFromDebuggerAsync(ClassInfo classInfo)
+        {
+            // Need to get the DTE on the UI thread.
+            await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();
+
+            var debugger = GetDebugger();
+
+            if (debugger == null)
+            {
+                return false;
+            }
+
+            var debugValueParser = new DebugValueParser(debugger);
+            return debugValueParser.PopulateClassFromLocal(classInfo);
         }
 
 #pragma warning disable VSTHRD010 // Caller calls ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync()

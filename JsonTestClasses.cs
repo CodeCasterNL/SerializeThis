@@ -17,9 +17,26 @@ namespace JsonTestClasses
             object fi = new FooInherited
             {
                 Firstname = "@Runtime1",
-                Lastname = null, // PlzGenerate
+                Lastname = null,
                 Age = 42,
                 DateOfBirth = new DateTime(2021, 07, 31),
+            };
+
+            var twoSame = new FooComplexType
+            {
+                BoolProperty = true,
+                ChildProperty1 = new FooBase
+                {
+                    Firstname = "F001",
+                    Lastname = "",
+                },
+                ChildProperty2 = new FooInherited
+                {
+                    Firstname = "class2",
+                    Lastname = null,
+                    Age = 42,
+                    DateOfBirth = new DateTime(2021, 08, 01),
+                }
             };
 
             var fd = new FooDictionaries();

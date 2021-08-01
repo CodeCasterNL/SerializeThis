@@ -10,7 +10,6 @@ namespace CodeCaster.SerializeThis.Serialization.Json
     /// </summary>
     public class JsonSerializer : IClassInfoSerializer
     {
-        private int _counter;
         private readonly Dictionary<string, JObject> _typesSeen = new Dictionary<string, JObject>();
 
         public string FileExtension => "json";
@@ -21,8 +20,6 @@ namespace CodeCaster.SerializeThis.Serialization.Json
 
         public string Serialize(ClassInfo type)
         {
-            _counter = 0;
-
             if (!CanSerialize(type))
             {
                 // Sure, maybe later we'll support collection or scalar types.
@@ -82,15 +79,21 @@ namespace CodeCaster.SerializeThis.Serialization.Json
 
             var jObject = new JObject();
 
-            // TODO: 3 is hardcoded here.
-            for (int i = 0; i < 3; i++)
+            if (child.Value is IEnumerable<(object, object)> dictionary)
             {
-                var exampleKey = SerializeChild(keyType);
-                var exampleValue = SerializeChild(valueType);
+                foreach (var item in dictionary)
+                {
+                    // TODO: use item.Key and item.Value...
+                    var exampleKey = SerializeChild(keyType);
+                    var exampleValue = SerializeChild(valueType);
 
-                var property = new JProperty(exampleKey.ToString(), exampleValue);
-                jObject.Add(property);
+                    var property = new JProperty(exampleKey.ToString(), exampleValue);
+                    jObject.Add(property);
+
+                    //EmitDictionaryEntry(indent + 1, value: item, generateValue: false);
+                }
             }
+
 
             return jObject;
         }
@@ -104,12 +107,14 @@ namespace CodeCaster.SerializeThis.Serialization.Json
                 return new JArray();
             }
 
-            // TODO: 3 is hardcoded here.
-            object[] arrayMembers = {
-                SerializeChild(collectionType),
-                SerializeChild(collectionType),
-                SerializeChild(collectionType),
-            };
+            var arrayMembers = new List<object>();
+            if (child.Value is IEnumerable<object> collectionItems)
+            {
+                foreach (var item in collectionItems)
+                {
+                    arrayMembers.Add(item);
+                }
+            }
 
             return new JArray(arrayMembers);
         }
@@ -117,44 +122,9 @@ namespace CodeCaster.SerializeThis.Serialization.Json
         // ReSharper disable BuiltInTypeReferenceStyle - for consistent naming
         private object GetContents(ClassInfo toSerialize)
         {
-            if (toSerialize.Value != null)
-            {
-                return toSerialize.Value;
-            }
-
-            _counter++;
-
-            if (toSerialize.Class.IsEnum)
-            {
-                return $"{toSerialize.Name}-FooEnum{_counter}";
-            }
-
-            switch (toSerialize.Class.Type)
-            {
-                case TypeEnum.Boolean:
-                    return _counter % 2 == 0;
-                case TypeEnum.String:
-                    return $"{toSerialize.Name}FooString{_counter}";
-                case TypeEnum.DateTime:
-                    return DateTime.Now.ToUniversalTime().AddSeconds(_counter);
-                case TypeEnum.Int16:
-                    return (Int16)_counter;
-                case TypeEnum.Int32:
-                    return (Int32)_counter;
-                case TypeEnum.Int64:
-                    return (Int64)_counter;
-                case TypeEnum.Float32:
-                    return ((Single)_counter) + .000042;
-                case TypeEnum.Float64:
-                    return ((Double)_counter) + .000000000000042;
-                case TypeEnum.Decimal:
-                    return ((Decimal)_counter) + .00000000000042m;
-                case TypeEnum.Byte:
-                    return (Byte)_counter;
-
-                default:
-                    return null;
-            }
+            return toSerialize.Class.IsEnum 
+                ? toSerialize.Value?.ToString() 
+                : toSerialize.Value;
         }
         // ReSharper enable BuiltInTypeReferenceStyle - for consistent naming
     }

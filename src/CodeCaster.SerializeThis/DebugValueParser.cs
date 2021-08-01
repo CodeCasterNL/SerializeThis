@@ -3,7 +3,6 @@ using EnvDTE;
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using System.Linq;
 
 namespace CodeCaster.SerializeThis
@@ -20,7 +19,7 @@ namespace CodeCaster.SerializeThis
             _debugger = debugger;
         }
 
-        internal void PopulateClassFromLocal(ClassInfo classInfo)
+        public bool PopulateClassFromLocal(ClassInfo classInfo)
         {
             var stackFrame = _debugger.CurrentStackFrame;
 
@@ -29,9 +28,11 @@ namespace CodeCaster.SerializeThis
                 if (local.Name == classInfo.Name)
                 {
                     PopulateClassInfo(classInfo, local);
-                    break;
+                    return true;
                 }
             }
+
+            return false;
         }
 
         private void PopulateClassInfo(ClassInfo classInfo, Expression local)
@@ -41,9 +42,7 @@ namespace CodeCaster.SerializeThis
                 if (local.IsValidValue)
                 {
                     var valueTypeValue = GetValueTypeValue(classInfo, local);
-                    classInfo.Value = valueTypeValue?.ToString() != "null"
-                        ? valueTypeValue
-                        : null;
+                    classInfo.Value = valueTypeValue;
                 }
 
                 return;
@@ -56,6 +55,7 @@ namespace CodeCaster.SerializeThis
             }
 
             // TODO: collection types
+            // TODO: inheritance! Runtime can be different, update class? Find existing class by name?
             foreach (var prop in classInfo.Class.Children)
             {
                 var localMember = FindMember(local, prop);
@@ -65,22 +65,13 @@ namespace CodeCaster.SerializeThis
 
         private IEnumerable CreateCollection(Class classInfo, Expression local)
         {
-            IEnumerable<object> items = GetItemsFromCollection(local);
-
-            switch (classInfo.CollectionType)
-            {
-                case CollectionType.Array:
-                case CollectionType.Collection:
-                case CollectionType.Dictionary:
-                    return items.ToArray();
-            }
-
-            throw new NotImplementedException($"Unsupported collection type {classInfo.CollectionType}");
+            IEnumerable<Expression> items = GetItemsFromCollection(local);
+            return items.ToArray();
         }
 
-        private IEnumerable<object> GetItemsFromCollection(Expression expression)
+        private IEnumerable<Expression> GetItemsFromCollection(Expression expression)
         {
-            foreach (var member in expression.DataMembers)
+            foreach (Expression member in expression.DataMembers)
             {
                 yield return member;
             }
@@ -104,17 +95,27 @@ namespace CodeCaster.SerializeThis
             switch (classInfo.Class.Type)
             {
                 case TypeEnum.Boolean:
+                    return Boolean.Parse(local.Value);
                 case TypeEnum.String:
+                    return (String)local.Value == null || local.Value == "null" ? null : local.Value.Substring(1, local.Value.Length - 2);
                 case TypeEnum.Byte:
+                    return Byte.Parse(local.Value);
                 case TypeEnum.Int16:
+                    return Int16.Parse(local.Value);
                 case TypeEnum.Int32:
+                    return Int32.Parse(local.Value);
                 case TypeEnum.Int64:
+                    return Int64.Parse(local.Value);
                 case TypeEnum.Float32:
+                    return Single.Parse(local.Value);
                 case TypeEnum.Float64:
+                    return Double.Parse(local.Value);
                 case TypeEnum.Decimal:
+                    return Decimal.Parse(local.Value);
                 case TypeEnum.DateTime:
+                    return DateTime.Parse(local.Value);
                 case TypeEnum.DateTimeOffset:
-                    return local.Value;
+                    return DateTimeOffset.Parse(local.Value);
             }
 
             return null;

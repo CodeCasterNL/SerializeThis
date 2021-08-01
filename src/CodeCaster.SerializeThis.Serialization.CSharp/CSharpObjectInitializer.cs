@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
@@ -9,7 +8,6 @@ namespace CodeCaster.SerializeThis.Serialization.CSharp
 {
     public class CSharpObjectInitializer : IClassInfoSerializer
     {
-        private int _counter;
         public string FileExtension => "cs";
 
         public string DisplayName => "C# object initializer";
@@ -18,16 +16,14 @@ namespace CodeCaster.SerializeThis.Serialization.CSharp
 
         public string Serialize(ClassInfo type)
         {
-            _counter = 0;
-            
             var builder = new StringBuilder();
 
             var rootTypeName = type.Name ?? "foo";
 
             builder.Append($"var {rootTypeName} = ");
-            
+
             EmitInitializer(builder, type, indent: 0, StatementEndOptions.Semicolon | StatementEndOptions.Newline);
-            
+
             return builder.ToString();
         }
 
@@ -59,7 +55,9 @@ namespace CodeCaster.SerializeThis.Serialization.CSharp
                 return;
             }
 
-            EmitValueTypeConstant(builder, type, statementEnd);
+            // Leaf nodes.
+            EmitValueTypeConstant(builder, type);
+            EndStatement(builder, statementEnd);
         }
 
         private static string GetSpaces(int indent) => new string(' ', indent * 4);
@@ -68,7 +66,7 @@ namespace CodeCaster.SerializeThis.Serialization.CSharp
         {
             var spaces = GetSpaces(indent);
             var typeName = GetGenericTypeName(type.Class);
-            
+
             builder.AppendFormat("new {0}{1}{2}{{{1}", typeName, Environment.NewLine, spaces);
 
             for (var index = 0; index < type.Class.Children.Count; index++)
@@ -92,7 +90,7 @@ namespace CodeCaster.SerializeThis.Serialization.CSharp
             {
                 return type.TypeName;
             }
-            
+
             // TODO: cache?
             return type.TypeName + "<" + string.Join(", ", type.GenericParameters.Select(p => GetGenericTypeName(p.Class))) + ">";
         }
@@ -105,7 +103,7 @@ namespace CodeCaster.SerializeThis.Serialization.CSharp
 
             EmitInitializer(builder, child, indent, statementEnd);
         }
-        
+
         private void EmitArray(StringBuilder builder, ClassInfo type, int indent, StatementEndOptions statementEnd)
         {
             var spaces = GetSpaces(indent);
@@ -129,7 +127,7 @@ namespace CodeCaster.SerializeThis.Serialization.CSharp
 
         private void EmitCollectionInitializer(StringBuilder builder, ClassInfo elementType, int indent, string spaces, StatementEndOptions statementEnd)
         {
-            void EmitCollectionEntry(int elementIndent, object value = null, bool generateValue = true, StatementEndOptions elementStatementEnd = StatementEndOptions.Comma | StatementEndOptions.Newline)
+            void EmitCollectionEntry(int elementIndent, object value = null, StatementEndOptions elementStatementEnd = StatementEndOptions.Comma | StatementEndOptions.Newline)
             {
                 builder.Append(GetSpaces(elementIndent));
                 EmitInitializer(builder, elementType, elementIndent, elementStatementEnd);
@@ -137,18 +135,11 @@ namespace CodeCaster.SerializeThis.Serialization.CSharp
 
             builder.Append(spaces).AppendLine("{");
 
-            if (elementType.Value == null)
+            if (elementType.Value is IEnumerable<object> collectionItems)
             {
-                // TODO: 3 is hardcoded here
-                EmitCollectionEntry(indent + 1, value: null, generateValue: true);
-                EmitCollectionEntry(indent + 1, value: null, generateValue: true);
-                EmitCollectionEntry(indent + 1, value: null, generateValue: true, StatementEndOptions.Newline);
-            }
-            else
-            {
-                foreach (var item in (IEnumerable<object>)elementType.Value)
+                foreach (var item in collectionItems)
                 {
-                    EmitCollectionEntry(indent + 1, value: item, generateValue: false);
+                    EmitCollectionEntry(indent + 1, value: item);
                 }
             }
 
@@ -161,7 +152,7 @@ namespace CodeCaster.SerializeThis.Serialization.CSharp
             var keyType = type.Class.GenericParameters[0];
             var valueType = type.Class.GenericParameters[1];
 
-            void EmitDictionaryEntry(int elementIndent, object value = null, bool generateValue = true, StatementEndOptions elementStatementEnd = StatementEndOptions.Comma | StatementEndOptions.Newline)
+            void EmitDictionaryEntry(int elementIndent, (object, object) value = default, StatementEndOptions elementStatementEnd = StatementEndOptions.Comma | StatementEndOptions.Newline)
             {
                 builder.Append(GetSpaces(elementIndent)).Append("{ ");
                 EmitInitializer(builder, keyType, indent + 1, StatementEndOptions.None);
@@ -178,18 +169,11 @@ namespace CodeCaster.SerializeThis.Serialization.CSharp
             builder.AppendFormat("new {0}{1}", typeName, Environment.NewLine);
             builder.Append(spaces).AppendLine("{");
 
-            if (type.Value == null)
+            if (type.Value is IEnumerable<(object, object)> dictionary)
             {
-                // TODO: 3 is hardcoded here
-                EmitDictionaryEntry(indent + 1);
-                EmitDictionaryEntry(indent + 1);
-                EmitDictionaryEntry(indent + 1, StatementEndOptions.Newline);
-            }
-            else
-            {
-                foreach (var item in (IEnumerable<object>)type.Value)
+                foreach (var item in dictionary)
                 {
-                    EmitDictionaryEntry(indent + 1, value: item, generateValue: false);
+                    EmitDictionaryEntry(indent + 1, value: item);
                 }
             }
 
@@ -197,70 +181,34 @@ namespace CodeCaster.SerializeThis.Serialization.CSharp
             EndStatement(builder, statementEnd);
         }
 
-        private void EmitValueTypeConstant(StringBuilder builder, ClassInfo type, StatementEndOptions statementEnd = StatementEndOptions.Comma | StatementEndOptions.Newline)
+        private void EmitValueTypeConstant(StringBuilder builder, ClassInfo type)
         {
-            _counter++;
-
-            var value = GetValue(type);
-
-            switch (value)
+            switch (type.Value)
             {
-                case bool b:
+                case Single s:
+                    builder.Append(s.ToString(CultureInfo.InvariantCulture) + "f");
+                    break;
+                case Double d:
+                    builder.Append(d.ToString(CultureInfo.InvariantCulture) + "d");
+                    break;
+                case Decimal d:
+                    builder.Append(d.ToString(CultureInfo.InvariantCulture) + "m");
+                    break;
+                case String s:
+                    builder.Append($"\"{s}\"");
+                    break;
+                case Boolean b:
                     builder.Append(b ? "true" : "false");
                     break;
                 case DateTime dt:
                     builder.AppendFormat("new DateTime({0}, {1}, {2}, {3}, {4}, {5})", dt.Year, dt.Month, dt.Day, dt.Hour, dt.Minute, dt.Second);
                     break;
                 default:
-                    builder.Append(value ?? "null");
+                    builder.Append(type.Value ?? "null");
                     break;
             }
-
-            EndStatement(builder, statementEnd);
         }
 
-        private object GetValue(ClassInfo type)
-        {
-            if (type.Value != null)
-            {
-                return type.Value;
-            }
-
-            if (type.Class.IsEnum)
-            {
-                // TODO: get enum example member (or 0)?
-                var enumMember = type.Class.Children.FirstOrDefault()?.Name ?? "0";
-                return $"{type.Class.TypeName}.{enumMember}";
-            }
-
-            switch (type.Class.Type)
-            {
-                case TypeEnum.Boolean:
-                    return _counter % 2 == 0;
-                case TypeEnum.String:
-                    return $"\"{type.Name}FooString{_counter}\"";
-                case TypeEnum.DateTime:
-                    return DateTime.Now.ToUniversalTime().AddSeconds(_counter);
-                case TypeEnum.Int16:
-                    return (Int16)_counter;
-                case TypeEnum.Int32:
-                    return (Int32)_counter;
-                case TypeEnum.Int64:
-                    return (Int64)_counter;
-                case TypeEnum.Float32:
-                    return (_counter + .42f).ToString(CultureInfo.InvariantCulture) + "f";
-                case TypeEnum.Float64:
-                    return (_counter + .42d).ToString(CultureInfo.InvariantCulture) + "d";
-                case TypeEnum.Decimal:
-                    return (_counter + .42m).ToString(CultureInfo.InvariantCulture) + "m";
-                case TypeEnum.Byte:
-                    return (Byte)_counter;
-
-                default:
-                    return null;
-            }
-        }
-        
         private void EndStatement(StringBuilder builder, StatementEndOptions statementEnd)
         {
             if (statementEnd.HasFlag(StatementEndOptions.Semicolon))

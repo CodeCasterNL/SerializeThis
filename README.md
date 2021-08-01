@@ -15,6 +15,28 @@ The serialized model looks like this:
 
 The extension creates a temp file, writes the output there, opens the file in Visual Studio and then attempts to delete the file. 
 
+## Solution design
+
+### SerializeThis.Serialization
+The Serialization library is a comprehensive bridge between Roslyn, Reflection and the Visual Studio Debugger on the input side, and C# object initializers and JSON output on the other side. Ideally it works all ways, so it can replace existing Json to C# generators.
+
+### Input libraries
+* SerializeThis.Serialization.Roslyn: parse the open file and its context in the IDE, design-time.
+* SerializeThis.Reflection: runtime experiment, not quite complete. And why would you use it when there's like JsonConvert.SerializeObject(), and otherwise ... this extension? (May be) useful in some unit tests though.
+
+### Output libraries
+* CodeCaster.SerializeThis.Serialization.CSharp: creates object initializers.
+* CodeCaster.SerializeThis.Serialization.Json: generates JSON.
+
+### Visual Studio Extension
+The startup project, SerializeThis.
+
+* To be renamed to SerializeThis.VS2019 as that will be its max supported version. Also contains too many logic, have to create a Framework 4.7.2 Class Library project and move the logic there.
+* Example: DebugValueParser, which populates a SymbolInfo with values.
+
+### Tests
+A couple of test projects, not quite covered.
+
 ## Feedback
 Its basic functionality has been tested in various scenarios, but if you have a type it can't serialize, feel free to [open an issue](https://github.com/CodeCasterNL/CodeCaster.SerializeThis/issues)!
 
