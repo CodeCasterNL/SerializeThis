@@ -10,9 +10,16 @@ namespace CodeCaster.SerializeThis.Serialization
         private int _counter;
         private DateTime _startTime;
         
-        public void Initialize(TypeInfo typeInfo, string name)
+        public bool CanHandle(TypeInfo typeInfo, string name)
         {
             _startTime = DateTime.Now;
+
+            return true;
+        }
+
+        public MemberInfo Announce(MemberInfo toSerialize, string path)
+        {
+            return toSerialize;
         }
 
         public object GetScalarValue(MemberInfo toSerialize, string path)
@@ -20,8 +27,36 @@ namespace CodeCaster.SerializeThis.Serialization
             return GetValue(toSerialize);
         }
 
-        public IEnumerable<object> GetCollectionElements(MemberInfo child, string path, MemberInfo collectionType)
+        public IEnumerable<object> GetCollectionElements(MemberInfo classInfo, string path, MemberInfo collectionType)
         {
+            switch (classInfo.Class.CollectionType)
+            {
+                case CollectionType.Array:
+                    classInfo.Value = new object[]
+                    {
+                        //GetValue(...),
+                        //GetValue(...),
+                        //GetValue(...),
+                    };
+                    break;
+                case CollectionType.Collection:
+                    classInfo.Value = new Collection<object>[]
+                    {
+                        //GetValue(...),
+                        //GetValue(...),
+                        //GetValue(...),
+                    };
+                    break;
+                case CollectionType.Dictionary:
+                    classInfo.Value = new Dictionary<object, object>[]
+                    {
+                        //GetValue(...),
+                        //GetValue(...),
+                        //GetValue(...),
+                    };
+                    break;
+            }
+
             throw new NotImplementedException();
         }
 
@@ -32,33 +67,7 @@ namespace CodeCaster.SerializeThis.Serialization
                 // TODO: this won't work, we can't populate a type's children.
                 if (classInfo.Class.IsCollectionType)
                 {
-                    switch (classInfo.Class.CollectionType)
-                    {
-                        case CollectionType.Array:
-                            classInfo.Value = new object[]
-                            {
-                                //GetValue(...),
-                                //GetValue(...),
-                                //GetValue(...),
-                            };
-                            break;
-                        case CollectionType.Collection:
-                            classInfo.Value = new Collection<object>[]
-                            {
-                                //GetValue(...),
-                                //GetValue(...),
-                                //GetValue(...),
-                            };
-                            break;
-                        case CollectionType.Dictionary:
-                            classInfo.Value = new Dictionary<object, object>[]
-                            {
-                                //GetValue(...),
-                                //GetValue(...),
-                                //GetValue(...),
-                            };
-                            break;
-                    }
+                    
                 }
                 else
                 {

@@ -186,9 +186,16 @@ namespace CodeCaster.SerializeThis.Extension
             // Only when we were invoked on a local.
             if (selectedSymbol is ILocalSymbol)
             {
-                valueProvider = await PopulateFromDebuggerAsync(classInfo);
+                valueProvider = await MaybeGetDebugValueParserAsync();
+                
+                // And only when the debugger can access that local.
+                if (true != valueProvider?.CanHandle(classInfo.Class, objectName))
+                {
+                    valueProvider = null;
+                }
             }
 
+            // When all else fails, generate some values.
             if (valueProvider == null)
             {
                 valueProvider = new ValueGenerator();
@@ -197,12 +204,15 @@ namespace CodeCaster.SerializeThis.Extension
             ShowOutput(classInfo, valueProvider, commandName);
         }
 
-        private async Task<IPropertyValueProvider> PopulateFromDebuggerAsync(MemberInfo classInfo)
+        private async Task<IPropertyValueProvider> MaybeGetDebugValueParserAsync()
         {
             // Need to get the DTE on the UI thread.
             await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();
 
-            var debugger = GetDebugger();
+
+            var dte = ServiceProvider.GetService(typeof(EnvDTE.DTE)) as EnvDTE.DTE;
+            
+            var debugger = dte?.Debugger;
 
             if (debugger == null)
             {
@@ -212,15 +222,7 @@ namespace CodeCaster.SerializeThis.Extension
             var debugValueParser = new DebugValueParser(debugger);
             return debugValueParser;
         }
-
-#pragma warning disable VSTHRD010 // Caller calls ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync()
-        private EnvDTE.Debugger GetDebugger()
-        {
-            var dte = ServiceProvider.GetService(typeof(EnvDTE.DTE)) as EnvDTE.DTE;
-            return dte?.Debugger;
-        }
-#pragma warning restore VSTHRD010
-
+        
         private void ShowOutput(MemberInfo classInfo, IPropertyValueProvider valueProvider, string menuItemName)
         {
             IClassInfoSerializer serializer;

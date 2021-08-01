@@ -33,9 +33,7 @@ namespace CodeCaster.SerializeThis.Serialization.Json
                 throw new NotSupportedException("Root type must be complex type");
             }
 
-            _valueProvider.Initialize(type.Class, type.Name);
-
-            var rootObject = GetComplexType(type, "");
+            var rootObject = GetComplexType(type, type.Name);
             return rootObject.ToString();
         }
 

@@ -37,7 +37,7 @@ namespace CodeCaster.SerializeThis
             _debugger = debugger;
         }
 
-        public void Initialize(TypeInfo declaredType, string name)
+        public bool CanHandle(TypeInfo declaredType, string name)
         {
             _valueDictionary = new Dictionary<string, ExpressionInfo>();
             
@@ -47,7 +47,28 @@ namespace CodeCaster.SerializeThis
             {
                 var info = new ExpressionInfo(name, expression, declaredType);
                 _valueDictionary[name] = info;
+                return true;
             }
+
+            return false;
+        }
+
+        public MemberInfo Announce(MemberInfo toSerialize, string path)
+        {
+            if (!_valueDictionary.Any())
+            {
+                return null;
+            }
+
+            var expression = GetExpression(toSerialize, path);
+
+            if (expression.Type != toSerialize.Class)
+            {
+                // TODO: polymorphism
+                System.Diagnostics.Debugger.Break();
+            }
+
+            return toSerialize;
         }
 
         public object GetScalarValue(MemberInfo toSerialize, string path)
@@ -63,12 +84,12 @@ namespace CodeCaster.SerializeThis
                 return null;
             }
 
-            var expression = GetExpression(path, toSerialize);
+            var expression = GetExpression(toSerialize, path);
 
             return GetValueTypeValue(expression);
         }
 
-        private ExpressionInfo GetExpression(string path, MemberInfo toSerialize)
+        private ExpressionInfo GetExpression(MemberInfo toSerialize, string path)
         {
             var parentPath = path;
             
@@ -80,19 +101,18 @@ namespace CodeCaster.SerializeThis
 
             if (!_valueDictionary.TryGetValue(parentPath, out var parentExpression))
             {
-                parentExpression = FindParent(parentPath);
+                // TODO: get from event or something?
+                parentExpression = GetExpression(null, parentPath);
+            }
+
+            if (parentPath == path)
+            {
+                return parentExpression;
             }
 
             var currentExpression = FindMember(parentExpression, toSerialize);
             
             return _valueDictionary[path] = new ExpressionInfo(path, currentExpression, toSerialize.Class);
-        }
-
-        private ExpressionInfo FindParent(string parentPath)
-        {
-            // TODO: walk up from foo.Bar.Baz to foo.Bar
-
-            return null;
         }
 
         // TODO: collections (and syntax, [i]?)

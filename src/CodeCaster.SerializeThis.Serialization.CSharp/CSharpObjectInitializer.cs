@@ -34,6 +34,8 @@ namespace CodeCaster.SerializeThis.Serialization.CSharp
 
         private void EmitInitializer(StringBuilder builder, MemberInfo type, int indent, string path = null, StatementEndOptions statementEnd = StatementEndOptions.Comma | StatementEndOptions.Newline)
         {
+            type = _valueProvider.Announce(type, path);
+            
             switch (type.Class.CollectionType)
             {
                 case CollectionType.Array:
@@ -222,7 +224,7 @@ namespace CodeCaster.SerializeThis.Serialization.CSharp
                     builder.AppendFormat("new DateTime({0}, {1}, {2}, {3}, {4}, {5})", dt.Year, dt.Month, dt.Day, dt.Hour, dt.Minute, dt.Second);
                     break;
                 default:
-                    builder.Append(type.Value ?? "null");
+                    builder.Append(value ?? "null");
                     break;
             }
         }
