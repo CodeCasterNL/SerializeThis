@@ -1,19 +1,56 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 
 // For FooAttributes.
 using System.Runtime.Serialization;
 
 namespace JsonTestClasses
 {
-    class TestInstances
+    /// <summary>
+    /// You can use this project to test the debugger extension.
+    /// </summary>
+    class Program
     {
-        private void Foo()
-        {
-            var fi = new FooInherited();
+        static void Main(string[] args)
+        { 
+            object fi = new FooInherited
+            {
+                Firstname = "@Runtime1",
+                Lastname = null, // PlzGenerate
+                Age = 42,
+                DateOfBirth = new DateTime(2021, 07, 31),
+            };
+
             var fd = new FooDictionaries();
 
             var attributeTest = new FooWithFooBase();
+
+            var fooSimpleCollections = new FooSimpleCollections
+            {
+                StringArray = new[]
+                {
+                    "1",
+                    null,
+                    null,
+                    "4",
+                    "Foo5",
+                },
+                IntStringDict = new Dictionary<int, string>
+                {
+                    { 42, "Forty-Two" },
+                    { 1, null },
+                    { Int32.MaxValue, "Over 9000" },
+                }
+            };
+
+            var fooAnon = new
+            {
+                StringProp = "Foo",
+                AnInt = 42,
+            };
+
+            Debugger.Break();
         }
     }
 
