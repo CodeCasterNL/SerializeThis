@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
-using CodeCaster.SerializeThis.Serialization;
+using SerializeThis.Serialization;
 
-namespace CodeCaster.SerializeThis.Tests.Shared
+namespace SerializeThis.Tests.Shared
 {
     public static class ScalarClasses
     {

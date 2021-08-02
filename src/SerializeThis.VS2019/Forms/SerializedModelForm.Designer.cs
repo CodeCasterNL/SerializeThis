@@ -1,4 +1,4 @@
-﻿namespace CodeCaster.SerializeThis.Forms
+﻿namespace SerializeThis.Forms
 {
     partial class SerializedModelForm
     {

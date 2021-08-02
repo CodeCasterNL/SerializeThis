@@ -1,9 +1,9 @@
 ﻿using System.Reflection;
 using System.Runtime.InteropServices;
 
-[assembly: AssemblyTitle("CodeCaster.SerializeThis")]
+[assembly: AssemblyTitle("SerializeThis.)]
 [assembly: AssemblyDescription("")]
 [assembly: AssemblyConfiguration("")]
-[assembly: AssemblyProduct("CodeCaster.SerializeThis")]
+[assembly: AssemblyProduct("SerializeThis.)]
 
 [assembly: ComVisible(false)]

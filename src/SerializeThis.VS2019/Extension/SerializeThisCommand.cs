@@ -4,8 +4,8 @@ using System.ComponentModel.Design;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using CodeCaster.SerializeThis.OutputHandlers;
-using CodeCaster.SerializeThis.Serialization;
+using SerializeThis.OutputHandlers;
+using SerializeThis.Serialization;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.FindSymbols;
 using Microsoft.CodeAnalysis.Text;
@@ -17,7 +17,7 @@ using Microsoft.VisualStudio.Shell.Interop;
 using Microsoft.VisualStudio.TextManager.Interop;
 using IServiceProvider = System.IServiceProvider;
 
-namespace CodeCaster.SerializeThis.Extension
+namespace SerializeThis.Extension
 {
     /// <summary>
     /// Command handler

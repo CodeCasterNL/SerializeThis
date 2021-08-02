@@ -1,4 +1,4 @@
-﻿using CodeCaster.SerializeThis.Serialization;
+﻿using SerializeThis.Serialization;
 using EnvDTE;
 using System;
 using System.Collections;

@@ -2,7 +2,7 @@
 using System.Linq;
 using Microsoft.CodeAnalysis;
 
-namespace CodeCaster.SerializeThis.Serialization.Roslyn
+namespace SerializeThis.Serialization.Roslyn
 {
     public static class TypeSymbolExtensions
     {

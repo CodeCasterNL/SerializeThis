@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace CodeCaster.SerializeThis.Serialization
+namespace SerializeThis.Serialization
 {
     /// <summary>
     /// A complex or value type. Complex can be any of a few known collection types, or is treated as a class.

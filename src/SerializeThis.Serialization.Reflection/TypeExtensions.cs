@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-namespace CodeCaster.SerializeThis.Reflection
+namespace SerializeThis.Serialization.Reflection
 {
     public static class TypeExtensions
     {

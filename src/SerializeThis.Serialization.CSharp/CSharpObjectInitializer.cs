@@ -4,7 +4,7 @@ using System.Globalization;
 using System.Linq;
 using System.Text;
 
-namespace CodeCaster.SerializeThis.Serialization.CSharp
+namespace SerializeThis.Serialization.CSharp
 {
     public class CSharpObjectInitializer : IClassInfoSerializer
     {

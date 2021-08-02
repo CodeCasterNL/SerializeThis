@@ -1,7 +1,7 @@
 ﻿using System;
-using CodeCaster.SerializeThis.Serialization;
+using SerializeThis.Serialization;
 
-namespace CodeCaster.SerializeThis.OutputHandlers
+namespace SerializeThis.OutputHandlers
 {
     public interface IOutputHandler
     {

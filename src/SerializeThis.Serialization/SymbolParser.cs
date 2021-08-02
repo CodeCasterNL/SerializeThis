@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace CodeCaster.SerializeThis.Serialization
+namespace SerializeThis.Serialization
 {
     /// <summary>
     /// One base implementation for parsers, but feel free to roll your own.

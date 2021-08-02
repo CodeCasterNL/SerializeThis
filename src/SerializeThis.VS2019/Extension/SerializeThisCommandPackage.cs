@@ -2,11 +2,11 @@
 using System.Diagnostics.CodeAnalysis;
 using System.Runtime.InteropServices;
 using System.Threading;
-using CodeCaster.SerializeThis.OutputHandlers;
-using CodeCaster.SerializeThis.Serialization.Roslyn;
+using SerializeThis.OutputHandlers;
+using SerializeThis.Serialization.Roslyn;
 using Microsoft.VisualStudio.Shell;
 
-namespace CodeCaster.SerializeThis.Extension
+namespace SerializeThis.Extension
 {
     /// <summary>
     /// This is the class that implements the package exposed by this assembly.

@@ -1,12 +1,12 @@
 ﻿using System;
 using System.IO;
-using CodeCaster.SerializeThis.Serialization;
+using SerializeThis.Serialization;
 using Microsoft.VisualStudio;
 using Microsoft.VisualStudio.Editor;
 using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.Shell.Interop;
 
-namespace CodeCaster.SerializeThis.OutputHandlers
+namespace SerializeThis.OutputHandlers
 {
     public class TempFileInNewTabOutputHandler : IOutputHandler
     {

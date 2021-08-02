@@ -1,8 +1,8 @@
 ﻿using System;
-using CodeCaster.SerializeThis.Forms;
-using CodeCaster.SerializeThis.Serialization;
+using SerializeThis.Forms;
+using SerializeThis.Serialization;
 
-namespace CodeCaster.SerializeThis.OutputHandlers
+namespace SerializeThis.OutputHandlers
 {
     public class ModelFormOutputHandler : IOutputHandler
     {

@@ -1,9 +1,9 @@
-﻿using CodeCaster.SerializeThis.Serialization;
+﻿using SerializeThis.Serialization;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace CodeCaster.SerializeThis.Reflection
+namespace SerializeThis.Serialization.Reflection
 {
     public static class AttributeExtensions
     {

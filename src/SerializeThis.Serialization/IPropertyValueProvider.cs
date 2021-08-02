@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace CodeCaster.SerializeThis.Serialization
+namespace SerializeThis.Serialization
 {
     public interface IPropertyValueProvider
     {

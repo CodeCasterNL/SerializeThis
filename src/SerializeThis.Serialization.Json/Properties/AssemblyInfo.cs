@@ -1,10 +1,10 @@
 ﻿using System.Reflection;
 using System.Runtime.InteropServices;
 
-[assembly: AssemblyTitle("CodeCaster.SerializeThis.Serialization.Json")]
+[assembly: AssemblyTitle("SerializeThis.Serialization.Json")]
 [assembly: AssemblyDescription("")]
 [assembly: AssemblyConfiguration("")]
-[assembly: AssemblyProduct("CodeCaster.SerializeThis.Serialization.Json")]
+[assembly: AssemblyProduct("SerializeThis.Serialization.Json")]
 
 [assembly: ComVisible(false)]
 

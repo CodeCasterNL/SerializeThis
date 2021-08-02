@@ -1,8 +1,8 @@
 using System;
-using CodeCaster.SerializeThis.Package;
-using CodeCaster.SerializeThis.Serialization;
-using CodeCaster.SerializeThis.Serialization.CSharp;
-using CodeCaster.SerializeThis.Serialization.Json;
+using SerializeThis.Package;
+using SerializeThis.Serialization;
+using SerializeThis.Serialization.CSharp;
+using SerializeThis.Serialization.Json;
 
 namespace CodeCaster.SerializeThis
 {

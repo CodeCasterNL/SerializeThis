@@ -1,7 +1,7 @@
-using CodeCaster.SerializeThis.Tests.Shared;
+using SerializeThis.Tests.Shared;
 using NUnit.Framework;
 
-namespace CodeCaster.SerializeThis.Serialization.Json.Tests
+namespace SerializeThis.Serialization.Json.Tests
 {
     // JsonSerializer is not thread safe
     [FixtureLifeCycle(LifeCycle.InstancePerTestCase)]

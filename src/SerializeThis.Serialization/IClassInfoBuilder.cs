@@ -1,4 +1,4 @@
-﻿namespace CodeCaster.SerializeThis.Serialization
+﻿namespace SerializeThis.Serialization
 {
     public interface IClassInfoBuilder<T>
     {

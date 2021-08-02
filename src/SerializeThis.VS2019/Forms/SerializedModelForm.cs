@@ -1,7 +1,7 @@
 ﻿using System.Windows.Forms;
-using CodeCaster.SerializeThis.Serialization;
+using SerializeThis.Serialization;
 
-namespace CodeCaster.SerializeThis.Forms
+namespace SerializeThis.Forms
 {
     public partial class SerializedModelForm : Form
     {

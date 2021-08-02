@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace CodeCaster.SerializeThis.Serialization.CSharp
+namespace SerializeThis.Serialization.CSharp
 {
     [Flags]
     public enum StatementEndOptions

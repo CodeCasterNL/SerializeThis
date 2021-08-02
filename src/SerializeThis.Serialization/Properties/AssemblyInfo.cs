@@ -1,10 +1,10 @@
 ﻿using System.Reflection;
 using System.Runtime.InteropServices;
 
-[assembly: AssemblyTitle("CodeCaster.SerializeThis.Serialization")]
+[assembly: AssemblyTitle("SerializeThis.Serialization")]
 [assembly: AssemblyDescription("")]
 [assembly: AssemblyConfiguration("")]
-[assembly: AssemblyProduct("CodeCaster.SerializeThis.Serialization")]
+[assembly: AssemblyProduct("SerializeThis.Serialization")]
 
 [assembly: ComVisible(false)]
 

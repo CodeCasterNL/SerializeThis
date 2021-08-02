@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Reflection;
-using CodeCaster.SerializeThis.Serialization;
+using SerializeThis.Serialization;
 
-namespace CodeCaster.SerializeThis.Reflection
+namespace SerializeThis.Serialization.Reflection
 {
     public class ClassInfoBuilder : SymbolParser<Type>
     {

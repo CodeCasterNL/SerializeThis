@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 
-namespace CodeCaster.SerializeThis.Serialization
+namespace SerializeThis.Serialization
 {
     [DebuggerDisplay("{ToDebugString(),nq}")]
     public class MemberInfo

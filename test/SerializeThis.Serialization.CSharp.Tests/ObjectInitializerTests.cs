@@ -1,7 +1,7 @@
-using CodeCaster.SerializeThis.Tests.Shared;
+using SerializeThis.Tests.Shared;
 using NUnit.Framework;
 
-namespace CodeCaster.SerializeThis.Serialization.CSharp.Tests
+namespace SerializeThis.Serialization.CSharp.Tests
 {
     public class ObjectInitializerTests
     {

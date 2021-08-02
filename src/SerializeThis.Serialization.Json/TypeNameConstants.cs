@@ -1,4 +1,4 @@
-﻿namespace CodeCaster.SerializeThis.Serialization.Json
+﻿namespace SerializeThis.Serialization.Json
 {
     public static class TypeNameConstants
     {

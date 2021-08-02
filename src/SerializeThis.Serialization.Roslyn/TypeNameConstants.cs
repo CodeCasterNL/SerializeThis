@@ -1,4 +1,4 @@
-﻿namespace CodeCaster.SerializeThis.Serialization.Roslyn
+﻿namespace SerializeThis.Serialization.Roslyn
 {
     public static class TypeNameConstants
     {

@@ -4,7 +4,7 @@ using Microsoft.CodeAnalysis;
 using System.Linq;
 using System.Collections.Generic;
 
-namespace CodeCaster.SerializeThis.Serialization.Roslyn
+namespace SerializeThis.Serialization.Roslyn
 {
     public static class AttributeDataExtensions
     {
