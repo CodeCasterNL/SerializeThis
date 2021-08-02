@@ -5,7 +5,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace CodeCaster.SerializeThis
+namespace SerializeThis.Extension.VS2019
 {
     /// <summary>
     /// TODO.
@@ -20,7 +20,7 @@ namespace CodeCaster.SerializeThis
 
             public TypeInfo Type { get; }
 
-            public ExpressionInfo(string path, EnvDTE.Expression expression, TypeInfo type)
+            public ExpressionInfo(string path, Expression expression, TypeInfo type)
             {
                 Path = path;
                 Expression = expression;
@@ -40,7 +40,7 @@ namespace CodeCaster.SerializeThis
         public bool CanHandle(TypeInfo declaredType, string name)
         {
             _valueDictionary = new Dictionary<string, ExpressionInfo>();
-            
+
             var expression = FindLocalVariable(name);
 
             if (expression != null)
@@ -92,7 +92,7 @@ namespace CodeCaster.SerializeThis
         private ExpressionInfo GetExpression(MemberInfo toSerialize, string path)
         {
             var parentPath = path;
-            
+
             var lastDotIndex = path.LastIndexOf('.');
             if (lastDotIndex >= 0)
             {
@@ -112,7 +112,7 @@ namespace CodeCaster.SerializeThis
             }
 
             var currentExpression = FindMember(parentExpression, toSerialize);
-            
+
             return _valueDictionary[path] = new ExpressionInfo(path, currentExpression, toSerialize.Class);
         }
 
@@ -204,31 +204,31 @@ namespace CodeCaster.SerializeThis
             switch (expressionInfo.Type.Type)
             {
                 case TypeEnum.Boolean:
-                    return Boolean.Parse(value);
+                    return bool.Parse(value);
 
                 case TypeEnum.String:
-                    return (String)value == null || value == "null" ? null : value.Substring(1, value.Length - 2);
+                    return value == null || value == "null" ? null : value.Substring(1, value.Length - 2);
 
                 case TypeEnum.Byte:
-                    return Byte.Parse(value);
+                    return byte.Parse(value);
 
                 case TypeEnum.Int16:
-                    return Int16.Parse(value);
+                    return short.Parse(value);
 
                 case TypeEnum.Int32:
-                    return Int32.Parse(value);
+                    return int.Parse(value);
 
                 case TypeEnum.Int64:
-                    return Int64.Parse(value);
+                    return long.Parse(value);
 
                 case TypeEnum.Float32:
-                    return Single.Parse(value);
+                    return float.Parse(value);
 
                 case TypeEnum.Float64:
-                    return Double.Parse(value);
+                    return double.Parse(value);
 
                 case TypeEnum.Decimal:
-                    return Decimal.Parse(value);
+                    return decimal.Parse(value);
 
                 case TypeEnum.DateTime:
                     return DateTime.Parse(value);

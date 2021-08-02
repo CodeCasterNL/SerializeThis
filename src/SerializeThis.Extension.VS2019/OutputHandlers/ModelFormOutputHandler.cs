@@ -1,8 +1,8 @@
 ﻿using System;
-using SerializeThis.Forms;
+using SerializeThis.Extension.VS2019.Forms;
 using SerializeThis.Serialization;
 
-namespace SerializeThis.OutputHandlers
+namespace SerializeThis.Extension.VS2019.OutputHandlers
 {
     public class ModelFormOutputHandler : IOutputHandler
     {

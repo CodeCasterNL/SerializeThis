@@ -28,7 +28,7 @@
     <ProjectGuid>{47AB8FC5-CE41-40AD-AC3A-F5ADD685B19B}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>SerializeThis</RootNamespace>
+    <RootNamespace>SerializeThis.Extension.VS2019</RootNamespace>
     <AssemblyName>SerializeThis</AssemblyName>
     <TargetFrameworkVersion>v4.7.2</TargetFrameworkVersion>
     <GeneratePkgDefFile>true</GeneratePkgDefFile>

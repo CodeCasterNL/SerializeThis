@@ -1,7 +1,7 @@
 ﻿using System;
 using SerializeThis.Serialization;
 
-namespace SerializeThis.OutputHandlers
+namespace SerializeThis.Extension.VS2019.OutputHandlers
 {
     public interface IOutputHandler
     {

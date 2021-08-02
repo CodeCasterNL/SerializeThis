@@ -1,7 +1,7 @@
 ﻿using System.Windows.Forms;
 using SerializeThis.Serialization;
 
-namespace SerializeThis.Forms
+namespace SerializeThis.Extension.VS2019.Forms
 {
     public partial class SerializedModelForm : Form
     {

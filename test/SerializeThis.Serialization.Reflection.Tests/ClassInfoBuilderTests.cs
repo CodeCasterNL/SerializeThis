@@ -1,12 +1,10 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using SerializeThis.Reflection;
-using SerializeThis.Serialization;
 using JsonTestClasses;
 using NUnit.Framework;
 
-namespace SerializeThis.Relection.Tests
+namespace SerializeThis.Serialization.Reflection.Tests
 {
     public class ClassInfoBuilderTests
     {

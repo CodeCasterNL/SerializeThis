@@ -1,10 +1,10 @@
 using System;
-using SerializeThis.Package;
+using SerializeThis.Extension.VS2019.Package;
 using SerializeThis.Serialization;
 using SerializeThis.Serialization.CSharp;
 using SerializeThis.Serialization.Json;
 
-namespace CodeCaster.SerializeThis
+namespace SerializeThis.Extension.VS2019
 {
     public class DefaultSerializerFactory : ISerializerFactory
     {

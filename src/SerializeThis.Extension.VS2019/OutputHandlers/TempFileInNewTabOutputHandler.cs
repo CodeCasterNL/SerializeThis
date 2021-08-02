@@ -6,7 +6,7 @@ using Microsoft.VisualStudio.Editor;
 using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.Shell.Interop;
 
-namespace SerializeThis.OutputHandlers
+namespace SerializeThis.Extension.VS2019.OutputHandlers
 {
     public class TempFileInNewTabOutputHandler : IOutputHandler
     {

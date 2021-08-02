@@ -1,7 +1,7 @@
 # SerializeThis
 
 ## Introduction
-SerializeThis is a [Visual Studio Extension (Marketplace)](https://marketplace.visualstudio.com/items?itemName=CodeCaster.CodeCasterSerializeThis). It lets you generate an example JSON for a class by right-clicking a type name. This can be helpful to generate example JSON to use in unit tests or through a REST client such as [Insomnia](https://insomnia.rest/).
+SerializeThis is a [Visual Studio Extension (Marketplace)](https://marketplace.visualstudio.com/items?itemName=CodeCaster.CodeCasterSerializeThis). It lets you generate an example JSON for a class by right-clicking a type, variable or member name. This can be helpful to generate example JSON or C# object initializer code to use in unit tests or through a REST client such as [Insomnia](https://insomnia.rest/).
 
 This is not meant as a replacement for documentation and client generators such as [Swagger](http://swagger.io/).
 
@@ -41,8 +41,8 @@ A couple of test projects, not quite covered.
 Its basic functionality has been tested in various scenarios, but if you have a type it can't serialize, feel free to [open an issue](https://github.com/CodeCasterNL/SerializeThis/issues)!
 
 ## Building and Running
-This project is a Visual Studio Extension, so you'll need to install the [Visual Studio 2019 SDK](https://docs.microsoft.com/en-us/visualstudio/extensibility/installing-the-visual-studio-sdk?view=vs-201) in order to compile it. The startup project requres Visual Studio 2019 to open and build, but the extension should work in Visual Studio 2015, 2017 and 2019. Versions since 1.2 were only tested in VS 2019.
+This output project is a Visual Studio Extension, so you'll need to install the [Visual Studio 2019 SDK](https://docs.microsoft.com/en-us/visualstudio/extensibility/installing-the-visual-studio-sdk?view=vs-201) in order to compile it. The startup project requres Visual Studio 2019 to open and build, but the extension should work in Visual Studio 2015, 2017 and 2019. Versions after 1.2.1 were only tested in VS 2019.
 
-Start debugging by running the CodeCaster.SerializeThis project, which starts an experimental instance of Visual Studio, where the extension will be loaded. You can then open any C# file, right-click a type name and see the "Serialize As" submenu.
+Start debugging by running the `src/SerializeThis.Extension.VS2019` project from its solution, which starts an experimental instance of Visual Studio, where the extension will be loaded. You can then open any C# file, right-click a type name and see the "Serialize As" submenu.
 
 The experimental instance has its own file history, so click "Continue without code" on the startup screen, click `File -> Open -> File...` and select the file you wish to test, for example the file `JsonTestClasses.cs` in the root of this repository. On later runs of the experimental instance, you can then click `File -> Recent Files -> ...\JsonTestClasses.cs` so you won't have to browse to it again.

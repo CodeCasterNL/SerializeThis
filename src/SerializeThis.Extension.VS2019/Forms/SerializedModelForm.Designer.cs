@@ -1,4 +1,4 @@
-﻿namespace SerializeThis.Forms
+﻿namespace SerializeThis.Extension.VS2019.Forms
 {
     partial class SerializedModelForm
     {

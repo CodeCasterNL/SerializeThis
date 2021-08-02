@@ -1,0 +1,15 @@
+SerializeThis is a Visual Studio Extension. It lets you generate an example JSON for a class by right-clicking a type, variable or member name. This can be helpful to generate example JSON or C# object initializer code to use in unit tests or through a REST client such as [Insomnia](https://insomnia.rest/).
+
+This is not meant as a replacement for documentation and client generators such as [Swagger](http://swagger.io/).
+
+It currently looks like this:
+
+[![SerializeThis Screenshot](https://github.com/CodeCasterNL/SerializeThis/raw/master/static/images/Serialize_This-Menu.png)](https://github.com/CodeCasterNL/SerializeThis/blob/master/static/images/Serialize_This-Menu.png)
+
+The serialized model looks like this:
+
+[![SerializeThis Screenshot](https://github.com/CodeCasterNL/SerializeThis/raw/master/static/images/Serialize_This-Serialized.png)](https://github.com/CodeCasterNL/SerializeThis/blob/master/static/images/Serialize_This-Serialized.png)
+
+The extension creates a temp file, writes the output there, opens the file in Visual Studio and then attempts to delete the file.
+
+Versions after 1.2.1 were only tested in VS 2019.

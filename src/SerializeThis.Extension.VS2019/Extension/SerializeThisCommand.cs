@@ -4,7 +4,7 @@ using System.ComponentModel.Design;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using SerializeThis.OutputHandlers;
+using SerializeThis.Extension.VS2019.OutputHandlers;
 using SerializeThis.Serialization;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.FindSymbols;
@@ -17,7 +17,7 @@ using Microsoft.VisualStudio.Shell.Interop;
 using Microsoft.VisualStudio.TextManager.Interop;
 using IServiceProvider = System.IServiceProvider;
 
-namespace SerializeThis.Extension
+namespace SerializeThis.Extension.VS2019.Extension
 {
     /// <summary>
     /// Command handler

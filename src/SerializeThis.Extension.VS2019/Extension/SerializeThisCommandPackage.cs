@@ -1,12 +1,11 @@
 ﻿using System;
-using System.Diagnostics.CodeAnalysis;
 using System.Runtime.InteropServices;
 using System.Threading;
-using SerializeThis.OutputHandlers;
+using SerializeThis.Extension.VS2019.OutputHandlers;
 using SerializeThis.Serialization.Roslyn;
 using Microsoft.VisualStudio.Shell;
 
-namespace SerializeThis.Extension
+namespace SerializeThis.Extension.VS2019.Extension
 {
     /// <summary>
     /// This is the class that implements the package exposed by this assembly.
