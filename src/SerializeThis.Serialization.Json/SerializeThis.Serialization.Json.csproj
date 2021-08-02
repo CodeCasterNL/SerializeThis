@@ -4,13 +4,14 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{D855EF9F-21AB-4BE3-9771-A75D2E059271}</ProjectGuid>
+    <ProjectGuid>{94488295-EC5E-4AB9-80BC-9590B204936E}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>CodeCaster.SerializeThis.Serialization</RootNamespace>
-    <AssemblyName>CodeCaster.SerializeThis.Serialization</AssemblyName>
+    <RootNamespace>SerializeThis.Serialization.Json</RootNamespace>
+    <AssemblyName>SerializeThis.Serialization.Json</AssemblyName>
     <TargetFrameworkVersion>v4.7.2</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
+    <TargetFrameworkProfile />
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -43,21 +44,25 @@
     <Compile Include="..\SolutionInfo.cs">
       <Link>Properties\SolutionInfo.cs</Link>
     </Compile>
-    <Compile Include="AttributeInfo.cs" />
-    <Compile Include="IPropertyValueProvider.cs" />
-    <Compile Include="TypeInfo.cs" />
-    <Compile Include="MemberInfo.cs" />
-    <Compile Include="CollectionType.cs" />
-    <Compile Include="IClassInfoBuilder.cs" />
-    <Compile Include="IClassInfoSerializer.cs" />
-    <Compile Include="ISerializerFactory.cs" />
-    <Compile Include="SymbolParser.cs" />
-    <Compile Include="TypeEnum.cs" />
+    <Compile Include="ClassInfoExtensions.cs" />
+    <Compile Include="JsonSerializer.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="ValueGenerator.cs" />
+    <Compile Include="AttributeExtensions.cs" />
+    <Compile Include="TypeNameConstants.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\SerializeThis.Serialization\SerializeThis.Serialization.csproj">
+      <Project>{d855ef9f-21ab-4be3-9771-a75d2e059271}</Project>
+      <Name>SerializeThis.Serialization</Name>
+    </ProjectReference>
   </ItemGroup>
   <ItemGroup>
     <None Include="Key.snk" />
+  </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="Newtonsoft.Json">
+      <Version>13.0.1</Version>
+    </PackageReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

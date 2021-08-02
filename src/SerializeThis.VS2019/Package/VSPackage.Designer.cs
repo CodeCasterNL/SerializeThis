@@ -8,7 +8,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace CodeCaster.SerializeThis.Package {
+namespace SerializeThis.Package {
     using System;
     
     
@@ -39,7 +39,7 @@ namespace CodeCaster.SerializeThis.Package {
         internal static global::System.Resources.ResourceManager ResourceManager {
             get {
                 if (object.ReferenceEquals(resourceMan, null)) {
-                    global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("CodeCaster.SerializeThis.Package.VSPackage", typeof(VSPackage).Assembly);
+                    global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("SerializeThis.Package.VSPackage", typeof(VSPackage).Assembly);
                     resourceMan = temp;
                 }
                 return resourceMan;

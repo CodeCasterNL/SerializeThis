@@ -4,14 +4,13 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{202C9FEF-1C93-4BCE-AC1B-0C1B7F85AE79}</ProjectGuid>
+    <ProjectGuid>{D855EF9F-21AB-4BE3-9771-A75D2E059271}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>CodeCaster.SerializeThis.Serialization.Roslyn</RootNamespace>
-    <AssemblyName>CodeCaster.SerializeThis.Serialization.Roslyn</AssemblyName>
+    <RootNamespace>SerializeThis.Serialization</RootNamespace>
+    <AssemblyName>SerializeThis.Serialization</AssemblyName>
     <TargetFrameworkVersion>v4.7.2</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
-    <TargetFrameworkProfile />
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -38,36 +37,27 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
-    <Reference Include="System.ComponentModel.Composition" />
     <Reference Include="System.Core" />
-    <Reference Include="System.Numerics" />
-    <Reference Include="System.Xml" />
-    <Reference Include="System.Xml.Linq" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="..\SolutionInfo.cs">
       <Link>Properties\SolutionInfo.cs</Link>
     </Compile>
-    <Compile Include="AttributeDataExtensions.cs" />
+    <Compile Include="AttributeInfo.cs" />
+    <Compile Include="IPropertyValueProvider.cs" />
+    <Compile Include="TypeInfo.cs" />
+    <Compile Include="MemberInfo.cs" />
+    <Compile Include="CollectionType.cs" />
+    <Compile Include="IClassInfoBuilder.cs" />
+    <Compile Include="IClassInfoSerializer.cs" />
+    <Compile Include="ISerializerFactory.cs" />
+    <Compile Include="SymbolParser.cs" />
+    <Compile Include="TypeEnum.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="TypeNameConstants.cs" />
-    <Compile Include="TypeSymbolExtensions.cs" />
-    <Compile Include="TypeSymbolParser.cs" />
+    <Compile Include="ValueGenerator.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\CodeCaster.SerializeThis.Serialization\CodeCaster.SerializeThis.Serialization.csproj">
-      <Project>{D855EF9F-21AB-4BE3-9771-A75D2E059271}</Project>
-      <Name>CodeCaster.SerializeThis.Serialization</Name>
-    </ProjectReference>
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="app.config" />
     <None Include="Key.snk" />
-  </ItemGroup>
-  <ItemGroup>
-    <PackageReference Include="Microsoft.CodeAnalysis.Common">
-      <Version>3.10.0</Version>
-    </PackageReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

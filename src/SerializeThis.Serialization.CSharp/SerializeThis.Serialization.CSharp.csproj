@@ -7,8 +7,8 @@
     <ProjectGuid>{2AA3E609-B787-4FB2-A271-3CF3C7ECDF4D}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>CodeCaster.SerializeThis.Serialization.CSharp</RootNamespace>
-    <AssemblyName>CodeCaster.SerializeThis.Serialization.CSharp</AssemblyName>
+    <RootNamespace>SerializeThis.Serialization.CSharp</RootNamespace>
+    <AssemblyName>SerializeThis.Serialization.CSharp</AssemblyName>
     <TargetFrameworkVersion>v4.7.2</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <Deterministic>true</Deterministic>
@@ -56,9 +56,9 @@
     <Compile Include="StatementEndOptions.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\CodeCaster.SerializeThis.Serialization\CodeCaster.SerializeThis.Serialization.csproj">
+    <ProjectReference Include="..\SerializeThis.Serialization\SerializeThis.Serialization.csproj">
       <Project>{D855EF9F-21AB-4BE3-9771-A75D2E059271}</Project>
-      <Name>CodeCaster.SerializeThis.Serialization</Name>
+      <Name>SerializeThis.Serialization</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>

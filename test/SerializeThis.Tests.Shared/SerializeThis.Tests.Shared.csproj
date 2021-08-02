@@ -9,7 +9,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\src\CodeCaster.SerializeThis.Serialization\CodeCaster.SerializeThis.Serialization.csproj" />
+    <ProjectReference Include="..\..\src\SerializeThis.Serialization\SerializeThis.Serialization.csproj" />
   </ItemGroup>
 
 </Project>

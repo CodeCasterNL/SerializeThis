@@ -13,9 +13,8 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\src\CodeCaster.SerializeThis.Serialization.CSharp\CodeCaster.SerializeThis.Serialization.CSharp.csproj" />
-    <ProjectReference Include="..\..\src\CodeCaster.SerializeThis.Serialization\CodeCaster.SerializeThis.Serialization.csproj" />
-    <ProjectReference Include="..\CodeCaster.SerializeThis.Tests.Shared\CodeCaster.SerializeThis.Tests.Shared.csproj" />
+    <ProjectReference Include="..\..\src\SerializeThis.Serialization.Json\SerializeThis.Serialization.Json.csproj" />
+    <ProjectReference Include="..\SerializeThis.Tests.Shared\SerializeThis.Tests.Shared.csproj" />
   </ItemGroup>
 
 </Project>
