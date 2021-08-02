@@ -32,7 +32,7 @@ namespace CodeCaster.SerializeThis.Serialization
             switch (classInfo.Class.CollectionType)
             {
                 case CollectionType.Array:
-                    classInfo.Value = new object[]
+                    return new object[]
                     {
                         //GetValue(...),
                         //GetValue(...),
@@ -40,7 +40,7 @@ namespace CodeCaster.SerializeThis.Serialization
                     };
                     break;
                 case CollectionType.Collection:
-                    classInfo.Value = new Collection<object>[]
+                    return new Collection<object>[]
                     {
                         //GetValue(...),
                         //GetValue(...),
@@ -48,7 +48,7 @@ namespace CodeCaster.SerializeThis.Serialization
                     };
                     break;
                 case CollectionType.Dictionary:
-                    classInfo.Value = new Dictionary<object, object>[]
+                    return new Dictionary<object, object>[]
                     {
                         //GetValue(...),
                         //GetValue(...),
@@ -79,7 +79,6 @@ namespace CodeCaster.SerializeThis.Serialization
             }
             else
             {
-                classInfo.Value = GetValue(classInfo);
             }
         }
 

@@ -101,7 +101,8 @@ namespace CodeCaster.SerializeThis
 
             if (!_valueDictionary.TryGetValue(parentPath, out var parentExpression))
             {
-                // TODO: get from event or something?
+                // TODO: get expression type from event or something?
+                throw new NotImplementedException($"TODO: look up type of parentPath '{parentPath}'");
                 parentExpression = GetExpression(null, parentPath);
             }
 
@@ -130,19 +131,6 @@ namespace CodeCaster.SerializeThis
                 if (local.Name == localName)
                 {
                     return local;
-                }
-            }
-
-            return null;
-        }
-
-        public Expression FindMemeber(Expression expression, string memberName)
-        {
-            foreach (Expression member in expression.DataMembers)
-            {
-                if (member.Name == memberName)
-                {
-                    return member;
                 }
             }
 

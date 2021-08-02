@@ -70,6 +70,8 @@ namespace CodeCaster.SerializeThis.Serialization.Json
 
         private JToken SerializeChild(MemberInfo child, string path)
         {
+            child = _valueProvider.Announce(child, path);
+            
             if (child.Class.CollectionType == CollectionType.Dictionary)
             {
                 return GetDictionary(child, path);
@@ -96,20 +98,20 @@ namespace CodeCaster.SerializeThis.Serialization.Json
 
             var jObject = new JObject();
 
-            if (child.Value is IEnumerable<(object, object)> dictionary)
-            {
-                foreach (var item in dictionary)
-                {
-                    //// TODO: use item.Key and item.Value...
-                    //var exampleKey = SerializeChild(keyType, AppendPath(path, $"[{keyType.Value}]"));
-                    //var exampleValue = SerializeChild(valueType);
+            ////// TODO: use item.Key and item.Value...
+            ////var exampleKey = SerializeChild(keyType, AppendPath(path, $"[{keyType.Value}]"));
+            ////var exampleValue = SerializeChild(valueType);
+            //if (child.Value is IEnumerable<(object, object)> dictionary)
+            //{
+            //    foreach (var item in dictionary)
+            //    {
+             
+            //        //var property = new JProperty(exampleKey.ToString(), exampleValue);
+            //        //jObject.Add(property);
 
-                    //var property = new JProperty(exampleKey.ToString(), exampleValue);
-                    //jObject.Add(property);
-
-                    //EmitDictionaryEntry(indent + 1, value: item, generateValue: false);
-                }
-            }
+            //        //EmitDictionaryEntry(indent + 1, value: item, generateValue: false);
+            //    }
+            //}
 
 
             return jObject;
