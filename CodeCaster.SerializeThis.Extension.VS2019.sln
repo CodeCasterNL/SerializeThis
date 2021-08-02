@@ -27,15 +27,17 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "2. Shared", "2. Shared", "{
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "3. Visual Studio Extension", "3. Visual Studio Extension", "{4EEC3285-E62E-4694-A6A7-FA2FC9B587E3}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SerializeThis.VS2019", "src\SerializeThis.SerializeThis.VS2019.csproj", "{47AB8FC5-CE41-40AD-AC3A-F5ADD685B19B}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SerializeThis.Extension.VS2019", "src\SerializeThis.Extension.VS2019\SerializeThis.Extension.VS2019.csproj", "{47AB8FC5-CE41-40AD-AC3A-F5ADD685B19B}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SerializeThis.Serialization", "src\SerializeThis.Serialization\SerializeThis.Serialization.csproj", "{D855EF9F-21AB-4BE3-9771-A75D2E059271}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SerializeThis.Serialization.Json", "src\SerializeThis.Serialization.Json\SerializeThis.Serialization.Json.csproj", "{94488295-EC5E-4AB9-80BC-9590B204936E}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SerializeThis.Serialization.CSharp", "src\SerializeThis.Serialization.CSharp\SerializeThis.Serialization.CSharp.csproj", "{2AA3E609-B787-4FB2-A271-3CF3C7ECDF4D}"
+EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SerializeThis.Serialization.Roslyn", "src\SerializeThis.Serialization.Roslyn\SerializeThis.Serialization.Roslyn.csproj", "{202C9FEF-1C93-4BCE-AC1B-0C1B7F85AE79}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SerializeThis.Serialization.CSharp", "src\SerializeThis.Serialization.CSharp\SerializeThis.Serialization.CSharp.csproj", "{2AA3E609-B787-4FB2-A271-3CF3C7ECDF4D}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SerializeThis.Serialization.Reflection", "src\SerializeThis.Serialization.Reflection\SerializeThis.Serialization.Reflection.csproj", "{878BCBF8-E17E-4E35-B285-18D73AE4FD58}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "4. Tests", "4. Tests", "{D5001EFA-9A47-4F6A-8ACA-76B6B84D2F83}"
 EndProject
@@ -45,9 +47,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SerializeThis.Serialization
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SerializeThis.Tests.Shared", "test\SerializeThis.Tests.Shared\SerializeThis.Tests.Shared.csproj", "{5DBDC7D3-1E6E-42EB-A85D-0E48F1A92D11}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SerializeThis.Serialization.Reflection", "src\SerializeThis.Reflection\SerializeThis.Serialization.Reflection.csproj", "{878BCBF8-E17E-4E35-B285-18D73AE4FD58}"
-EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SerializeThis.Serialization.Relection.Tests", "test\SerializeThis.Relection.Tests\SerializeThis.Serialization.Relection.Tests.csproj", "{0747C62F-6907-4028-BEA7-0C62D9995923}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SerializeThis.Serialization.Relection.Tests", "test\SerializeThis.Serialization.Reflection.Tests\SerializeThis.Serialization.Reflection.Tests.csproj", "{0747C62F-6907-4028-BEA7-0C62D9995923}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

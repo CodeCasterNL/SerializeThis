@@ -13,7 +13,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\src\SerializeThis.Reflection\SerializeThis.Serialization.Reflection.csproj" />
+    <ProjectReference Include="..\..\src\SerializeThis.Serialization.Reflection\SerializeThis.Serialization.Reflection.csproj" />
     <ProjectReference Include="..\..\src\SerializeThis.Serialization\SerializeThis.Serialization.csproj" />
     <ProjectReference Include="..\SerializeThis.Tests.Shared\SerializeThis.Tests.Shared.csproj" />
   </ItemGroup>

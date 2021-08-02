@@ -25,23 +25,23 @@ The Serialization library is a comprehensive bridge between Roslyn, Reflection a
 * SerializeThis.Reflection: runtime experiment, not quite complete. And why would you use it when there's like JsonConvert.SerializeObject(), and otherwise ... this extension? (May be) useful in some unit tests though.
 
 ### Output libraries
-* CodeCaster.SerializeThis.Serialization.CSharp: creates object initializers.
-* CodeCaster.SerializeThis.Serialization.Json: generates JSON.
+* SerializeThis.Serialization.CSharp: creates object initializers.
+* SerializeThis.Serialization.Json: generates JSON.
 
 ### Visual Studio Extension
-The startup project, SerializeThis.
+The startup project, SerializeThis.VS2019. VS2022 will require a new strategy and solution.
 
-* To be renamed to SerializeThis.VS2019 as that will be its max supported version. Also contains too many logic, have to create a Framework 4.7.2 Class Library project and move the logic there.
+* Also contains too many logic, have to create a Framework 4.7.2 Class Library project and move the logic there.
 * Example: DebugValueParser, which populates a SymbolInfo with values.
 
 ### Tests
 A couple of test projects, not quite covered.
 
 ## Feedback
-Its basic functionality has been tested in various scenarios, but if you have a type it can't serialize, feel free to [open an issue](https://github.com/CodeCasterNL/CodeCaster.SerializeThis/issues)!
+Its basic functionality has been tested in various scenarios, but if you have a type it can't serialize, feel free to [open an issue](https://github.com/CodeCasterNL/SerializeThis/issues)!
 
 ## Building and Running
-This project is a Visual Studio Extension, so you'll need to install the [Visual Studio 2019 SDK](https://docs.microsoft.com/en-us/visualstudio/extensibility/installing-the-visual-studio-sdk?view=vs-201) in order to compile it. The startup project requres Visual Studio 2019 to open and build, but the extension will work in Visual Studio 2015, 2017 and 2019.
+This project is a Visual Studio Extension, so you'll need to install the [Visual Studio 2019 SDK](https://docs.microsoft.com/en-us/visualstudio/extensibility/installing-the-visual-studio-sdk?view=vs-201) in order to compile it. The startup project requres Visual Studio 2019 to open and build, but the extension should work in Visual Studio 2015, 2017 and 2019. Versions since 1.2 were only tested in VS 2019.
 
 Start debugging by running the CodeCaster.SerializeThis project, which starts an experimental instance of Visual Studio, where the extension will be loaded. You can then open any C# file, right-click a type name and see the "Serialize As" submenu.
 
