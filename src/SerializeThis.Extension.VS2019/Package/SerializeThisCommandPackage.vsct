@@ -76,6 +76,7 @@
       <!-- XML support will come later. -->
       <!--<IDSymbol name="xmlCommandId" value="0x0101" />-->
       <IDSymbol name="cSharpCommandId" value="0x0102" />
+      <!-- TODO: settings? Submenus? Key modifiers to select output window type? -->
     </GuidSymbol>
 
     <GuidSymbol name="guidImages" value="{19077bda-00dc-4ea6-a4f6-23d24e992fac}" >

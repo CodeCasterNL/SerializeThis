@@ -16,6 +16,7 @@ using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.Shell.Interop;
 using Microsoft.VisualStudio.TextManager.Interop;
 using IServiceProvider = System.IServiceProvider;
+using SerializeThis.Serialization.Debug;
 
 namespace SerializeThis.Extension.VS2019.Extension
 {

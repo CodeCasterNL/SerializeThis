@@ -29,10 +29,9 @@ The Serialization library is a comprehensive bridge between Roslyn, Reflection a
 * SerializeThis.Serialization.Json: generates JSON.
 
 ### Visual Studio Extension
-The startup project, SerializeThis.VS2019. VS2022 will require a new strategy and solution.
+The startup project, SerializeThis.VS2019. Contains a tad too much logic.
 
-* Also contains too many logic, have to create a Framework 4.7.2 Class Library project and move the logic there.
-* Example: DebugValueParser, which populates a SymbolInfo with values.
+VS2022 will require a new strategy and solution.
 
 ### Tests
 A couple of test projects, not quite covered.

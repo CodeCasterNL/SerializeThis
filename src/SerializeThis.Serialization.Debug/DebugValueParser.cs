@@ -1,11 +1,10 @@
-﻿using SerializeThis.Serialization;
-using EnvDTE;
+﻿using EnvDTE;
 using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace SerializeThis.Extension.VS2019
+namespace SerializeThis.Serialization.Debug
 {
     /// <summary>
     /// TODO.

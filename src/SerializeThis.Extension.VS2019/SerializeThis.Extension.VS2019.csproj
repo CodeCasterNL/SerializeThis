@@ -61,7 +61,6 @@
     <Compile Include="..\SolutionInfo.cs">
       <Link>Properties\SolutionInfo.cs</Link>
     </Compile>
-    <Compile Include="DebugValueParser.cs" />
     <Compile Include="DefaultSerializerFactory.cs" />
     <Compile Include="Forms\SerializedModelForm.cs">
       <SubType>Form</SubType>
@@ -147,6 +146,10 @@
     <ProjectReference Include="..\SerializeThis.Serialization.CSharp\SerializeThis.Serialization.CSharp.csproj">
       <Project>{2AA3E609-B787-4FB2-A271-3CF3C7ECDF4D}</Project>
       <Name>SerializeThis.Serialization.CSharp</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\SerializeThis.Serialization.Debug\SerializeThis.Serialization.Debug.csproj">
+      <Project>{9AAF95E1-B780-4E54-9F05-89D5D1CC2CAD}</Project>
+      <Name>SerializeThis.Serialization.Debug</Name>
     </ProjectReference>
     <ProjectReference Include="..\SerializeThis.Serialization.Json\SerializeThis.Serialization.Json.csproj">
       <Project>{94488295-EC5E-4AB9-80BC-9590B204936E}</Project>
