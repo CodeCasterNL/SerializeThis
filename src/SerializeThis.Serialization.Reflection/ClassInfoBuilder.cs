@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Reflection;
-using SerializeThis.Serialization;
 
 namespace SerializeThis.Serialization.Reflection
 {
@@ -82,6 +81,7 @@ namespace SerializeThis.Serialization.Reflection
         {
             { typeof(Boolean), TypeEnum.Boolean },
             { typeof(String), TypeEnum.String },
+            { typeof(Char), TypeEnum.Char },
             { typeof(Byte), TypeEnum.Byte },
             { typeof(Int16), TypeEnum.Int16 },
             { typeof(Int32), TypeEnum.Int32 },

@@ -11,7 +11,7 @@ namespace SerializeThis.Serialization
         /// <summary>
         /// Return true when you can provide values for the requested type and name.
         /// </summary>
-        bool CanHandle(TypeInfo typeInfo, string name);
+        bool CanHandle(TypeInfo typeInfo, string path);
         
         /// <summary>
         /// Called by the serializer when it encounters another property.

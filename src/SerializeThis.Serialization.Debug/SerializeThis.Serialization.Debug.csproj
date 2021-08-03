@@ -288,6 +288,8 @@
       <Link>Properties\SolutionInfo.cs</Link>
     </Compile>
     <Compile Include="DebugValueParser.cs" />
+    <Compile Include="ExpressionExtensions.cs" />
+    <Compile Include="ExpressionInfo.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Key.snk" />

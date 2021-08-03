@@ -114,6 +114,8 @@ namespace JsonTestClasses
     /// </summary>
     public class FooNumerics : FooBase
     {
+        public byte Char { get; set; }
+        public byte? NullableChar { get; set; }
         public byte Byte { get; set; }
         public byte? NullableByte { get; set; }
         public short Int16 { get; set; }

@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 using System.Text;
@@ -35,7 +34,7 @@ namespace SerializeThis.Serialization.CSharp
         private void EmitInitializer(StringBuilder builder, MemberInfo type, int indent, string path = null, StatementEndOptions statementEnd = StatementEndOptions.Comma | StatementEndOptions.Newline)
         {
             type = _valueProvider.Announce(type, path);
-            
+
             switch (type.Class.CollectionType)
             {
                 case CollectionType.Array:
@@ -211,8 +210,11 @@ namespace SerializeThis.Serialization.CSharp
                 case Double d:
                     builder.Append(d.ToString(CultureInfo.InvariantCulture) + "d");
                     break;
-                case Decimal d:
-                    builder.Append(d.ToString(CultureInfo.InvariantCulture) + "m");
+                case Decimal m:
+                    builder.Append(m.ToString(CultureInfo.InvariantCulture) + "m");
+                    break;
+                case Int64 l:
+                    builder.Append(l.ToString(CultureInfo.InvariantCulture) + "l");
                     break;
                 case String s:
                     builder.Append($"\"{s}\"");
@@ -222,6 +224,9 @@ namespace SerializeThis.Serialization.CSharp
                     break;
                 case DateTime dt:
                     builder.AppendFormat("new DateTime({0}, {1}, {2}, {3}, {4}, {5})", dt.Year, dt.Month, dt.Day, dt.Hour, dt.Minute, dt.Second);
+                    break;
+                case DateTimeOffset dto:
+                    builder.AppendFormat("new DateTime({0}, {1}, {2}, {3}, {4}, {5}, TimeSpan.FromHours(2))");
                     break;
                 default:
                     builder.Append(value ?? "null");

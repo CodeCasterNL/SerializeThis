@@ -99,6 +99,8 @@ namespace SerializeThis.Serialization
                     return _counter % 2 == 0;
                 case TypeEnum.String:
                     return $"{type.Name}FooString{_counter}";
+                case TypeEnum.Char:
+                    return 65 + (_counter % 26); // A-Z
                 case TypeEnum.DateTime:
                     return _startTime.AddSeconds(_counter);
                 case TypeEnum.Int16:

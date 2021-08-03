@@ -220,7 +220,7 @@ namespace SerializeThis.Extension.VS2019.Extension
                 return null;
             }
 
-            var debugValueParser = new DebugValueParser(debugger);
+            var debugValueParser = new DebugValueParser(debugger, _roslynParser);
             return debugValueParser;
         }
         

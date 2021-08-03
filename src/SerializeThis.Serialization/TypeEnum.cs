@@ -10,18 +10,30 @@
         Boolean = 1,
 
         String = 2,
+        Char = 3,
 
-        Byte = 3,
-        Int16 = 4,
-        Int32 = 5,
-        Int64 = 6,
+        Byte = 4,
+        Int16 = 5,
+        Int32 = 6,
+        Int64 = 7,
 
-        Float32 = 7,
-        Float64 = 8,
+        Float32 = 8,
+        Float64 = 9,
 
-        Decimal = 9,
+        Decimal = 10,
 
-        DateTime = 10,
-        DateTimeOffset = 11,
+        DateTime = 11,
+        DateTimeOffset = 12,
+
+
+        //sbyte   System.SByte
+
+        //uint    System.UInt32
+        //nint    System.IntPtr
+        //nuint   System.UIntPtr
+
+        //ulong   System.UInt64
+        //short   System.Int16
+        //ushort  System.UInt16
     }
 }

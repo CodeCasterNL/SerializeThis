@@ -39,13 +39,13 @@ namespace SerializeThis.Serialization.Json
 
         private JObject GetComplexType(MemberInfo toSerialize, string path)
         {
-            if (_typesSeen.TryGetValue(toSerialize.Class.TypeName, out var existing))
-            {
-                // TODO: this is broken if we have a property of our own type. This just happens to prevent infinite recursion, but also doesn't properly show what the object can contain.
-                return existing;
-            }
+            //if (_typesSeen.TryGetValue(toSerialize.Class.TypeName, out var existing))
+            //{
+            //    // TODO: this is broken if we have a property of our own type. This just happens to prevent infinite recursion, but also doesn't properly show what the object can contain.
+            //    return existing;
+            //}
 
-            existing = new JObject();
+            var existing = new JObject();
             _typesSeen[toSerialize.Class.TypeName] = existing;
 
             foreach (var child in toSerialize.Class.Children)

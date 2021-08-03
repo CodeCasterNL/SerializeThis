@@ -9,43 +9,32 @@ namespace SerializeThis.Serialization.Debug
     /// <summary>
     /// TODO.
     /// </summary>
-    public class DebugValueParser : IPropertyValueProvider
+    public partial class DebugValueParser : IPropertyValueProvider
     {
-        private class ExpressionInfo
-        {
-            public string Path { get; }
-
-            public Expression Expression { get; }
-
-            public TypeInfo Type { get; }
-
-            public ExpressionInfo(string path, Expression expression, TypeInfo type)
-            {
-                Path = path;
-                Expression = expression;
-                Type = type;
-            }
-        }
-
         private readonly Debugger _debugger;
-
+        private readonly ITypeInfoProvider _typeInfoProvider;
         private Dictionary<string, ExpressionInfo> _valueDictionary;
 
-        public DebugValueParser(Debugger debugger)
+        public DebugValueParser(Debugger debugger, ITypeInfoProvider typeInfoProvider)
         {
             _debugger = debugger;
+            _typeInfoProvider = typeInfoProvider;
         }
 
-        public bool CanHandle(TypeInfo declaredType, string name)
+        public bool CanHandle(TypeInfo declaredType, string path)
         {
             _valueDictionary = new Dictionary<string, ExpressionInfo>();
 
-            var expression = FindLocalVariable(name);
+            var expression = FindLocalVariable(path);
 
             if (expression != null)
             {
-                var info = new ExpressionInfo(name, expression, declaredType);
-                _valueDictionary[name] = info;
+                var runtimeType = GetRuntimeType(declaredType, expression);
+                
+                var info = new ExpressionInfo(path, expression, runtimeType);
+                
+                _valueDictionary[path] = info;
+                
                 return true;
             }
 
@@ -59,13 +48,8 @@ namespace SerializeThis.Serialization.Debug
                 return null;
             }
 
-            var expression = GetExpression(toSerialize, path);
-
-            if (expression.Type != toSerialize.Class)
-            {
-                // TODO: polymorphism
-                System.Diagnostics.Debugger.Break();
-            }
+            // Cache the current expression.
+            _ = GetExpression(toSerialize, path);
 
             return toSerialize;
         }
@@ -110,9 +94,29 @@ namespace SerializeThis.Serialization.Debug
                 return parentExpression;
             }
 
-            var currentExpression = FindMember(parentExpression, toSerialize);
+            var currentExpression = parentExpression.FindMember(toSerialize);
 
-            return _valueDictionary[path] = new ExpressionInfo(path, currentExpression, toSerialize.Class);
+            var runtimeType = GetRuntimeType(toSerialize.Class, currentExpression);
+
+            return _valueDictionary[path] = new ExpressionInfo(path, currentExpression, runtimeType);
+        }
+
+        private TypeInfo GetRuntimeType(TypeInfo typeInfo, Expression expression)
+        {
+            var typeName = expression.GetTypeName();
+            if (typeName != typeInfo.TypeName)
+            {
+                var runtimeType = _typeInfoProvider.GetTypeInfo(expression.Type);
+
+                System.Diagnostics.Debugger.Break();
+                // TODO: populate derived type info.
+                // TODO: how to find type info?
+                // TODO: how to handle inheritance?
+
+                return runtimeType;
+            }
+
+            return typeInfo;
         }
 
         // TODO: collections (and syntax, [i]?)
@@ -124,6 +128,11 @@ namespace SerializeThis.Serialization.Debug
         public Expression FindLocalVariable(string localName)
         {
             var stackFrame = _debugger.CurrentStackFrame;
+
+            if (stackFrame == null)
+            {
+                return null;
+            }
 
             foreach (Expression local in stackFrame.Locals)
             {
@@ -178,19 +187,6 @@ namespace SerializeThis.Serialization.Debug
             }
         }
 
-        private Expression FindMember(ExpressionInfo member, MemberInfo prop)
-        {
-            foreach (Expression dataMember in member.Expression.DataMembers)
-            {
-                if (dataMember.Name == prop.Name)
-                {
-                    return dataMember;
-                }
-            }
-
-            return null;
-        }
-
         private object GetValueTypeValue(ExpressionInfo expressionInfo)
         {
             if (expressionInfo == null)
@@ -204,6 +200,9 @@ namespace SerializeThis.Serialization.Debug
             {
                 case TypeEnum.Boolean:
                     return bool.Parse(value);
+
+                case TypeEnum.Char:
+                    return char.Parse(value);
 
                 case TypeEnum.String:
                     return value == null || value == "null" ? null : value.Substring(1, value.Length - 2);

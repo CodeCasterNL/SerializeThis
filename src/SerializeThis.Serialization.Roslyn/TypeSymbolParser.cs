@@ -171,6 +171,8 @@ namespace SerializeThis.Serialization.Roslyn
                     return TypeEnum.Boolean;
                 case SpecialType.System_String:
                     return TypeEnum.String;
+                case SpecialType.System_Char:
+                    return TypeEnum.Char;
                 case SpecialType.System_DateTime:
                     return TypeEnum.DateTime;
                 case SpecialType.System_Int16:

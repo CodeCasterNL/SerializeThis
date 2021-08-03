@@ -148,5 +148,11 @@ namespace SerializeThis.Serialization
         protected abstract MemberInfo GetCollectionTypeParameter(T typeSymbol);
 
         protected abstract (MemberInfo TKey, MemberInfo TValue) GetDictionaryKeyType(T typeSymbol);
+
+        public TypeInfo GetTypeInfo(string typeName)
+        {
+            _typesSeen.TryGetValue(typeName, out var typeInfo);
+            return typeInfo;
+        }
     }
 }
