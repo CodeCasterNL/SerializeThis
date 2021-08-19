@@ -100,7 +100,7 @@ namespace SerializeThis.Serialization.Roslyn
             return result;
         }
 
-        protected override TypeEnum GetComplexSymbolType(ITypeSymbol typeSymbol, out CollectionType? collectionType, OUT out bool isNullableValueType, ref bool isEnum, out IList<MemberInfo> typeParameters)
+        protected override TypeEnum GetComplexSymbolType(ITypeSymbol typeSymbol, out CollectionType? collectionType, out bool isNullableValueType, out bool isAnonymousType, ref bool isEnum, out IList<MemberInfo> typeParameters)
         {
             collectionType = null;
             
@@ -152,7 +152,7 @@ namespace SerializeThis.Serialization.Roslyn
                 var nullableType = namedTypeSymbol?.TypeArguments.FirstOrDefault();
                 if (nullableType != null)
                 {
-                    var nullableTypeEnum = GetSymbolType(nullableType, out _, out _, out _, out _);
+                    var nullableTypeEnum = GetSymbolType(nullableType, out _, out _, out _, out _, out _);
                     return nullableTypeEnum;
                 }
             }

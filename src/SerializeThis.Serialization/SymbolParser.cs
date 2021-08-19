@@ -55,13 +55,14 @@ namespace SerializeThis.Serialization
             return returnValue;
         }
 
-        protected TypeEnum GetSymbolType(T typeSymbol, out CollectionType? collectionType, out bool isNullableValueType, out bool isEnum, out IList<MemberInfo> typeParameters)
+        protected TypeEnum GetSymbolType(T typeSymbol, out CollectionType? collectionType, out bool isNullableValueType, out bool isAnonymousType, out bool isEnum, out IList<MemberInfo> typeParameters)
         {
             var knownValueType = GetKnownValueType(typeSymbol);
             if (knownValueType != null)
             {
                 collectionType = null;
                 isNullableValueType = false;
+                isAnonymousType = false;
                 isEnum = false;
                 typeParameters = Array.Empty<MemberInfo>();
                 return knownValueType.Value;
@@ -69,16 +70,17 @@ namespace SerializeThis.Serialization
             
             isEnum = IsEnum(typeSymbol);
 
-            return GetComplexSymbolType(typeSymbol, out collectionType, out isNullableValueType, ref isEnum, out typeParameters);
+            return GetComplexSymbolType(typeSymbol, out collectionType, out isNullableValueType, out isAnonymousType, ref isEnum, out typeParameters);
         }
 
         private void ParseClass(TypeInfo c, T typeSymbol, object value)
         {
-            var type = GetSymbolType(typeSymbol, out var collectionType, out var isNullableValueType, out var isEnum, out var genericParameters);
+            var type = GetSymbolType(typeSymbol, out var collectionType, out var isNullableValueType, out var isAnonymousType, out var isEnum, out var genericParameters);
 
             c.Type = type;
             c.CollectionType = collectionType;
             c.IsNullableValueType = isNullableValueType;
+            c.IsAnonymousType = isAnonymousType;
             c.IsEnum = isEnum;
             c.Attributes = GetAttributes(typeSymbol);
 
@@ -141,7 +143,7 @@ namespace SerializeThis.Serialization
         /// </summary>
         protected abstract TypeEnum? GetKnownValueType(T typeSymbol);
 
-        protected abstract TypeEnum GetComplexSymbolType(T typeSymbol, out CollectionType? collectionType, out bool isNullableValueType, ref bool isEnum, out IList<MemberInfo> typeParameters);
+        protected abstract TypeEnum GetComplexSymbolType(T typeSymbol, out CollectionType? collectionType, out bool isNullableValueType, out bool isAnonymousType, ref bool isEnum, out IList<MemberInfo> typeParameters);
 
         protected abstract MemberInfo GetArrayTypeParameter(T typeSymbol);
 

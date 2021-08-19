@@ -26,5 +26,7 @@ namespace SerializeThis.Serialization
         public IList<MemberInfo> GenericParameters { get; set; } = new List<MemberInfo>();
 
         public IList<AttributeInfo> Attributes { get; set; } = new List<AttributeInfo>();
+        
+        public bool IsAnonymousType { get; set; }
     }
 }
