@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Linq;
 
 // For FooAttributes.
 using System.Runtime.Serialization;
@@ -65,9 +66,15 @@ namespace JsonTestClasses
             {
                 StringProp = "Foo",
                 AnInt = 42,
+                Q = GetQueryable().AsQueryable()
             };
 
             Debugger.Break();
+        }
+
+        private static IEnumerable<string> GetQueryable()
+        {
+            yield return "";
         }
     }
 

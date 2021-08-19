@@ -100,12 +100,11 @@ namespace SerializeThis.Serialization.Roslyn
             return result;
         }
 
-        protected override TypeEnum GetComplexSymbolType(ITypeSymbol typeSymbol, out CollectionType? collectionType, out bool isNullableValueType, ref bool isEnum, out IList<MemberInfo> typeParameters)
+        protected override TypeEnum GetComplexSymbolType(ITypeSymbol typeSymbol, out CollectionType? collectionType, OUT out bool isNullableValueType, ref bool isEnum, out IList<MemberInfo> typeParameters)
         {
             collectionType = null;
             
-
-            //isAnonymousType = typeSymbol.IsAnonymousType;
+            isAnonymousType = typeSymbol.IsAnonymousType;
 
             var isArray = typeSymbol.IsArray();
 

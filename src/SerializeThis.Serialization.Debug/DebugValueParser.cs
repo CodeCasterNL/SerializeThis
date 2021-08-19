@@ -106,14 +106,12 @@ namespace SerializeThis.Serialization.Debug
             var typeName = expression.GetTypeName();
             if (typeName != typeInfo.TypeName)
             {
+                // TODO: SymbolFinder?
                 var runtimeType = _typeInfoProvider.GetTypeInfo(expression.Type);
-
-                System.Diagnostics.Debugger.Break();
-                // TODO: populate derived type info.
-                // TODO: how to find type info?
-                // TODO: how to handle inheritance?
-
-                return runtimeType;
+                if (runtimeType != null)
+                {
+                    return runtimeType;
+                }
             }
 
             return typeInfo;
