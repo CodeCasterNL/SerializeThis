@@ -96,8 +96,15 @@ namespace CodeCaster.SerializeThis.Extension
 
         private async void MenuItemCallback(object sender, EventArgs e)
         {
-            var commandName = GetContentType(((MenuCommand)sender).CommandID.ID);
-            await DoWorkAsync(commandName);
+            try
+            {
+                var commandName = GetContentType(((MenuCommand)sender).CommandID.ID);
+                await DoWorkAsync(commandName);
+            }
+            catch (Exception ex)
+            {
+                ShowMessageBox(ServiceProvider, "Error serializing: " + ex);
+            }
         }
 
         private static string GetContentType(int menuCommandId)
