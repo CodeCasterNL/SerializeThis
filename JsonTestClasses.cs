@@ -139,16 +139,17 @@ namespace JsonTestClasses
         public decimal? NullableDecimal { get; set; }
     }
 
+    public enum FooEnum
+    {
+        Foo = 0,
+        Bar = 1,
+    }
+
     /// <summary>
     /// Enums.
     /// </summary>
     public class FooWithEnum : FooBase
     {
-        public enum FooEnum
-        {
-            Foo = 0,
-            Bar = 1,
-        }
 
         public FooEnum EnumMember { get; set; }
     }
@@ -272,10 +273,17 @@ namespace JsonTestClasses
         [System.Text.Json.JsonPropertyName(Name = "Last_Name")]
         public string Lastname { get; set; }
 
+        [Test(new int[1] { 42 }, FooEnum.Bar, typeof(string))]
         [DataMember(Name = "YesNo")]
         public bool BoolProperty { get; set; }
     }
+
+    public class TestAttribute : Attribute
+    {
+        public TestAttribute(int[] foos, FooEnum @enum, Type type) { }
+    }
 }
+
 
 // These are here so the attribute test works. This is a standalone file without references, so Roslyn won't know the attributes otherwise.
 namespace Newtonsoft.Json
