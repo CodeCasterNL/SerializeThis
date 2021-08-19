@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using System.Text;
 
 namespace SerializeThis.Serialization.Reflection
@@ -29,6 +30,10 @@ namespace SerializeThis.Serialization.Reflection
         {
             return typeSymbol.GetICollectionTInterface() != null;
         }
+
+        public static bool IsAnonymousType(this Type typeSymbol) => 
+            typeSymbol.GetCustomAttributes(typeof(CompilerGeneratedAttribute), inherit: false).Any()
+            && typeSymbol.FullName?.Contains("AnonymousType") == true;
 
         public static string GetNameWithoutGenerics(this Type typeSymbol)
         {

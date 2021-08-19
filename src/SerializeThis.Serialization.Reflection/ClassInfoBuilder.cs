@@ -37,9 +37,11 @@ namespace SerializeThis.Serialization.Reflection
             return result;
         }
 
-        protected override TypeEnum GetComplexSymbolType(Type typeSymbol, out CollectionType? collectionType, out bool isNullableValueType, ref bool isEnum, out IList<Serialization.MemberInfo> typeParameters)
+        protected override TypeEnum GetComplexSymbolType(Type typeSymbol, out CollectionType? collectionType, out bool isNullableValueType, out bool isAnonymousType, ref bool isEnum, out IList<Serialization.MemberInfo> typeParameters)
         {
             isNullableValueType = System.Nullable.GetUnderlyingType(typeSymbol) != null;
+
+            isAnonymousType = typeSymbol.IsAnonymousType();
 
             // Don't count strings as collections, even though they implement IEnumerable<string>.
             var isCollection = typeSymbol != typeof(string)
