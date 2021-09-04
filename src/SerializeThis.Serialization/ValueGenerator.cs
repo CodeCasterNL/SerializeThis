@@ -9,7 +9,7 @@ namespace SerializeThis.Serialization
     {
         private int _counter;
         private DateTime _startTime;
-        
+
         public bool CanHandle(TypeInfo typeInfo, string name)
         {
             _startTime = DateTime.Now;
@@ -27,12 +27,12 @@ namespace SerializeThis.Serialization
             return GetValue(toSerialize);
         }
 
-        public IEnumerable<object> GetCollectionElements(MemberInfo classInfo, string path, MemberInfo collectionType)
+        public IEnumerable<MemberInfo> GetCollectionElements(MemberInfo classInfo, string path, MemberInfo collectionType)
         {
             switch (classInfo.Class.CollectionType)
             {
                 case CollectionType.Array:
-                    return new object[]
+                    return new MemberInfo[]
                     {
                         //GetValue(...),
                         //GetValue(...),
@@ -40,7 +40,7 @@ namespace SerializeThis.Serialization
                     };
                     break;
                 case CollectionType.Collection:
-                    return new Collection<object>[]
+                    return new Collection<MemberInfo>
                     {
                         //GetValue(...),
                         //GetValue(...),
@@ -48,7 +48,7 @@ namespace SerializeThis.Serialization
                     };
                     break;
                 case CollectionType.Dictionary:
-                    return new Dictionary<object, object>[]
+                    return null;//new Dictionary<MemberInfo, MemberInfo>
                     {
                         //GetValue(...),
                         //GetValue(...),
@@ -67,7 +67,7 @@ namespace SerializeThis.Serialization
                 // TODO: this won't work, we can't populate a type's children.
                 if (classInfo.Class.IsCollectionType)
                 {
-                    
+
                 }
                 else
                 {

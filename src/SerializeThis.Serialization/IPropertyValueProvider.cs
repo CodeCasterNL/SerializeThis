@@ -6,7 +6,7 @@ namespace SerializeThis.Serialization
     {
         object GetScalarValue(MemberInfo toSerialize, string path);
 
-        IEnumerable<object> GetCollectionElements(MemberInfo child, string path, MemberInfo collectionType);
+        IEnumerable<MemberInfo> GetCollectionElements(MemberInfo child, string path, MemberInfo collectionType);
         
         /// <summary>
         /// Return true when you can provide values for the requested type and name.

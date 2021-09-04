@@ -118,9 +118,29 @@ namespace SerializeThis.Serialization.Debug
         }
 
         // TODO: collections (and syntax, [i]?)
-        public IEnumerable<object> GetCollectionElements(MemberInfo child, string path, MemberInfo collectionType)
+        public IEnumerable<MemberInfo> GetCollectionElements(MemberInfo collection, string path, MemberInfo collectionType)
         {
-            throw new NotImplementedException();
+            var collectionExpression = GetExpression(collection, path);
+
+            IEnumerable<Expression> collectionItems = GetItemsFromCollection(collectionExpression.Expression);
+
+            // TODO: detect array/indexable collection
+            // TODO: detect Dictionary<Tkey, TValue>
+
+            int i = 0;
+
+            foreach (var collectionItem in collectionItems)
+            {
+                var memberInfo = new MemberInfo
+                {
+                    Name = $"path[{i++}]",
+                    Class = _typeInfoProvider.GetTypeInfo(collectionItem.Type)
+                };
+
+                //var value = ...
+
+                yield return memberInfo;
+            }
         }
 
         public Expression FindLocalVariable(string localName)

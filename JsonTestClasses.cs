@@ -273,14 +273,14 @@ namespace JsonTestClasses
         [System.Text.Json.JsonPropertyName(Name = "Last_Name")]
         public string Lastname { get; set; }
 
-        [Test(new int[1] { 42 }, FooEnum.Bar, typeof(string))]
+        [Test2(new int[1] { 42 }, FooEnum.Bar, typeof(string))]
         [DataMember(Name = "YesNo")]
         public bool BoolProperty { get; set; }
     }
 
-    public class TestAttribute : Attribute
+    public class Test2Attribute : Attribute
     {
-        public TestAttribute(int[] foos, FooEnum @enum, Type type) { }
+        public Test2Attribute(int[] foos, FooEnum @enum, Type type) { }
     }
 }
 

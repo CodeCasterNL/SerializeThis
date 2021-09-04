@@ -123,16 +123,16 @@ namespace SerializeThis.Serialization.Json
             var collectionType = child.Class.GenericParameters.FirstOrDefault();
             if (collectionType == null)
             {
-                return new JArray();
+                throw new ArgumentException($"Cannot find element type of '{child.Name}' ('{path}')", nameof(collectionType));
             }
 
             var arrayMembers = new List<object>();
 
-            foreach (var collectionElement in _valueProvider.GetCollectionElements(child, path, collectionType))
+            foreach (var elementInfo in _valueProvider.GetCollectionElements(child, path, collectionType))
             {
+                SerializeChild(elementInfo, path);
                 //arrayMembers.Add(SerializeChild(collectionElement));
             }
-
 
             return new JArray(arrayMembers);
         }
