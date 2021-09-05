@@ -6,6 +6,13 @@ namespace SerializeThis.Serialization.Roslyn
 {
     public class TypeSymbolParser : SymbolParser<ITypeSymbol>
     {
+        public SemanticModel CurrentSemanticModel { get; set; }
+        
+        protected override ITypeSymbol LookupTypeInfo(string typeName, object instance)
+        {
+            return CurrentSemanticModel?.Compilation.GetTypeByMetadataName(typeName);
+        }
+
         protected override string GetClassName(ITypeSymbol typeSymbol) => typeSymbol.GetTypeName();
 
         // TODO: this will break. Include assembly name with type name?

@@ -130,8 +130,7 @@ namespace SerializeThis.Serialization.Json
 
             foreach (var elementInfo in _valueProvider.GetCollectionElements(child, path, collectionType))
             {
-                SerializeChild(elementInfo, path);
-                //arrayMembers.Add(SerializeChild(collectionElement));
+                arrayMembers.Add(SerializeChild(elementInfo, path));
             }
 
             return new JArray(arrayMembers);

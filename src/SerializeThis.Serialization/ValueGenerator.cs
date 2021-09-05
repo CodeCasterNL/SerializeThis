@@ -32,21 +32,13 @@ namespace SerializeThis.Serialization
             switch (classInfo.Class.CollectionType)
             {
                 case CollectionType.Array:
-                    return new MemberInfo[]
-                    {
-                        //GetValue(...),
-                        //GetValue(...),
-                        //GetValue(...),
-                    };
-                    break;
                 case CollectionType.Collection:
-                    return new Collection<MemberInfo>
+                    return new []
                     {
-                        //GetValue(...),
-                        //GetValue(...),
-                        //GetValue(...),
+                        new MemberInfo { Class = collectionType.Class, Name = path + "Element1" },
+                        new MemberInfo { Class = collectionType.Class, Name = path + "Element2" },
+                        new MemberInfo { Class = collectionType.Class, Name = path + "Element3" },
                     };
-                    break;
                 case CollectionType.Dictionary:
                     return null;//new Dictionary<MemberInfo, MemberInfo>
                     {

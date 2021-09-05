@@ -151,9 +151,30 @@ namespace SerializeThis.Serialization
 
         protected abstract (MemberInfo TKey, MemberInfo TValue) GetDictionaryKeyType(T typeSymbol);
 
-        public TypeInfo GetTypeInfo(string typeName)
+        /// <summary>
+        /// Find type info by full name. Called when a runtime type differs from a declared type.
+        /// </summary>
+        protected abstract T LookupTypeInfo(string typeName, object instance);
+
+        public TypeInfo GetTypeInfo(string typeName, object instance)
         {
-            _typesSeen.TryGetValue(typeName, out var typeInfo);
+            if (_typesSeen.TryGetValue(typeName, out var typeInfo))
+            {
+                return typeInfo;
+            }
+
+            // This type was not encountered yet? Reconstruct by asking the derived parser.
+
+            typeInfo = new TypeInfo
+            {
+                TypeName = typeName
+            };
+            _typesSeen[typeName] = typeInfo;
+
+            var typeSymbol = LookupTypeInfo(typeName, instance);
+
+            ParseClass(typeInfo, typeSymbol, instance);
+
             return typeInfo;
         }
     }

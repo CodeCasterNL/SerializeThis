@@ -38,13 +38,13 @@ namespace SerializeThis.Serialization.CSharp
             switch (type.Class.CollectionType)
             {
                 case CollectionType.Array:
-                    EmitArray(builder, type, indent, statementEnd);
+                    EmitArray(builder, type, indent, path, statementEnd);
                     return;
                 case CollectionType.Collection:
-                    EmitCollection(builder, type, indent, statementEnd);
+                    EmitCollection(builder, type, indent, path, statementEnd);
                     return;
                 case CollectionType.Dictionary:
-                    EmitDictionary(builder, type, indent, statementEnd);
+                    EmitDictionary(builder, type, indent, path, statementEnd);
                     return;
             }
 
@@ -120,61 +120,59 @@ namespace SerializeThis.Serialization.CSharp
             EmitInitializer(builder, child, indent, path, statementEnd);
         }
 
-        private void EmitArray(StringBuilder builder, MemberInfo type, int indent, StatementEndOptions statementEnd)
+        private void EmitArray(StringBuilder builder, MemberInfo collectionType, int indent, string path, StatementEndOptions statementEnd)
         {
             var spaces = GetSpaces(indent);
-            var elementType = type.Class.GenericParameters[0];
+            var elementType = collectionType.Class.GenericParameters[0];
 
             // TypeName includes square brackets for arrays (System.String[])
-            builder.AppendFormat("new {0}{1}", type.Class.TypeName, Environment.NewLine);
-            EmitCollectionInitializer(builder, elementType, indent, spaces, statementEnd);
+            builder.AppendFormat("new {0}{1}", collectionType.Class.TypeName, Environment.NewLine);
+            EmitCollectionInitializer(builder, collectionType, elementType, indent, path, spaces, statementEnd);
         }
 
-        private void EmitCollection(StringBuilder builder, MemberInfo type, int indent, StatementEndOptions statementEnd)
+        private void EmitCollection(StringBuilder builder, MemberInfo collectionType, int indent, string path, StatementEndOptions statementEnd)
         {
             var spaces = GetSpaces(indent);
-            var elementType = type.Class.GenericParameters[0];
+            var elementType = collectionType.Class.GenericParameters[0];
 
-            var typeName = $"{type.Class.TypeName}<{elementType.Class.TypeName}>";
+            var typeName = $"{collectionType.Class.TypeName}<{elementType.Class.TypeName}>";
 
             builder.AppendFormat("new {0}{1}", typeName, Environment.NewLine);
-            EmitCollectionInitializer(builder, elementType, indent, spaces, statementEnd);
+            EmitCollectionInitializer(builder, collectionType, elementType, indent, path, spaces, statementEnd);
         }
 
-        private void EmitCollectionInitializer(StringBuilder builder, MemberInfo elementType, int indent, string spaces, StatementEndOptions statementEnd)
+        private void EmitCollectionInitializer(StringBuilder builder, MemberInfo collectionType, MemberInfo elementType, int indent, string path, string spaces, StatementEndOptions statementEnd)
         {
-            void EmitCollectionEntry(int elementIndent, string path, StatementEndOptions elementStatementEnd = StatementEndOptions.Comma | StatementEndOptions.Newline)
+            void EmitCollectionEntry(int elementIndent, string elementPath, StatementEndOptions elementStatementEnd = StatementEndOptions.Comma | StatementEndOptions.Newline)
             {
                 builder.Append(GetSpaces(elementIndent));
-                EmitInitializer(builder, elementType, elementIndent, path, elementStatementEnd);
+                EmitInitializer(builder, elementType, elementIndent, elementPath, elementStatementEnd);
             }
 
             builder.Append(spaces).AppendLine("{");
 
-            //if (elementType.Value is IEnumerable<object> collectionItems)
-            //{
-            //    int i = 0;
-            //    foreach (var item in collectionItems)
-            //    {
-            //        EmitCollectionEntry(indent + 1, AppendPath(path, "[i]"));
-            //    }
-            //}
+            int i = 0;
 
+            foreach (var elementInfo in _valueProvider.GetCollectionElements(collectionType, path, elementType))
+            {
+                EmitCollectionEntry(indent + 1, $"{path}[{i++}]");
+            }
+            
             builder.Append(spaces).Append("}");
             EndStatement(builder, statementEnd);
         }
 
-        private void EmitDictionary(StringBuilder builder, MemberInfo type, int indent, StatementEndOptions statementEnd)
+        private void EmitDictionary(StringBuilder builder, MemberInfo type, int indent, string path, StatementEndOptions statementEnd)
         {
             var keyType = type.Class.GenericParameters[0];
             var valueType = type.Class.GenericParameters[1];
 
-            void EmitDictionaryEntry(int elementIndent, string path, StatementEndOptions elementStatementEnd = StatementEndOptions.Comma | StatementEndOptions.Newline)
+            void EmitDictionaryEntry(int elementIndent, string elementPath, StatementEndOptions elementStatementEnd = StatementEndOptions.Comma | StatementEndOptions.Newline)
             {
                 builder.Append(GetSpaces(elementIndent)).Append("{ ");
-                EmitInitializer(builder, keyType, indent + 1, path, StatementEndOptions.None);
+                EmitInitializer(builder, keyType, indent + 1, elementPath, StatementEndOptions.None);
                 builder.Append(", ");
-                EmitInitializer(builder, valueType, indent + 1, path, StatementEndOptions.None);
+                EmitInitializer(builder, valueType, indent + 1, elementPath, StatementEndOptions.None);
                 builder.Append(" }");
                 EndStatement(builder, elementStatementEnd);
             }

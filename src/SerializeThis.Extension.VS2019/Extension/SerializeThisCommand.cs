@@ -17,6 +17,7 @@ using Microsoft.VisualStudio.Shell.Interop;
 using Microsoft.VisualStudio.TextManager.Interop;
 using IServiceProvider = System.IServiceProvider;
 using SerializeThis.Serialization.Debug;
+using SerializeThis.Serialization.Roslyn;
 
 namespace SerializeThis.Extension.VS2019.Extension
 {
@@ -179,22 +180,26 @@ namespace SerializeThis.Extension.VS2019.Extension
                     return;
             }
 
+            // TODO: hax
+            ((TypeSymbolParser)_roslynParser).CurrentSemanticModel = semanticModel;
+            
             // This does the actual magic of parsing the type under the caret.
-            var classInfo = _roslynParser.GetMemberInfoRecursive(objectName, symbolToSerialize, null/*, semanticModel*/);
+            var classInfo = _roslynParser.GetMemberInfoRecursive(objectName, symbolToSerialize, null);
 
             IPropertyValueProvider valueProvider = null;
 
-            // Only when we were invoked on a local.
-            if (selectedSymbol is ILocalSymbol)
-            {
-                valueProvider = await MaybeGetDebugValueParserAsync();
-                
-                // And only when the debugger can access that local.
-                if (true != valueProvider?.CanHandle(classInfo.Class, objectName))
-                {
-                    valueProvider = null;
-                }
-            }
+            // TODO: rethink debugger
+            //// Only when we were invoked on a local.
+            //if (selectedSymbol is ILocalSymbol)
+            //{
+            //    valueProvider = await MaybeGetDebugValueParserAsync(semanticModel);
+            //    
+            //    // And only when the debugger can access that local.
+            //    if (true != valueProvider?.CanHandle(classInfo.Class, objectName))
+            //    {
+            //        valueProvider = null;
+            //    }
+            //}
 
             // When all else fails, generate some values.
             if (valueProvider == null)
@@ -205,7 +210,7 @@ namespace SerializeThis.Extension.VS2019.Extension
             ShowOutput(classInfo, valueProvider, commandName);
         }
 
-        private async Task<IPropertyValueProvider> MaybeGetDebugValueParserAsync()
+        private async Task<IPropertyValueProvider> MaybeGetDebugValueParserAsync(SemanticModel semanticModel)
         {
             // Need to get the DTE on the UI thread.
             await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();

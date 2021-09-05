@@ -2,6 +2,6 @@
 {
     public interface ITypeInfoProvider
     {
-        TypeInfo GetTypeInfo(string typeName);
+        TypeInfo GetTypeInfo(string typeName, object instance);
     }
 }

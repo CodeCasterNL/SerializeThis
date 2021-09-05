@@ -85,6 +85,7 @@ namespace SerializeThis.Serialization.Debug
             if (!_valueDictionary.TryGetValue(parentPath, out var parentExpression))
             {
                 // TODO: get expression type from event or something?
+                //var runtimeType = _typeInfoProvider.GetTypeInfo(parentExpression.Type.TypeName);
                 throw new NotImplementedException($"TODO: look up type of parentPath '{parentPath}'");
                 parentExpression = GetExpression(null, parentPath);
             }
@@ -96,6 +97,11 @@ namespace SerializeThis.Serialization.Debug
 
             var currentExpression = parentExpression.FindMember(toSerialize);
 
+            if (currentExpression == null && toSerialize.Class.IsValueType && !toSerialize.Class.IsNullableValueType && toSerialize.Class.Type != TypeEnum.String)
+            {
+                throw new ArgumentException($"Value of '{path}' is null, but type '{toSerialize.Class.TypeName}' ({toSerialize.Class.Type}) doesn't allow that");
+            }
+
             var runtimeType = GetRuntimeType(toSerialize.Class, currentExpression);
 
             return _valueDictionary[path] = new ExpressionInfo(path, currentExpression, runtimeType);
@@ -103,11 +109,16 @@ namespace SerializeThis.Serialization.Debug
 
         private TypeInfo GetRuntimeType(TypeInfo typeInfo, Expression expression)
         {
+            if (expression == null)
+            {
+                return null;
+            }
+
             var typeName = expression.GetTypeName();
             if (typeName != typeInfo.TypeName)
             {
                 // TODO: SymbolFinder?
-                var runtimeType = _typeInfoProvider.GetTypeInfo(expression.Type);
+                var runtimeType = _typeInfoProvider.GetTypeInfo(expression.Type, null);
                 if (runtimeType != null)
                 {
                     return runtimeType;
@@ -134,7 +145,7 @@ namespace SerializeThis.Serialization.Debug
                 var memberInfo = new MemberInfo
                 {
                     Name = $"path[{i++}]",
-                    Class = _typeInfoProvider.GetTypeInfo(collectionItem.Type)
+                    Class = _typeInfoProvider.GetTypeInfo(collectionItem.Type, null)
                 };
 
                 //var value = ...

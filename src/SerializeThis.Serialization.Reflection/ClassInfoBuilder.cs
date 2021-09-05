@@ -6,6 +6,11 @@ namespace SerializeThis.Serialization.Reflection
 {
     public class ClassInfoBuilder : SymbolParser<Type>
     {
+        protected override Type LookupTypeInfo(string typeName, object instance)
+        {
+            return Type.GetType(typeName);
+        }
+
         protected override string GetClassName(Type typeSymbol) => typeSymbol.GetNameWithoutGenerics();
         
         // TODO: this will break. Include assembly name with type name?
