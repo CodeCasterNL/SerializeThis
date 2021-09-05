@@ -17,5 +17,8 @@ namespace SerializeThis.Serialization
         /// Called by the serializer when it encounters another property.
         /// </summary>
         MemberInfo Announce(MemberInfo type, string path);
+        
+        MemberInfo Announce(MemberInfo keyType, MemberInfo valueType, string path);
+        void Initialize();
     }
 }

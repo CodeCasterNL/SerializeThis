@@ -21,10 +21,13 @@ namespace SerializeThis.Serialization.Debug
             _typeInfoProvider = typeInfoProvider;
         }
 
-        public bool CanHandle(TypeInfo declaredType, string path)
+        public void Initialize()
         {
             _valueDictionary = new Dictionary<string, ExpressionInfo>();
+        }
 
+        public bool CanHandle(TypeInfo declaredType, string path)
+        {
             var expression = FindLocalVariable(path);
 
             if (expression != null)
@@ -266,5 +269,25 @@ namespace SerializeThis.Serialization.Debug
 
             return null;
         }
-    }
+
+        public MemberInfo Announce(MemberInfo keyType, MemberInfo valueType, string path)
+        {
+            var kvtName = $"KeyValueType<{keyType.Class.TypeName}, {valueType.Class.TypeName}>";
+            var keyValueType = new MemberInfo
+            {
+                Name = kvtName,
+                Class = new TypeInfo
+                {
+                    TypeName = kvtName,
+                    GenericParameters = new List<MemberInfo>
+                    {
+                        keyType,
+                        valueType
+                    }
+                }
+            };
+
+            return keyValueType;
+        }
+   }
 }

@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using System.Linq;
 
 namespace SerializeThis.Serialization
@@ -12,9 +11,12 @@ namespace SerializeThis.Serialization
 
         public bool CanHandle(TypeInfo typeInfo, string name)
         {
-            _startTime = DateTime.Now;
-
             return true;
+        }
+
+        public void Initialize()
+        {
+            _startTime = DateTime.Now;
         }
 
         public MemberInfo Announce(MemberInfo toSerialize, string path)
@@ -22,34 +24,32 @@ namespace SerializeThis.Serialization
             return toSerialize;
         }
 
-        public object GetScalarValue(MemberInfo toSerialize, string path)
-        {
-            return GetValue(toSerialize);
-        }
+        public object GetScalarValue(MemberInfo toSerialize, string path) => GetValue(toSerialize);
 
+        // TODO: ValueInfo
         public IEnumerable<MemberInfo> GetCollectionElements(MemberInfo classInfo, string path, MemberInfo collectionType)
         {
             switch (classInfo.Class.CollectionType)
             {
                 case CollectionType.Array:
                 case CollectionType.Collection:
-                    return new []
+                    return new[]
                     {
-                        new MemberInfo { Class = collectionType.Class, Name = path + "Element1" },
-                        new MemberInfo { Class = collectionType.Class, Name = path + "Element2" },
-                        new MemberInfo { Class = collectionType.Class, Name = path + "Element3" },
+                        new MemberInfo { Class = collectionType.Class, Name = path + "[0]" },
+                        new MemberInfo { Class = collectionType.Class, Name = path + "[1]" },
+                        new MemberInfo { Class = collectionType.Class, Name = path + "[2]" },
                     };
                 case CollectionType.Dictionary:
-                    return null;//new Dictionary<MemberInfo, MemberInfo>
+                    return new []
                     {
-                        //GetValue(...),
-                        //GetValue(...),
-                        //GetValue(...),
+                        //new MemberInfo { Class = collectionType.Class, Name = path + $"[{collectionType.Class.GenericParameters[0].}]" },
+                        new MemberInfo { Class = collectionType.Class, Name = path + $"[]" },
+                        new MemberInfo { Class = collectionType.Class, Name = path + $"[]" },
+                        new MemberInfo { Class = collectionType.Class, Name = path + $"[]" },
                     };
-                    break;
             }
 
-            throw new NotImplementedException();
+            throw new ArgumentException(nameof(classInfo.Class.CollectionType));
         }
 
         private void PopulateValue(MemberInfo classInfo)
@@ -113,6 +113,26 @@ namespace SerializeThis.Serialization
                 default:
                     return null;
             }
+        }
+
+        public MemberInfo Announce(MemberInfo keyType, MemberInfo valueType, string path)
+        {
+            var kvtName = $"KeyValueType<{keyType.Class.TypeName}, {valueType.Class.TypeName}>";
+            var keyValueType = new MemberInfo
+            {
+                Name = kvtName,
+                Class = new TypeInfo
+                {
+                    TypeName = kvtName,
+                    GenericParameters = new List<MemberInfo>
+                    {
+                        keyType,
+                        valueType
+                    }
+                }
+            };
+
+            return keyValueType;
         }
     }
 }

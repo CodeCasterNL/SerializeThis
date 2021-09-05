@@ -27,6 +27,8 @@ namespace SerializeThis.Serialization.Json
 
         public string Serialize(MemberInfo type)
         {
+            _valueProvider.Initialize();
+
             if (!CanSerialize(type))
             {
                 // Sure, maybe later we'll support collection or scalar types.
@@ -95,24 +97,18 @@ namespace SerializeThis.Serialization.Json
             // A dictionary's key type is the first child, the value type the second.
             var keyType = child.Class.GenericParameters.FirstOrDefault();
             var valueType = child.Class.GenericParameters.Skip(1).FirstOrDefault();
+            var keyValueType = _valueProvider.Announce(keyType, valueType, path);
 
             var jObject = new JObject();
 
-            ////// TODO: use item.Key and item.Value...
-            ////var exampleKey = SerializeChild(keyType, AppendPath(path, $"[{keyType.Value}]"));
-            ////var exampleValue = SerializeChild(valueType);
-            //if (child.Value is IEnumerable<(object, object)> dictionary)
-            //{
-            //    foreach (var item in dictionary)
-            //    {
-             
-            //        //var property = new JProperty(exampleKey.ToString(), exampleValue);
-            //        //jObject.Add(property);
+            foreach (var elementInfo in _valueProvider.GetCollectionElements(child, path, keyValueType))
+            {
+                var key = SerializeChild(elementInfo.Class.GenericParameters[0], path);
+                var value = SerializeChild(elementInfo.Class.GenericParameters[1], path);
 
-            //        //EmitDictionaryEntry(indent + 1, value: item, generateValue: false);
-            //    }
-            //}
-
+                var property = new JProperty(key.ToString(), value);
+                jObject.Add(property);
+            }
 
             return jObject;
         }

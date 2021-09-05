@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 using System.Text;
@@ -23,6 +24,8 @@ namespace SerializeThis.Serialization.CSharp
         public string Serialize(MemberInfo type)
         {
             var builder = new StringBuilder();
+            
+            _valueProvider.Initialize();
 
             builder.Append($"var {type.Name} = ");
 
@@ -143,54 +146,47 @@ namespace SerializeThis.Serialization.CSharp
 
         private void EmitCollectionInitializer(StringBuilder builder, MemberInfo collectionType, MemberInfo elementType, int indent, string path, string spaces, StatementEndOptions statementEnd)
         {
-            void EmitCollectionEntry(int elementIndent, string elementPath, StatementEndOptions elementStatementEnd = StatementEndOptions.Comma | StatementEndOptions.Newline)
-            {
-                builder.Append(GetSpaces(elementIndent));
-                EmitInitializer(builder, elementType, elementIndent, elementPath, elementStatementEnd);
-            }
-
             builder.Append(spaces).AppendLine("{");
+
+            var elementSpaces = GetSpaces(indent + 1);
 
             int i = 0;
 
             foreach (var elementInfo in _valueProvider.GetCollectionElements(collectionType, path, elementType))
             {
-                EmitCollectionEntry(indent + 1, $"{path}[{i++}]");
+                builder.Append(elementSpaces);
+
+                EmitInitializer(builder, elementInfo, indent + 1, $"{path}[{i++}]");
             }
-            
+
             builder.Append(spaces).Append("}");
+
             EndStatement(builder, statementEnd);
         }
 
-        private void EmitDictionary(StringBuilder builder, MemberInfo type, int indent, string path, StatementEndOptions statementEnd)
+        private void EmitDictionary(StringBuilder builder, MemberInfo collectionType, int indent, string path, StatementEndOptions statementEnd)
         {
-            var keyType = type.Class.GenericParameters[0];
-            var valueType = type.Class.GenericParameters[1];
+            var keyType = collectionType.Class.GenericParameters[0];
+            var valueType = collectionType.Class.GenericParameters[1];
 
-            void EmitDictionaryEntry(int elementIndent, string elementPath, StatementEndOptions elementStatementEnd = StatementEndOptions.Comma | StatementEndOptions.Newline)
-            {
-                builder.Append(GetSpaces(elementIndent)).Append("{ ");
-                EmitInitializer(builder, keyType, indent + 1, elementPath, StatementEndOptions.None);
-                builder.Append(", ");
-                EmitInitializer(builder, valueType, indent + 1, elementPath, StatementEndOptions.None);
-                builder.Append(" }");
-                EndStatement(builder, elementStatementEnd);
-            }
+            var keyValueType = _valueProvider.Announce(keyType, valueType, path);
 
             var spaces = GetSpaces(indent);
 
-            var typeName = $"{type.Class.TypeName}<{keyType.Class.TypeName}, {valueType.Class.TypeName}>";
+            var typeName = $"{collectionType.Class.TypeName}<{keyType.Class.TypeName}, {valueType.Class.TypeName}>";
 
             builder.AppendFormat("new {0}{1}", typeName, Environment.NewLine);
             builder.Append(spaces).AppendLine("{");
 
-            //if (type.Value is IEnumerable<(object, object)> dictionary)
-            //{
-            //    foreach (var item in dictionary)
-            //    {
-            //        EmitDictionaryEntry(indent + 1, value: item);
-            //    }
-            //}
+            foreach (var elementInfo in _valueProvider.GetCollectionElements(collectionType, path, keyValueType))
+            {
+                builder.Append(GetSpaces(indent + 1)).Append("{ ");
+                EmitInitializer(builder, elementInfo.Class.GenericParameters[0], indent + 1, path, StatementEndOptions.None);
+                builder.Append(", ");
+                EmitInitializer(builder, elementInfo.Class.GenericParameters[1], indent + 1, path, StatementEndOptions.None);
+                builder.Append(" }");
+                EndStatement(builder, StatementEndOptions.Comma | StatementEndOptions.Newline);
+            }
 
             builder.Append(spaces).Append("}");
             EndStatement(builder, statementEnd);
@@ -224,7 +220,7 @@ namespace SerializeThis.Serialization.CSharp
                     builder.AppendFormat("new DateTime({0}, {1}, {2}, {3}, {4}, {5})", dt.Year, dt.Month, dt.Day, dt.Hour, dt.Minute, dt.Second);
                     break;
                 case DateTimeOffset dto:
-                    builder.AppendFormat("new DateTime({0}, {1}, {2}, {3}, {4}, {5}, TimeSpan.FromHours(2))");
+                    builder.AppendFormat("new DateTime({0}, {1}, {2}, {3}, {4}, {5}, TimeSpan.FromHours(2))", dto.Year, dto.Month, dto.Day, dto.Hour, dto.Minute, dto.Second);
                     break;
                 default:
                     builder.Append(value ?? "null");

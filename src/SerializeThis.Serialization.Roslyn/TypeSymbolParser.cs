@@ -4,6 +4,9 @@ using Microsoft.CodeAnalysis;
 
 namespace SerializeThis.Serialization.Roslyn
 {
+    /// <summary>
+    /// Parses the code in the currently open editor window, using Roslyn.
+    /// </summary>
     public class TypeSymbolParser : SymbolParser<ITypeSymbol>
     {
         public SemanticModel CurrentSemanticModel { get; set; }
