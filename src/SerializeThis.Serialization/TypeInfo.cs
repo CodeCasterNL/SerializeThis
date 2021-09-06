@@ -13,7 +13,7 @@ namespace SerializeThis.Serialization
 
         public bool IsValueType => Type != TypeEnum.ComplexType;
         
-        public bool IsComplexType => Type == TypeEnum.ComplexType;
+        public bool IsComplexType => Type == TypeEnum.ComplexType || Type == TypeEnum.Interface;
 
         public bool IsCollectionType => CollectionType.HasValue;
 

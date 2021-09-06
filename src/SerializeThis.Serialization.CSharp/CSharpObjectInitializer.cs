@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 using System.Text;
@@ -24,7 +23,7 @@ namespace SerializeThis.Serialization.CSharp
         public string Serialize(MemberInfo type)
         {
             var builder = new StringBuilder();
-            
+
             _valueProvider.Initialize();
 
             builder.Append($"var {type.Name} = ");
@@ -44,7 +43,15 @@ namespace SerializeThis.Serialization.CSharp
                     EmitArray(builder, type, indent, path, statementEnd);
                     return;
                 case CollectionType.Collection:
-                    EmitCollection(builder, type, indent, path, statementEnd);
+                    if (type.Class.Type == TypeEnum.Interface)
+                    {
+                        builder.Append($"/* TODO: an interface ({GetGenericTypeName(type.Class)})! */ null");
+                        EndStatement(builder, statementEnd);
+                    }
+                    else
+                    {
+                        EmitCollection(builder, type, indent, path, statementEnd);
+                    }
                     return;
                 case CollectionType.Dictionary:
                     EmitDictionary(builder, type, indent, path, statementEnd);
@@ -60,7 +67,16 @@ namespace SerializeThis.Serialization.CSharp
                 // TODO: how often to repeat the pattern A.B.C.D[.A.B.C.D[...]] if D has a property of type A?)
                 // TODO: maybe print `// A.B.C.D.A = max recursion depth reached` or something like that.
 
-                EmitComplexType(builder, type, indent, path, statementEnd);
+                if (type.Class.Type == TypeEnum.Interface)
+                {
+                    builder.Append($"/* TODO: an interface ({GetGenericTypeName(type.Class)})! */ null");
+                    EndStatement(builder, statementEnd);
+                }
+                else
+                {
+                    EmitComplexType(builder, type, indent, path, statementEnd);
+                }
+
                 return;
             }
 

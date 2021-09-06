@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.Linq;
 
@@ -54,6 +55,10 @@ namespace JsonTestClasses
                     "4",
                     "Foo5",
                 },
+                FooBaseIList = new List<FooBase>
+                {
+                    new FooBase { Firstname = "Foo", Lastname = "Bar" }
+                },
                 IntStringDict = new Dictionary<int, string>
                 {
                     { 42, "Forty-Two" },
@@ -88,10 +93,19 @@ namespace JsonTestClasses
         public bool BoolProperty { get; set; }
     }
 
+    public interface IFooInterface
+    {
+        string Firstname { get; set; }
+        string Lastname { get; set; }
+        bool BoolProperty { get; set; }
+        int Age { get; set; }
+        DateTime DateOfBirth { get; set; }
+    }
+
     /// <summary>
     /// Inheritance.
     /// </summary>
-    public class FooInherited : FooBase
+    public class FooInherited : FooBase, IFooInterface
     {
         public int Age { get; set; }
         public DateTime DateOfBirth { get; set; }
@@ -104,6 +118,7 @@ namespace JsonTestClasses
     {
         public string[] StringArray { get; set; }
         public List<FooBase> FooBaseList { get; set; }
+        public IList<FooBase> FooBaseIList { get; set; }
         public Dictionary<int, string> IntStringDict { get; set; }
     }
 
@@ -171,8 +186,9 @@ namespace JsonTestClasses
         public int[,] MultiDimInt32s { get; set; }
         public int[][] JaggedInt32s { get; set; }
         public ICollection<FooInherited> ChildrenICollection { get; set; }
+        public Collection<FooInherited> ChildrenCollection { get; set; }
         public IMyCollection<FooInherited> InterfaceInheritance { get; set; }
-        public IMyCollection2<FooInherited> InterfaceDeeperInheritance { get; set; }
+        public MyCollection2<FooInherited> DeeperInheritance { get; set; }
         public string[] StringArray { get; set; }
         public List<FooBase> ChildrenList { get; set; }
         public IList<FooInherited> ChildrenIList { get; set; }
@@ -191,6 +207,10 @@ namespace JsonTestClasses
     }
 
     public interface IMyDictionary<TKey, TValue> : IDictionary<TKey, TValue>
+    {
+    }
+
+    public class MyCollection2<T> : Collection<T>, IMyCollection2<T>
     {
     }
 

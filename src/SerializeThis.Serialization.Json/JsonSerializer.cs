@@ -18,7 +18,7 @@ namespace SerializeThis.Serialization.Json
 
         public string DisplayName => "JSON";
 
-        public bool CanSerialize(MemberInfo type) => type.Class.Type == TypeEnum.ComplexType;
+        public bool CanSerialize(MemberInfo type) => type.Class.IsComplexType;
 
         public JsonSerializer(IPropertyValueProvider valueProvider)
         {
@@ -35,7 +35,7 @@ namespace SerializeThis.Serialization.Json
                 throw new NotSupportedException("Root type must be complex type");
             }
 
-            var rootObject = GetComplexType(type, type.Name);
+            var rootObject = SerializeChild(type, type.Name);
             return rootObject.ToString();
         }
 

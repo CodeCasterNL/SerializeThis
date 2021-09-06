@@ -166,8 +166,18 @@ namespace SerializeThis.Serialization.Roslyn
                     return nullableTypeEnum;
                 }
             }
-            
-            return TypeEnum.ComplexType;
+
+            switch (typeSymbol.TypeKind)
+            {
+                case TypeKind.Interface:
+                    return TypeEnum.Interface;
+                case TypeKind.Struct:
+                    return TypeEnum.Struct;
+
+                // TODO: see which other Roslyn types we need to support (Pointer?).
+                default:
+                    return TypeEnum.ComplexType;
+            }
         }
 
         protected override TypeEnum? GetKnownValueType(ITypeSymbol typeSymbol)

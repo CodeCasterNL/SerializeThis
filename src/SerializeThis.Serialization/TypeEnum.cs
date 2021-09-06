@@ -6,6 +6,12 @@
     public enum TypeEnum
     {
         ComplexType = 0,
+        //ValueType = 1,
+        Interface = 13,
+        AbstractClass = 14,
+        Struct = 15,
+
+        // TODO: add ValueType = 1, move below to ValueTypeEnum
 
         Boolean = 1,
 
@@ -24,7 +30,7 @@
 
         DateTime = 11,
         DateTimeOffset = 12,
-
+        
 
         //sbyte   System.SByte
 

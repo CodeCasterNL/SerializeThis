@@ -45,3 +45,10 @@ This output project is a Visual Studio Extension, so you'll need to install the 
 Start debugging by running the `src/SerializeThis.Extension.VS2019` project from its solution, which starts an experimental instance of Visual Studio, where the extension will be loaded. You can then open any C# file, right-click a type name and see the "Serialize As" submenu.
 
 The experimental instance has its own file history, so click "Continue without code" on the startup screen, click `File -> Open -> File...` and select the file you wish to test, for example the file `JsonTestClasses.cs` in the root of this repository. On later runs of the experimental instance, you can then click `File -> Recent Files -> ...\JsonTestClasses.cs` so you won't have to browse to it again.
+
+## Known issues
+* Must fix: I broke recursion.
+* Nice to have: support runtime/assigned types being different from declared types (`object[] foo = new { "Bar", null, 42, new Foo { Bar = "Baz" } }`).
+* Refactor: add interface/struct/... detection, so we won't generate `new ICollection<string>` but emit nothing or a comment. Or find and instantiate known interface types?
+* * E.g. `IList<T> = new List<T>, IEnumerable<T> = new Collection<T>, ...`?
+
