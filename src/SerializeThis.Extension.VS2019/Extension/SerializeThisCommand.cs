@@ -169,18 +169,21 @@ namespace SerializeThis.Extension.VS2019.Extension
                     }
                     variableName = symbolToSerialize.Name.LowercaseFirst();
                     break;
+
                 // 'Foo' in `public class Foo { ... }`, `public Foo F { get; set; }`.
                 // 'var' in `var f = new Foo { ... }`.
                 case ITypeSymbol typeSymbol:
                     symbolToSerialize = typeSymbol;
                     variableName = symbolToSerialize.Name.LowercaseFirst();
                     break;
+
                 // 'Foo' in `var b = new Bar { Foo = ... }`
                 // 'F' in `public class Bar { public Foo F { get; set; } }`
                 case IPropertySymbol propertySymbol:
                     symbolToSerialize = propertySymbol.Type;
                     variableName = propertySymbol.Name;
                     break;
+
                 // 'f' in `var f = new Foo { ... }`.
                 case ILocalSymbol localSymbol:
                     variableName = localSymbol.Name;
@@ -196,7 +199,7 @@ namespace SerializeThis.Extension.VS2019.Extension
 
             // TODO: hax
             ((TypeSymbolParser)_roslynParser).CurrentSemanticModel = semanticModel;
-            
+
             // This does the actual magic of parsing the type under the caret.
             var classInfo = _roslynParser.GetMemberInfoRecursive(variableName, symbolToSerialize, null);
 
@@ -231,7 +234,7 @@ namespace SerializeThis.Extension.VS2019.Extension
 
 
             var dte = ServiceProvider.GetService(typeof(EnvDTE.DTE)) as EnvDTE.DTE;
-            
+
             var debugger = dte?.Debugger;
 
             if (debugger == null)
@@ -242,7 +245,7 @@ namespace SerializeThis.Extension.VS2019.Extension
             var debugValueParser = new DebugValueParser(debugger, _roslynParser);
             return debugValueParser;
         }
-        
+
         private void ShowOutput(MemberInfo classInfo, IPropertyValueProvider valueProvider, string menuItemName)
         {
             IClassInfoSerializer serializer;

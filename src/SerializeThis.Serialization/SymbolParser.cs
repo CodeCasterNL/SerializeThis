@@ -111,7 +111,7 @@ namespace SerializeThis.Serialization
                     c.GenericParameters.Add(arrayTypeParameter);
                 }
             }
-            else if (c.Type == TypeEnum.ComplexType && !isNullableValueType)
+            else if (c.IsComplexType)
             {
                 foreach (var gp in genericParameters)
                 {
