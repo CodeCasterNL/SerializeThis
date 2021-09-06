@@ -62,6 +62,11 @@
     </Bitmaps>
   </Commands>
 
+  <KeyBindings>
+    <KeyBinding guid="guidSerializeThisPackageCmdSet" id="cSharpCommandId" editor="guidSourceCodeTextEditor" key1="S" mod1="Alt" key2="C" />
+    <KeyBinding guid="guidSerializeThisPackageCmdSet" id="jsonCommandId" editor="guidSourceCodeTextEditor" key1="S" mod1="Alt" key2="J" />
+  </KeyBindings>
+
   <Symbols>
     <!-- This is the package guid. -->
     <GuidSymbol name="guidSerializeThisPackage" value="{dc187add-f3fb-448a-8424-99255a901aa4}" />
@@ -78,6 +83,11 @@
       <IDSymbol name="cSharpCommandId" value="0x0102" />
       <!-- TODO: settings? Submenus? Key modifiers to select output window type? -->
     </GuidSymbol>
+
+    <!-- The GUID for registering the hotkeys with the "Code Editor" context only. -->
+    <!-- https://stackoverflow.com/questions/31337319/vs-2013-sdk-how-to-keybind-hotkey-only-for-code-window-editor -->
+    <!-- https://github.com/MicrosoftDocs/visualstudio-docs/blob/master/docs/extensibility/ide-guids.md -->
+    <GuidSymbol name="guidSourceCodeTextEditor" value="{8b382828-6202-11d1-8870-0000f87579d2}" />
 
     <GuidSymbol name="guidImages" value="{19077bda-00dc-4ea6-a4f6-23d24e992fac}" >
       <IDSymbol name="bmpPicJson" value="1" />
