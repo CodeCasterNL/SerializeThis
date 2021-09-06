@@ -70,7 +70,7 @@ namespace SerializeThis.Extension.VS2019.OutputHandlers
             int i = 0;
             do
             {
-                filename = Path.Combine(Path.GetTempPath(), ReplaceInvalidFilenameChars(classInfo.Name, '_'));
+                filename = Path.Combine(Path.GetTempPath(), ReplaceInvalidFilenameChars(classInfo.Class.TypeName, '_'));
                 if (i > 0)
                 {
                     filename += $"({i})";

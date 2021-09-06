@@ -154,37 +154,45 @@ namespace SerializeThis.Extension.VS2019.Extension
 
             var selectedSymbol = await GetSymbolUnderCursorAsync(document, semanticModel, position);
 
-            ITypeSymbol symbolToSerialize;
-
-            // Longish name so it's an easy double-click target.
-            var objectName = "rootObject";
+            ITypeSymbol symbolToSerialize = null;
+            string variableName = null;
 
             switch (selectedSymbol)
             {
                 // 'Foo' in `var f = new Foo { ... }`.
                 case IMethodSymbol methodSymbol when methodSymbol.MethodKind == MethodKind.Constructor:
                     symbolToSerialize = methodSymbol.ReceiverType;
+                    if (symbolToSerialize == null)
+                    {
+                        // TODO: should never happen.
+                        break;
+                    }
+                    variableName = symbolToSerialize.Name.LowercaseFirst();
                     break;
                 // 'Foo' in `public class Foo { ... }`, `public Foo F { get; set; }`.
                 // 'var' in `var f = new Foo { ... }`.
                 case ITypeSymbol typeSymbol:
                     symbolToSerialize = typeSymbol;
+                    variableName = symbolToSerialize.Name.LowercaseFirst();
                     break;
                 // 'f' in `var f = new Foo { ... }`.
                 case ILocalSymbol localSymbol:
-                    objectName = localSymbol.Name;
+                    variableName = localSymbol.Name;
                     symbolToSerialize = localSymbol.Type;
                     break;
-                default:
-                    ShowMessageBox(ServiceProvider, "Invoke this menu on a type name.");
-                    return;
+            }
+
+            if (symbolToSerialize == null)
+            {
+                ShowMessageBox(ServiceProvider, "Cannot find a type to serialize under the caret; select a type name or variable.");
+                return;
             }
 
             // TODO: hax
             ((TypeSymbolParser)_roslynParser).CurrentSemanticModel = semanticModel;
             
             // This does the actual magic of parsing the type under the caret.
-            var classInfo = _roslynParser.GetMemberInfoRecursive(objectName, symbolToSerialize, null);
+            var classInfo = _roslynParser.GetMemberInfoRecursive(variableName, symbolToSerialize, null);
 
             IPropertyValueProvider valueProvider = null;
 

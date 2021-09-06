@@ -19,6 +19,7 @@ namespace SerializeThis.Serialization
         MemberInfo Announce(MemberInfo type, string path);
         
         MemberInfo Announce(MemberInfo keyType, MemberInfo valueType, string path);
+
         void Initialize();
     }
 }

@@ -46,6 +46,7 @@
     <Compile Include="AttributeInfo.cs" />
     <Compile Include="IPropertyValueProvider.cs" />
     <Compile Include="ITypeInfoProvider.cs" />
+    <Compile Include="StringExtensions.cs" />
     <Compile Include="TypeInfo.cs" />
     <Compile Include="MemberInfo.cs" />
     <Compile Include="CollectionType.cs" />
