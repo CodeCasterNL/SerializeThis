@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
 namespace SerializeThis.Serialization.Json
@@ -18,7 +19,7 @@ namespace SerializeThis.Serialization.Json
 
         public string DisplayName => "JSON";
 
-        public bool CanSerialize(MemberInfo type) => type.Class.IsComplexType;
+        public bool CanSerialize(MemberInfo type) => true;
 
         public JsonSerializer(IPropertyValueProvider valueProvider)
         {
@@ -29,14 +30,11 @@ namespace SerializeThis.Serialization.Json
         {
             _valueProvider.Initialize();
 
-            if (!CanSerialize(type))
-            {
-                // Sure, maybe later we'll support collection or scalar types.
-                throw new NotSupportedException("Root type must be complex type");
-            }
-
             var rootObject = SerializeChild(type, type.Name);
-            return rootObject.ToString();
+            return JsonConvert.SerializeObject(rootObject, new JsonSerializerSettings
+            {
+                Formatting = Formatting.Indented
+            });
         }
 
         private JObject GetComplexType(MemberInfo toSerialize, string path)
