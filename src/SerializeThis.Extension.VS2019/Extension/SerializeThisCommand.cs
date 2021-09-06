@@ -175,6 +175,12 @@ namespace SerializeThis.Extension.VS2019.Extension
                     symbolToSerialize = typeSymbol;
                     variableName = symbolToSerialize.Name.LowercaseFirst();
                     break;
+                // 'Foo' in `var b = new Bar { Foo = ... }`
+                // 'F' in `public class Bar { public Foo F { get; set; } }`
+                case IPropertySymbol propertySymbol:
+                    symbolToSerialize = propertySymbol.Type;
+                    variableName = propertySymbol.Name;
+                    break;
                 // 'f' in `var f = new Foo { ... }`.
                 case ILocalSymbol localSymbol:
                     variableName = localSymbol.Name;
@@ -252,7 +258,7 @@ namespace SerializeThis.Extension.VS2019.Extension
 
             if (!serializer.CanSerialize(classInfo))
             {
-                ShowMessageBox(ServiceProvider, $"Could not serialize {classInfo.Name} to {serializer.DisplayName}");
+                ShowMessageBox(ServiceProvider, $"Could not serialize {classInfo.Class.TypeName} to {serializer.DisplayName}");
                 return;
             }
 
